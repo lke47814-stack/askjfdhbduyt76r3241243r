@@ -589,7 +589,8 @@ sup.note-ref[contenteditable="false"]{
 #passwordMsg{min-height:22px;margin-top:12px;font-size:13px;font-weight:800}
 body.locked header,
 body.locked main,
-body.locked .settingsPanel{
+body.locked .settingsPanel,
+body.locked .aiPanel{
   display:none!important;
 }
 .settingBlock{
@@ -609,6 +610,23 @@ body.locked .settingsPanel{
   margin:8px 0;
 }
 @media(max-width:520px){.settingBlock .frontGrid{grid-template-columns:1fr}}
+
+.aiPanel{
+  position:fixed; top:58px; right:18px; bottom:18px; width:min(560px,calc(100vw - 36px)); z-index:71;
+  background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:0 18px 60px rgba(0,0,0,.28);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.aiHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(156,111,42,.12),transparent)}
+.aiHead h2{margin:0;font-family:var(--serif);font-size:24px}
+.aiBody{padding:14px;overflow:auto;display:grid;gap:12px}
+.aiBody textarea{min-height:105px;resize:vertical}
+.aiPresetGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aiOutput{min-height:180px;white-space:pre-wrap;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--soft);color:var(--ink);font-family:var(--serif);line-height:1.55}
+.aiFine{font-size:12px;color:var(--muted);line-height:1.45}
+.aiBusy{opacity:.65;pointer-events:none}
+.sectionAnchorBadge{display:inline-flex;align-items:center;margin-left:8px;padding:3px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--soft);font-size:12px;cursor:pointer}
+.sectionCard.linkFlash,.readSection.linkFlash{outline:3px solid rgba(156,111,42,.45);outline-offset:3px}
+@media(max-width:700px){.aiPanel{left:8px;right:8px;top:48px;bottom:8px;width:auto}.aiPresetGrid{grid-template-columns:1fr}}
 
 .hidden{display:none!important}
 a{color:var(--accent)}
@@ -648,6 +666,7 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <div class="actions">
 <button id="toggleLibraryBtn">Hide Library</button>
 <button id="toggleEntriesBtn">Hide Entries</button>
+<button id="aiBtn" class="good">AI</button>
 <button id="settingsBtn">Settings</button>
 <button id="manualSaveTop" class="primary">Manual Save</button>
 </div>
@@ -855,6 +874,18 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
   </div>
 </div>
 
+<div id="aiPanel" class="aiPanel hidden" role="dialog" aria-modal="false" aria-label="Catena AI support">
+  <div class="aiHead"><div><h2>AI Support</h2><div class="sub">Runs through your Vercel server API, not through a visible browser key.</div></div><button id="closeAiBtn" class="small">Close</button></div>
+  <div class="aiBody">
+    <div><div class="label">Instruction</div><textarea id="aiInstruction" placeholder="Example: Strengthen this in a patristic, contemplative style, but preserve the wording unless I ask for rewriting."></textarea></div>
+    <div class="aiPresetGrid"><button id="aiAskBtn" class="primary">Run Custom Instruction</button><button id="aiPolishBtn">Polish Selection / Entry</button><button id="aiOutlineBtn">Create Structure</button><button id="aiFootnotesBtn">Suggest Footnotes</button><button id="aiLinksBtn">Suggest Internal Links</button><button id="aiReviewBtn">Review Export Readiness</button></div>
+    <div class="aiFine">Select text in the main commentary first to work only on that text. With no selection, the AI receives the current entry title, reference, quote, commentary, sections, and note text. It cannot save anything by itself; you choose whether to insert or replace.</div>
+    <div><div class="label">AI output</div><div id="aiOutput" class="aiOutput">No AI output yet.</div></div>
+    <div class="actions"><button id="aiReplaceSelectionBtn" class="primary">Replace Selection</button><button id="aiInsertBtn">Insert at Cursor</button><button id="aiCopyBtn">Copy Output</button></div>
+    <div id="aiStatus" class="sub"></div>
+  </div>
+</div>
+
 <main id="appGrid" class="app">
 <aside class="rail card">
 <div class="paneMiniHead"><strong>Library</strong><button id="collapseLibraryBtn" class="small">Hide</button></div>
@@ -981,6 +1012,7 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <button id="blockquoteBtn" class="small">Blockquote</button>
 <button id="cfBtn" class="small">cf.</button>
 <button id="linkBtn" class="small">Link</button>
+<button id="aiInlineBtn" class="small good">AI</button>
 <button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
 <button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
 <button class="small fmt" data-target="commentEditor" data-cmd="removeFormat">Clear</button>
@@ -1254,8 +1286,9 @@ function quoteHtmlOf(e){
 function normSections(s, mode){
   const source = Array.isArray(s)
     ? s
-    : sectionListForMode(mode).map(t => ({title:t, html:'', collapsed:false}));
+    : sectionListForMode(mode).map(t => ({id:uid(), title:t, html:'', collapsed:false}));
   return source.map(x => ({
+    id:x.id || uid(),
     title:x.title || 'Section',
     html:x.html || '',
     collapsed:!!x.collapsed
@@ -1758,10 +1791,12 @@ function renderSections(){
   e.sections.forEach((s,idx) => {
     const card = document.createElement('div');
     card.className = 'sectionCard';
+    card.dataset.sectionId = s.id || (s.id = uid());
     card.innerHTML =
       '<div class="sectionHead">' +
       '<button class="small toggle">▾</button>' +
       '<input class="secTitle" value="' + esc(s.title) + '">' +
+      '<button class="small copySecLink" title="Copy section link text">Copy Link</button>' +
       '<button class="small delete">Delete</button>' +
       '<button class="small move">Move Up</button>' +
       '</div>' +
@@ -1772,6 +1807,11 @@ function renderSections(){
       e.sections[idx].collapsed = !e.sections[idx].collapsed;
       renderSections();
       changed();
+    };
+    card.querySelector('.copySecLink').onclick = () => {
+      const txt = 'section:' + titleOf(e) + ' > ' + (e.sections[idx].title || 'Section');
+      navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : prompt('Copy this section reference:', txt);
+      setStatus('Section link text copied.', true);
     };
     card.querySelector('.delete').onclick = () => {
       e.sections.splice(idx,1);
@@ -1795,6 +1835,7 @@ function pullSections(){
   if (current < 0 || !entries[current]) return;
   entries[current].sections =
     Array.from(document.querySelectorAll('.sectionCard')).map((card,idx) => ({
+      id:card.dataset.sectionId || (entries[current].sections[idx] && entries[current].sections[idx].id) || uid(),
       title:card.querySelector('.secTitle').value || 'Section',
       html:cleanHtml(card.querySelector('.sectionContent').innerHTML),
       collapsed:entries[current].sections[idx]
@@ -1805,6 +1846,7 @@ function pullSections(){
 function addSection(){
   if (current < 0) return;
   entries[current].sections.push({
+    id:uid(),
     title:'Custom section',
     html:'',
     collapsed:false
@@ -1824,7 +1866,7 @@ function addMissingModeSections(mode){
   const existing = new Set((e.sections || []).map(s => String(s.title || '').trim().toLowerCase()));
   sectionListForMode(mode).forEach(title => {
     if (!existing.has(title.toLowerCase())) {
-      e.sections.push({title:title, html:'', collapsed:false});
+      e.sections.push({id:uid(), title:title, html:'', collapsed:false});
     }
   });
   renderSections();
@@ -2172,6 +2214,46 @@ function entryAnchorId(eOrId){
 function folderAnchorId(folder){
   return 'folder-' + slugify(folder || 'Unfiled');
 }
+function sectionAnchorId(entry, section){
+  const eid = typeof entry === 'string' ? entry : (entry && entry.id);
+  const sid = typeof section === 'string' ? section : (section && section.id);
+  return 'section-' + safeDomId(eid || 'entry') + '-' + safeDomId(sid || 'section');
+}
+function sectionTextOf(e,s){
+  return [e.id,titleOf(e),e.title,e.reference,e.folder,e.collection,s.id,s.title,htmlToPlain(s.html)].filter(Boolean).join(' ').toLowerCase();
+}
+function findSectionTarget(raw, allowPrompt){
+  if (allowPrompt === undefined) allowPrompt = true;
+  let q0 = String(raw || '').trim();
+  if (!q0) return null;
+  q0 = q0.replace(/^section\s*:\s*/i,'').trim();
+  let entryPart = '';
+  let sectionPart = q0;
+  if (q0.includes('>')) {
+    const parts = q0.split('>'); entryPart = parts.shift().trim(); sectionPart = parts.join('>').trim();
+  } else if (q0.includes('#')) {
+    const parts = q0.split('#'); entryPart = parts.shift().trim(); sectionPart = parts.join('#').trim();
+  }
+  const candidates = [];
+  const entryQ = entryPart.toLowerCase();
+  const sectionQ = sectionPart.toLowerCase();
+  entries.filter(e => !e.deleted).forEach(e => {
+    if (entryQ && !cfTextOf(e).includes(entryQ)) return;
+    (e.sections || []).forEach(sec => {
+      const title = String(sec.title || '').toLowerCase();
+      const whole = sectionTextOf(e,sec);
+      if (!sectionQ || title === sectionQ || title.includes(sectionQ) || whole.includes(sectionQ)) candidates.push({kind:'section', entry:e, section:sec});
+    });
+  });
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length > 1 && allowPrompt) {
+    const lines = candidates.slice(0,12).map((x,i) => (i + 1) + '. ' + titleOf(x.entry) + ' > ' + (x.section.title || 'Section')).join('\n');
+    const chosen = prompt('Choose section target by number:\n\n' + lines);
+    const n = parseInt(chosen || '',10);
+    if (n >= 1 && n <= Math.min(candidates.length,12)) return candidates[n - 1];
+  }
+  return null;
+}
 function cfTextOf(e){
   return [e.id,titleOf(e),e.title,e.reference,e.folder,e.collection,e.page].filter(Boolean).join(' ').toLowerCase();
 }
@@ -2179,6 +2261,12 @@ function findCfTarget(raw, allowPrompt){
   if (allowPrompt === undefined) allowPrompt = true;
   const q0 = String(raw || '').trim();
   if (!q0) return null;
+  const sectionMatch = q0.match(/^section\s*:\s*(.+)$/i);
+  if (sectionMatch) return findSectionTarget(sectionMatch[1], allowPrompt);
+  if (q0.includes('>') || q0.includes('#')) {
+    const secTarget = findSectionTarget(q0, false);
+    if (secTarget) return secTarget;
+  }
   const folderMatch = q0.match(/^folder\s*:\s*(.+)$/i);
   if (folderMatch) return {kind:'folder', folder:folderMatch[1].trim() || 'Unfiled'};
   const q = q0.toLowerCase();
@@ -2203,6 +2291,10 @@ function cfAnchorFromTarget(target,label){
     const text = label || ('cf. ' + titleOf(target.entry));
     return '<a class="cf-link" data-cf-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
   }
+  if (target.kind === 'section') {
+    const text = label || ('cf. ' + titleOf(target.entry) + ' > ' + (target.section.title || 'Section'));
+    return '<a class="cf-link" data-cf-id="' + esc(target.entry.id) + '" data-cf-section-id="' + esc(target.section.id) + '" href="#' + sectionAnchorId(target.entry,target.section) + '">' + esc(text) + '</a>';
+  }
   if (target.kind === 'folder') {
     const text = label || ('cf. ' + target.folder);
     return '<a class="cf-link" data-cf-folder="' + esc(target.folder) + '" href="#' + folderAnchorId(target.folder) + '">' + esc(text) + '</a>';
@@ -2217,10 +2309,17 @@ function cfAnchorFromLabel(label){
 function updateExistingCfLinks(root){
   root.querySelectorAll('a.cf-link').forEach(a => {
     const id = a.dataset.cfId;
+    const sectionId = a.dataset.cfSectionId;
     const folder = a.dataset.cfFolder;
     if (id) {
       const e = entries.find(x => x.id === id);
-      if (e) {
+      if (e && sectionId) {
+        const sec = (e.sections || []).find(s => s.id === sectionId);
+        if (sec) {
+          a.setAttribute('href','#' + sectionAnchorId(e,sec));
+          if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + titleOf(e) + ' > ' + (sec.title || 'Section');
+        }
+      } else if (e) {
         a.setAttribute('href','#' + entryAnchorId(e));
         if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + titleOf(e);
       }
@@ -2234,10 +2333,14 @@ function updateExistingCfLinks(root){
 function updateExistingInternalLinks(root){
   root.querySelectorAll('a.internal-link').forEach(a => {
     const id = a.dataset.linkEntryId;
+    const sectionId = a.dataset.linkSectionId;
     const folder = a.dataset.linkFolder;
     if (id) {
       const e = entries.find(x => x.id === id);
-      if (e) a.setAttribute('href','#' + entryAnchorId(e));
+      if (e && sectionId) {
+        const sec = (e.sections || []).find(s => s.id === sectionId);
+        if (sec) a.setAttribute('href','#' + sectionAnchorId(e,sec));
+      } else if (e) a.setAttribute('href','#' + entryAnchorId(e));
     } else if (folder) {
       a.setAttribute('href','#' + folderAnchorId(folder));
     }
@@ -2248,6 +2351,10 @@ function internalAnchorFromTarget(target,label){
   if (target.kind === 'entry') {
     const text = label || titleOf(target.entry);
     return '<a class="internal-link" data-link-entry-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'section') {
+    const text = label || (titleOf(target.entry) + ' > ' + (target.section.title || 'Section'));
+    return '<a class="internal-link" data-link-entry-id="' + esc(target.entry.id) + '" data-link-section-id="' + esc(target.section.id) + '" href="#' + sectionAnchorId(target.entry,target.section) + '">' + esc(text) + '</a>';
   }
   if (target.kind === 'folder') {
     const text = label || target.folder;
@@ -2299,7 +2406,7 @@ function insertSmartLink(){
   if (current < 0) return;
   const savedRange = saveEditorSelection();
   const selectedText = selectedEditorText(savedRange);
-  const raw = prompt('Link target:\n\nPaste a website URL, or type an entry title/reference, or type folder:Folder Name for an internal hyperlink.\n\nSelected text becomes the hyperlink.');
+  const raw = prompt('Link target:\n\nPaste a website URL, type an entry title/reference, type folder:Folder Name, or type section:Entry Title > Section Title for an internal hyperlink.\n\nSelected text becomes the hyperlink.');
   if (!raw) return;
   restoreEditorSelection(savedRange);
   const trimmed = raw.trim().replace(/^\[\[|\]\]$/g,'');
@@ -2322,13 +2429,25 @@ function insertSmartLink(){
     alert('No internal entry or folder matched that text. Use cf. for an unresolved reference, or paste a website URL.');
     return;
   }
-  const href = target.kind === 'entry' ? '#' + entryAnchorId(target.entry) : '#' + folderAnchorId(target.folder);
-  const label = selectedText || (target.kind === 'entry' ? titleOf(target.entry) : target.folder);
+  const href = target.kind === 'entry'
+    ? '#' + entryAnchorId(target.entry)
+    : target.kind === 'section'
+      ? '#' + sectionAnchorId(target.entry,target.section)
+      : '#' + folderAnchorId(target.folder);
+  const label = selectedText || (target.kind === 'entry'
+    ? titleOf(target.entry)
+    : target.kind === 'section'
+      ? titleOf(target.entry) + ' > ' + (target.section.title || 'Section')
+      : target.folder);
   if (selectedText) {
     document.execCommand('createLink', false, href);
     decorateAnchorsByHref(href, a => {
       a.classList.add('internal-link');
       if (target.kind === 'entry') a.dataset.linkEntryId = target.entry.id;
+      if (target.kind === 'section') {
+        a.dataset.linkEntryId = target.entry.id;
+        a.dataset.linkSectionId = target.section.id;
+      }
       if (target.kind === 'folder') a.dataset.linkFolder = target.folder;
       a.removeAttribute('target');
       a.removeAttribute('rel');
@@ -2342,7 +2461,7 @@ function insertSmartLink(){
 function insertCfReference(){
   if (current < 0) return;
   pull();
-  const q = prompt('Type an entry title/reference, or type folder:Folder Name. You can also type [[Title]], [[John 1:1]], or [[folder:Chapter 1]] directly in the editor later.');
+  const q = prompt('Type an entry title/reference, folder:Folder Name, or section:Entry Title > Section Title. You can also type [[Title]], [[John 1:1]], [[folder:Chapter 1]], or [[section:Entry > Section]] directly in the editor later.');
   if (!q) return;
   const target = findCfTarget(q.replace(/^\[\[|\]\]$/g,''), true);
   if (!target) {
@@ -2428,6 +2547,20 @@ function linkifyHtml(html){
   });
   return root.innerHTML;
 }
+function scrollToSection(sectionId){
+  if (!sectionId) return;
+  const node = document.querySelector('[data-section-id="' + CSS.escape(sectionId) + '"]');
+  if (!node) return;
+  node.scrollIntoView({behavior:'smooth', block:'center'});
+  node.classList.add('linkFlash');
+  setTimeout(() => node.classList.remove('linkFlash'), 1400);
+}
+function openEntryById(entryId, sectionId){
+  const idx = entries.findIndex(e => e.id === entryId);
+  if (idx < 0) return;
+  openEntry(idx);
+  if (sectionId) { setMode(true); setTimeout(() => scrollToSection(sectionId), 90); }
+}
 function updateRead(){
   if (current < 0 || !entries[current]) return;
   const e = entries[current];
@@ -2446,7 +2579,7 @@ function updateRead(){
   $('readSections').innerHTML = e.sections
     .filter(s => stripHtml(s.html).trim())
     .map(s =>
-      '<section class="readSection"><h3>' + esc(s.title) + '</h3>' +
+      '<section class="readSection" id="' + sectionAnchorId(e,s) + '" data-section-id="' + esc(s.id) + '"><h3>' + esc(s.title) + '<span class="sectionAnchorBadge"># section</span></h3>' +
       linkifyHtml(s.html) + '</section>'
     ).join('');
   $('readNotes').innerHTML = notesHtml(e);
@@ -2517,7 +2650,7 @@ function endnotesAggregateHtml(list,label){
 function entryHtml(e){
   const sections = e.sections
     .filter(s => stripHtml(s.html).trim())
-    .map(s => '<h3>' + esc(s.title) + '</h3>' + linkifyHtml(s.html))
+    .map(s => '<section class="entrySection" id="' + sectionAnchorId(e,s) + '" data-section-id="' + esc(s.id) + '"><h3>' + esc(s.title) + '</h3>' + linkifyHtml(s.html) + '</section>')
     .join('');
   let head = '';
   if (appSettings.exportShowEntryTitle !== false) {
@@ -3204,9 +3337,62 @@ function setupPaneLayout(){
   bindPaneResizer('railResizer', 'rail', 150, 520);
   bindPaneResizer('listResizer', 'list', 220, 720);
 }
+
+let lastAiRange = null;
+function plainSections(e){ return (e.sections || []).map(s => ({id:s.id, title:s.title, text:htmlToPlain(s.html)})); }
+function getSelectedEditorRange(){ const ed = $('commentEditor'); const sel = window.getSelection(); if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) return null; return sel.getRangeAt(0).cloneRange(); }
+function getAiContext(){
+  if (current < 0 || !entries[current]) return null;
+  pull();
+  const e = entries[current];
+  const range = getSelectedEditorRange();
+  if (range) lastAiRange = range.cloneRange();
+  return {
+    app:'Catena Commentary Studio Beta',
+    selectedText: range && !range.collapsed ? String(range.toString() || '') : '',
+    entry:{ id:e.id, title:titleOf(e), reference:e.reference || '', collection:e.collection || '', folder:e.folder || '', status:e.status || '', mode:modeLabel(e.workMode || appSettings.mode), quote:htmlToPlain(quoteHtmlOf(e)), commentary:htmlToPlain(e.commentHtml), sections:plainSections(e), footnotes:(e.footnotes || []).map(n => ({num:n.num, text:n.text || ''})), citations:(e.endnotes || []).map(n => ({num:n.num, text:n.text || ''})) },
+    internalIndex:entries.filter(x => !x.deleted).map(x => ({ id:x.id, title:titleOf(x), reference:x.reference || '', folder:x.folder || '', sections:(x.sections || []).map(s => ({id:s.id, title:s.title || 'Section'})) }))
+  };
+}
+function openAiPanel(){ const range = getSelectedEditorRange(); if (range) lastAiRange = range.cloneRange(); $('aiPanel').classList.remove('hidden'); if (!$('aiInstruction').value.trim()) $('aiInstruction').value = 'Help with the current entry. Preserve my meaning and do not invent sources. If suggesting internal links, use syntax like [[section:Entry Title > Section Title]] or [[Entry Title]].'; }
+function closeAiPanel(){ $('aiPanel').classList.add('hidden'); }
+function setAiStatus(msg,bad){ const el = $('aiStatus'); if (!el) return; el.textContent = msg || ''; el.className = bad ? 'bad' : 'sub'; }
+function extractAiText(data){ if (!data) return ''; if (typeof data.text === 'string') return data.text; if (typeof data.output_text === 'string') return data.output_text; if (Array.isArray(data.output)) return data.output.map(item => (item.content || []).map(c => c.text || '').join('')).join('\n').trim(); return ''; }
+async function runAiTask(task){
+  const ctx = getAiContext(); if (!ctx) return alert('Select or create an entry first.');
+  openAiPanel();
+  const payload = {task, instruction:$('aiInstruction').value.trim(), context:ctx};
+  const panel = $('aiPanel'); panel.classList.add('aiBusy'); setAiStatus('Running AI request...', false);
+  try {
+    const res = await fetch('/api/ai', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || ('AI request failed with status ' + res.status));
+    const text = extractAiText(data).trim();
+    $('aiOutput').textContent = text || 'The AI returned no text.';
+    setAiStatus('AI output ready. Review it before inserting.', false);
+  } catch (err) {
+    $('aiOutput').textContent = 'AI is not connected yet. Deploy this package on Vercel and add OPENAI_API_KEY in the Vercel environment variables. Details: ' + (err && err.message ? err.message : err);
+    setAiStatus('AI connection failed.', true);
+  } finally { panel.classList.remove('aiBusy'); }
+}
+function insertAiOutput(replace){ const text = $('aiOutput').textContent || ''; if (!text || text === 'No AI output yet.') return; const html = esc(text).replace(/\n/g,'<br>'); const savedRange = lastAiRange || getSelectedEditorRange(); restoreEditorSelection(savedRange); if (replace && savedRange && !savedRange.collapsed) document.execCommand('insertHTML', false, html); else insertHtmlAtCursor(html); changed(); }
+async function copyAiOutput(){ const text = $('aiOutput').textContent || ''; if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text); else prompt('Copy AI output:', text); setAiStatus('AI output copied.', false); }
+
 function bind(){
   setupPaneLayout();
   setupBlockquoteResizing();
+  $('aiBtn').onclick = openAiPanel;
+  $('aiInlineBtn').onclick = openAiPanel;
+  $('closeAiBtn').onclick = closeAiPanel;
+  $('aiAskBtn').onclick = () => runAiTask('custom');
+  $('aiPolishBtn').onclick = () => runAiTask('polish');
+  $('aiOutlineBtn').onclick = () => runAiTask('structure');
+  $('aiFootnotesBtn').onclick = () => runAiTask('footnotes');
+  $('aiLinksBtn').onclick = () => runAiTask('internal_links');
+  $('aiReviewBtn').onclick = () => runAiTask('export_review');
+  $('aiInsertBtn').onclick = () => insertAiOutput(false);
+  $('aiReplaceSelectionBtn').onclick = () => insertAiOutput(true);
+  $('aiCopyBtn').onclick = copyAiOutput;
   document.querySelectorAll('.navBtn[data-view]').forEach(b => {
     b.onclick = () => {
       activeView = b.dataset.view;
@@ -3340,26 +3526,17 @@ function bind(){
   });
 
   document.addEventListener('click', e => {
-    const cf = e.target.closest && e.target.closest('a.cf-link[data-cf-id]');
-    if (cf) {
-      const idx = entries.findIndex(x => x.id === cf.dataset.cfId);
-      if (idx >= 0 && (!cf.getAttribute('href') || cf.getAttribute('href').charAt(0) === '#')) {
-        e.preventDefault();
-        openEntry(idx);
-      }
-      return;
-    }
-    const internal = e.target.closest && e.target.closest('a.internal-link');
-    if (!internal || !internal.getAttribute('href') || internal.getAttribute('href').charAt(0) !== '#') return;
-    if (internal.dataset.linkEntryId) {
-      const idx = entries.findIndex(x => x.id === internal.dataset.linkEntryId);
-      if (idx >= 0) {
-        e.preventDefault();
-        openEntry(idx);
-      }
-    } else if (internal.dataset.linkFolder) {
+    const link = e.target.closest && e.target.closest('a.cf-link,a.internal-link');
+    if (!link || !link.getAttribute('href') || link.getAttribute('href').charAt(0) !== '#') return;
+    const entryId = link.dataset.cfId || link.dataset.linkEntryId;
+    const sectionId = link.dataset.cfSectionId || link.dataset.linkSectionId;
+    const folder = link.dataset.cfFolder || link.dataset.linkFolder;
+    if (entryId) {
       e.preventDefault();
-      activeFolder = internal.dataset.linkFolder;
+      openEntryById(entryId, sectionId);
+    } else if (folder) {
+      e.preventDefault();
+      activeFolder = folder;
       activeView = 'active';
       renderAll();
     }
