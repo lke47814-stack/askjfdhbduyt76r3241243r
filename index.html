@@ -351,6 +351,12 @@ sup.note-ref{
   font-weight:900;
   cursor:pointer;
   padding:0 2px;
+  user-select:none;
+  white-space:nowrap;
+}
+sup.note-ref[contenteditable="false"]{
+  -webkit-user-select:none;
+  user-select:none;
 }
 .status{
   font-size:13px;
@@ -1471,11 +1477,25 @@ function pull(){
   e.workMode = validMode($('workModeInput') ? $('workModeInput').value : e.workMode);
   e.quoteHtml = cleanHtml($('quoteInput').innerHTML);
   e.quote = htmlToPlain(e.quoteHtml);
-  e.commentHtml = cleanHtml($('commentEditor').innerHTML);
+  const ed = $('commentEditor');
+  makeNoteRefsSafe(ed);
+  e.commentHtml = cleanHtml(ed.innerHTML);
   const active = document.activeElement;
-  const fromComment = active && $('commentEditor').contains(active);
-  const noteChanged = syncNotesWithComment(e, fromComment);
-  if (noteChanged && fromComment) renderNotes();
+  const fromComment = active && ed.contains(active);
+  /*
+    Do not rewrite the live commentary DOM while the user is typing.
+    The previous build normalized <sup> note markers on every input event,
+    which could trap the caret around a footnote/citation marker and make it
+    feel impossible to type after it or delete it naturally.  We still scan the
+    current HTML immediately, remove notes whose markers were deleted, and save
+    normalized HTML; we only rewrite the live editor when focus is elsewhere.
+  */
+  const noteChanged = syncNotesWithComment(e, false);
+  if (noteChanged) renderNotes();
+  if (!fromComment) {
+    ed.innerHTML = e.commentHtml || '';
+    makeNoteRefsSafe(ed);
+  }
   e.updatedAt = now();
 }
 function push(){
@@ -1493,6 +1513,7 @@ function push(){
   renderModeHint();
   $('quoteInput').innerHTML = quoteHtmlOf(e);
   $('commentEditor').innerHTML = e.commentHtml || '';
+  makeNoteRefsSafe($('commentEditor'));
   renderSections();
   renderNotes();
   $('entryInfo').textContent = 'Updated: ' +
@@ -1744,6 +1765,80 @@ function pullNotes(){
 function noteLabel(type,num){
   return type === 'footnotes' ? '[' + num + ']' : '[C' + num + ']';
 }
+const NOTE_SPACE = '\u200B';
+function isNoteRefNode(n){
+  return !!(n && n.nodeType === 1 && n.matches && n.matches('sup.note-ref'));
+}
+function isNoteSpacerNode(n){
+  return !!(n && n.nodeType === 3 && /^\u200B*$/.test(n.nodeValue || ''));
+}
+function makeNoteRefsSafe(root){
+  if (!root) return;
+  root.querySelectorAll('sup.note-ref').forEach(s => {
+    s.setAttribute('contenteditable','false');
+    s.setAttribute('draggable','false');
+    s.title = 'Footnote/citation marker. Backspace or Delete beside it removes it.';
+    if (!s.nextSibling || !isNoteSpacerNode(s.nextSibling)) {
+      s.parentNode.insertBefore(document.createTextNode(NOTE_SPACE), s.nextSibling);
+    }
+  });
+}
+function removeNoteMarkerNode(marker){
+  if (!marker || !marker.parentNode) return false;
+  const next = marker.nextSibling;
+  const prev = marker.previousSibling;
+  if (next && isNoteSpacerNode(next)) next.remove();
+  if (prev && isNoteSpacerNode(prev)) prev.remove();
+  marker.remove();
+  return true;
+}
+function markerNextToCaret(sel, forward){
+  if (!sel || !sel.rangeCount) return null;
+  const r = sel.getRangeAt(0);
+  if (!r.collapsed) return null;
+  let node = r.startContainer;
+  let offset = r.startOffset;
+  if (node.nodeType === 3) {
+    const text = node.nodeValue || '';
+    if (!forward && offset > 0) {
+      if (text.charAt(offset - 1) === NOTE_SPACE) {
+        if (isNoteRefNode(node.previousSibling)) return node.previousSibling;
+      }
+      return null;
+    }
+    if (forward && offset < text.length) {
+      if (text.charAt(offset) === NOTE_SPACE) {
+        if (isNoteRefNode(node.previousSibling)) return node.previousSibling;
+        if (isNoteRefNode(node.nextSibling)) return node.nextSibling;
+      }
+      return null;
+    }
+    let cand = forward ? node.nextSibling : node.previousSibling;
+    if (isNoteSpacerNode(cand)) cand = forward ? cand.nextSibling : cand.previousSibling;
+    return isNoteRefNode(cand) ? cand : null;
+  }
+  let cand = forward ? node.childNodes[offset] : node.childNodes[offset - 1];
+  if (isNoteSpacerNode(cand)) cand = forward ? cand.nextSibling : cand.previousSibling;
+  return isNoteRefNode(cand) ? cand : null;
+}
+function handleCommentKeydown(ev){
+  if (ev.key !== 'Backspace' && ev.key !== 'Delete') return;
+  const ed = $('commentEditor');
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) return;
+  const marker = markerNextToCaret(sel, ev.key === 'Delete');
+  if (!marker) return;
+  ev.preventDefault();
+  const r = document.createRange();
+  const parent = marker.parentNode;
+  const offset = Array.prototype.indexOf.call(parent.childNodes, marker);
+  removeNoteMarkerNode(marker);
+  r.setStart(parent, Math.max(0, Math.min(offset, parent.childNodes.length)));
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+  changed();
+}
 function deleteNote(type,idx){
   if (current < 0 || !entries[current]) return;
   const e = entries[current];
@@ -1752,7 +1847,7 @@ function deleteNote(type,idx){
   const ed = $('commentEditor');
   ed.querySelectorAll('sup.note-ref[data-type="' + type + '"]').forEach(s => {
     if ((note.id && s.dataset.noteId === note.id) || parseInt(s.dataset.index || '0',10) === idx + 1) {
-      s.remove();
+      removeNoteMarkerNode(s);
     }
   });
   e[type].splice(idx,1);
@@ -1783,10 +1878,11 @@ function insertExistingNoteMarker(type,idx){
   note.linked = true;
   const label = noteLabel(type, idx + 1);
   const html =
-    '<sup class="note-ref" data-type="' + type +
+    '<sup class="note-ref" contenteditable="false" draggable="false" data-type="' + type +
     '" data-index="' + (idx + 1) + '" data-note-id="' +
-    esc(note.id) + '">' + label + '</sup>';
+    esc(note.id) + '">' + label + '</sup>' + NOTE_SPACE;
   insertHtmlAtCursor(html);
+  makeNoteRefsSafe($('commentEditor'));
   syncNotesWithComment(e,true);
   renderNotes();
   changed();
@@ -1802,7 +1898,20 @@ function insertHtmlAtCursor(html){
     sel.removeAllRanges();
     sel.addRange(r);
   }
-  document.execCommand('insertHTML', false, html);
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const frag = tpl.content;
+  const last = frag.lastChild;
+  range.insertNode(frag);
+  if (last) {
+    const after = document.createRange();
+    after.setStartAfter(last);
+    after.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(after);
+  }
 }
 function noteArraysEqual(a,b){
   if (a.length !== b.length) return false;
@@ -1841,7 +1950,12 @@ function syncNotesWithComment(e, mutateEditor){
       sup.dataset.type = type;
       sup.dataset.noteId = note.id;
       sup.dataset.index = String(note.num);
+      sup.setAttribute('contenteditable','false');
+      sup.setAttribute('draggable','false');
       sup.textContent = noteLabel(type,note.num);
+      if (mutateEditor && (!sup.nextSibling || !isNoteSpacerNode(sup.nextSibling))) {
+        sup.parentNode.insertBefore(document.createTextNode(NOTE_SPACE), sup.nextSibling);
+      }
       next.push(note);
     });
     old.forEach(n => {
@@ -2667,6 +2781,7 @@ function bind(){
     $(id).addEventListener('input', changed);
     $(id).addEventListener('change', changed);
   });
+  $('commentEditor').addEventListener('keydown', handleCommentKeydown);
   $('manualSaveBtn').onclick = manualSave;
   $('manualSaveTop').onclick = manualSave;
   $('newBtn').onclick = newEntry;
@@ -2797,20 +2912,14 @@ function setupPasswordGate(onUnlocked){
   const input = $('passwordInput');
   const btn = $('passwordBtn');
   const msg = $('passwordMsg');
-  const AUTH_KEY = 'CatenaBetaPasswordUnlocked';
   const PASSWORD = 'admin123';
   let started = false;
   function unlock(){
     if (started) return;
     started = true;
-    sessionStorage.setItem(AUTH_KEY, 'yes');
     document.body.classList.remove('locked');
     if (screen) screen.classList.add('hidden');
     onUnlocked();
-  }
-  if (sessionStorage.getItem(AUTH_KEY) === 'yes') {
-    unlock();
-    return;
   }
   function check(){
     if ((input.value || '') === PASSWORD) {
