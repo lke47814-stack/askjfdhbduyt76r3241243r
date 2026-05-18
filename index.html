@@ -1,0 +1,1828 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catena Commentary Studio Beta</title>
+<style>
+:root{
+  --bg:#f6efe2;
+  --panel:#fffaf1;
+  --field:#fffdf8;
+  --ink:#202632;
+  --muted:#697386;
+  --line:#d7c8ad;
+  --accent:#8a6412;
+  --danger:#a61b34;
+  --good:#2e7d32;
+  --shadow:0 12px 28px rgba(73,48,12,.12);
+  --ui:Inter,"Segoe UI",Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+}
+body.dark{
+  --bg:#10141f;
+  --panel:#141b29;
+  --field:#0f1726;
+  --ink:#edf2ff;
+  --muted:#a7b2c5;
+  --line:#303b52;
+  --accent:#d8b85a;
+  --shadow:0 14px 34px rgba(0,0,0,.25);
+}
+*{
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  overflow-x:hidden;
+}
+button,input,select,textarea{font:inherit}
+button{
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--panel);
+  color:var(--ink);
+  padding:8px 11px;
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:white}
+button.good{background:var(--good);border-color:var(--good);color:white}
+button.danger{background:var(--danger);border-color:var(--danger);color:white}
+button.small{padding:5px 8px;font-size:12px}
+input,select,textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--field);
+  color:var(--ink);
+  padding:9px 10px;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.header{
+  max-width:1560px;
+  margin:auto;
+  padding:13px 16px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+h1{
+  font-family:var(--serif);
+  font-size:28px;
+  margin:0;
+}
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.toolbar{
+  display:grid;
+  grid-template-columns:1fr 135px 135px auto auto auto;
+  gap:8px;
+  margin-top:11px;
+}
+.app{
+  max-width:1560px;
+  margin:16px auto;
+  padding:0 16px 42px;
+  display:grid;
+  grid-template-columns:230px 380px minmax(0,1fr);
+  gap:14px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.rail{padding:12px}
+.navTitle{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  font-weight:900;
+  margin:10px 0 8px;
+}
+.navBtn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  background:transparent;
+}
+.navBtn.active{
+  border-color:var(--accent);
+  background:var(--field);
+  color:var(--accent);
+}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.stack{display:grid;gap:7px}
+.listHead,.paneHead{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:12px 14px;
+  background:var(--field);
+  border-bottom:1px solid var(--line);
+}
+.entries{
+  max-height:calc(100vh - 220px);
+  overflow:auto;
+  padding:9px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.row{
+  border:1px solid transparent;
+  border-bottom:1px solid var(--line);
+  border-radius:11px;
+  padding:9px;
+  background:transparent;
+  cursor:pointer;
+}
+.row:hover,.row.active{
+  border-color:var(--line);
+  background:var(--field);
+}
+.row.dragging{opacity:.45}
+.row.dragOver{outline:2px solid var(--accent)}
+.rowTop{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:7px;
+  align-items:center;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+.rowTitle{font-weight:900;margin:5px 0}
+.rowQuote{
+  font-family:var(--serif);
+  font-size:14px;
+  line-height:1.45;
+}
+.pill{
+  font-size:10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:2px 6px;
+  color:var(--muted);
+}
+.workBody{padding:16px}
+.workTitle{
+  font-family:var(--serif);
+  font-size:24px;
+  font-weight:900;
+}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--accent);
+  font-weight:900;
+  margin:14px 0 6px;
+}
+.quoteBox,.editor,.sectionContent,.noteText{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--field);
+  padding:13px;
+  line-height:1.68;
+  outline:none;
+}
+.quoteBox{
+  font-family:var(--serif);
+  font-size:18px;
+  border-left:5px solid var(--accent);
+  min-height:92px;
+  white-space:pre-wrap;
+}
+.tools{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  background:var(--field);
+  border:1px solid var(--line);
+  border-radius:12px 12px 0 0;
+  padding:8px;
+}
+.compactTools{
+  margin-bottom:0;
+}
+.editor{
+  border-radius:0 0 12px 12px;
+  min-height:240px;
+  white-space:pre-wrap;
+}
+.sectionCard{
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--field);
+  margin:9px 0;
+  overflow:hidden;
+}
+.sectionHead{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:7px;
+  align-items:center;
+  padding:8px;
+  border-bottom:1px solid var(--line);
+}
+.sectionBody{padding:10px}
+.sectionBody.collapsed{display:none}
+.sectionContent{
+  min-height:85px;
+  background:var(--panel);
+}
+.noteRow{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--field);
+  padding:10px;
+  margin:8px 0;
+}
+.noteHead{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:8px;
+  align-items:center;
+}
+.noteNum{
+  font-weight:900;
+  color:var(--accent);
+  font-family:var(--serif);
+  font-size:18px;
+}
+.noteText{
+  min-height:70px;
+  margin-top:8px;
+  background:var(--panel);
+}
+.readArticle{
+  font-family:var(--serif);
+  max-width:900px;
+  margin:auto;
+}
+.readArticle h2{font-size:32px;margin:0 0 8px}
+.readMeta{
+  font-family:var(--ui);
+  font-size:13px;
+  color:var(--muted);
+  border-bottom:1px solid var(--line);
+  padding-bottom:10px;
+  margin-bottom:16px;
+}
+.readQuote{
+  border-left:5px solid var(--accent);
+  background:var(--field);
+  padding:14px 18px;
+  font-size:18px;
+}
+.readSection{
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:12px;
+}
+.notesList{
+  font-family:var(--ui);
+  font-size:14px;
+}
+.notesList li{margin-bottom:7px}
+sup.note-ref{
+  font-family:var(--ui);
+  font-size:.75em;
+  color:var(--accent);
+  font-weight:900;
+  cursor:pointer;
+  padding:0 2px;
+}
+.status{
+  font-size:13px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.ok{color:var(--good)}
+.bad{color:var(--danger)}
+
+.settingsPanel{
+  position:fixed;
+  right:18px;
+  top:86px;
+  z-index:50;
+  width:min(380px,calc(100vw - 36px));
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:14px;
+}
+.settingsPanel h2{
+  font-family:var(--serif);
+  margin:0 0 8px;
+  font-size:24px;
+}
+.settingRow{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  border-top:1px solid var(--line);
+  padding:10px 0;
+}
+.settingRow:first-of-type{border-top:0}
+.toggleSwitch{
+  width:auto;
+  transform:scale(1.2);
+}
+.settingRow select{max-width:170px}
+
+.hidden{display:none!important}
+a{color:var(--accent)}
+@media(max-width:1240px){
+  .app{grid-template-columns:230px minmax(0,1fr)}
+  .listPane{display:none}
+  .toolbar{grid-template-columns:1fr 1fr}
+}
+@media(max-width:850px){
+  .app,.grid2,.grid3,.toolbar{grid-template-columns:1fr}
+  .top{display:block}
+}
+</style>
+</head>
+<body>
+<script id="seedData" type="text/plain">W3siaWQiOiAiZW50cnktMSIsICJvcmRlciI6IDEsICJ0aXRsZSI6ICJVbnRpdGxlZCBDb21tZW50YXJ5IEVudHJ5IiwgInJlZmVyZW5jZSI6ICIiLCAiY29sbGVjdGlvbiI6ICJDb21tZW50YXJ5IiwgImZvbGRlciI6ICIiLCAic3RhdHVzIjogIkRyYWZ0IiwgInRhZ3MiOiAiIiwgInBhZ2UiOiAiTWFudWFsIiwgInF1b3RlIjogIlBhc3RlIG9yIHR5cGUgdGhlIHNvdXJjZSB0ZXh0IGhlcmUuIiwgImNvbW1lbnRIdG1sIjogIldyaXRlIHlvdXIgY29tbWVudGFyeSBoZXJlLiIsICJzZWN0aW9ucyI6IFt7InRpdGxlIjogIkxpdGVyYWwgbWVhbmluZyIsICJodG1sIjogIiIsICJjb2xsYXBzZWQiOiBmYWxzZX0sIHsidGl0bGUiOiAiSGlzdG9yaWNhbCBjb250ZXh0IiwgImh0bWwiOiAiIiwgImNvbGxhcHNlZCI6IGZhbHNlfSwgeyJ0aXRsZSI6ICJHcmVlay9IZWJyZXcgbm90ZXMiLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9LCB7InRpdGxlIjogIlRoZW9sb2dpY2FsIHNpZ25pZmljYW5jZSIsICJodG1sIjogIiIsICJjb2xsYXBzZWQiOiBmYWxzZX0sIHsidGl0bGUiOiAiQXBwbGljYXRpb24iLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9LCB7InRpdGxlIjogIkNyb3NzLXJlZmVyZW5jZXMiLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9XSwgImZvb3Rub3RlcyI6IFtdLCAiZW5kbm90ZXMiOiBbXSwgImZhdm9yaXRlIjogZmFsc2UsICJkZWxldGVkIjogZmFsc2UsICJjcmVhdGVkQXQiOiAiMjAyNi0wNS0xOFQxMzo1Mzo1NiIsICJ1cGRhdGVkQXQiOiAiMjAyNi0wNS0xOFQxMzo1Mzo1NiJ9XQ==</script>
+<header>
+<div class="header">
+<div class="top">
+<div>
+<h1>Catena Commentary Studio Beta</h1>
+<div class="sub">
+Beta: universal commentary app with Scripture Mode, Book Mode, export styles, folders, notes, and citations.
+</div>
+</div>
+<div class="actions">
+<button id="settingsBtn">Settings</button>
+<button id="manualSaveTop" class="primary">Manual Save</button>
+</div>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="Search entries">
+<select id="statusFilter">
+<option value="">All status</option>
+<option>Draft</option>
+<option>Needs Review</option>
+<option>Reviewed</option>
+<option>Final</option>
+<option>Published</option>
+</select>
+<select id="sortMode">
+<option value="order">Manual order</option>
+<option value="updated">Recently edited</option>
+<option value="title">Title A-Z</option>
+<option value="reference">Reference</option>
+</select>
+<button id="newBtn">New</button>
+<button id="openBtn">Open JSON</button>
+<button id="exportJsonBtn">Export JSON</button>
+</div>
+</div>
+</header>
+
+<div id="settingsPanel" class="settingsPanel hidden">
+  <div class="actions" style="justify-content:space-between;align-items:center">
+    <h2>Settings</h2>
+    <button id="closeSettingsBtn" class="small">Close</button>
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Dark theme</strong>
+      <div class="sub">Saved automatically and remembered after reload.</div>
+    </div>
+    <input id="darkThemeToggle" class="toggleSwitch" type="checkbox">
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Writing mode</strong>
+      <div class="sub">Universal is normal. Scripture organizes by Bible references. Book organizes by source/page.</div>
+    </div>
+    <select id="modeSetting">
+      <option value="universal">Universal</option>
+      <option value="scripture">Scripture Mode</option>
+      <option value="book">Book Mode</option>
+    </select>
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Export style</strong>
+      <div class="sub">Changes only the PDF/Book HTML appearance.</div>
+    </div>
+    <select id="styleSetting">
+      <option value="church">Church Fathers / Catena</option>
+      <option value="academic">Modern Academic</option>
+      <option value="study">Study Bible</option>
+      <option value="minimal">Minimal Notes</option>
+    </select>
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Auto-title from reference</strong>
+      <div class="sub">In Scripture Mode, blank titles become the verse reference.</div>
+    </div>
+    <input id="autoTitleToggle" class="toggleSwitch" type="checkbox">
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Scripture export sorting</strong>
+      <div class="sub">Sorts export by biblical book/chapter/verse when possible.</div>
+    </div>
+    <input id="scriptureSortToggle" class="toggleSwitch" type="checkbox">
+  </div>
+  <div class="settingRow">
+    <div>
+      <strong>Manual Save</strong>
+      <div class="sub">Ctrl+S also saves. Your project saves in this browser with IndexedDB.</div>
+    </div>
+    <button id="settingsSaveBtn" class="primary small">Save Now</button>
+  </div>
+</div>
+
+
+<main class="app">
+<aside class="rail card">
+<div class="navTitle">Library</div>
+<button class="navBtn active" data-view="active">Active <span id="nActive">0</span></button>
+<button class="navBtn" data-view="drafts">Drafts <span id="nDrafts">0</span></button>
+<button class="navBtn" data-view="final">Final <span id="nFinal">0</span></button>
+<button class="navBtn" data-view="favorites">Favorites <span id="nFav">0</span></button>
+<button class="navBtn" data-view="trash">Trash <span id="nTrash">0</span></button>
+<div class="navTitle">Folders</div>
+<div id="folderButtons"></div>
+<div class="navTitle">Selected</div>
+<div class="stack">
+<button id="selectVisibleBtn">Select Visible</button>
+<button id="clearSelectionBtn">Clear Selection</button>
+<button id="deleteSelectedBtn" class="danger">Delete Selected</button>
+<button id="emptyTrashBtn" class="danger">Empty Trash</button>
+</div>
+<div class="navTitle">Entry</div>
+<div class="stack">
+<button id="addBtn" class="good">Add</button>
+<button id="duplicateBtn">Duplicate</button>
+<button id="favoriteBtn">Favorite</button>
+<button id="deleteBtn" class="danger">Delete / Restore</button>
+</div>
+<div class="navTitle">Exports</div>
+<div class="stack">
+<button id="previewPdfBtn">PDF Preview</button>
+<button id="downloadPdfBtn" class="primary">Download PDF</button>
+<button id="exportMdBtn">Markdown</button>
+<button id="exportTomlBtn">TOML</button>
+<button id="exportHtmlBtn">Book HTML</button>
+</div>
+<input id="importFile" type="file" class="hidden" accept=".json,application/json">
+</aside>
+
+<section class="listPane card">
+<div class="listHead">
+<strong id="listTitle">Active Entries</strong>
+<span id="selectedCount" class="pill">0 selected</span>
+</div>
+<div id="entries" class="entries"></div>
+</section>
+
+<section class="card">
+<div class="paneHead">
+<div id="entryTitle" class="workTitle">Select entry</div>
+<div class="actions">
+<button id="editBtn">Edit</button>
+<button id="readBtn">Read</button>
+<button id="manualSaveBtn" class="primary">Manual Save</button>
+</div>
+</div>
+
+<div id="editView" class="workBody">
+<div class="grid2">
+<div><div class="label">Entry title</div><input id="titleInput" placeholder="Leave blank in Scripture Mode to use the reference"></div>
+<div><div class="label">Reference</div><input id="referenceInput" placeholder="John 1:1"></div>
+</div>
+<div class="grid3">
+<div><div class="label">Collection</div><input id="collectionInput" placeholder="Commentary"></div>
+<div><div class="label">Folder</div><input id="folderInput" placeholder="John / Chapter 1"></div>
+<div>
+<div class="label">Status</div>
+<select id="statusInput">
+<option>Draft</option>
+<option>Needs Review</option>
+<option>Reviewed</option>
+<option>Final</option>
+<option>Published</option>
+</select>
+</div>
+</div>
+<div class="grid2">
+<div><div class="label">Tags</div><input id="tagsInput"></div>
+<div><div class="label">Page / source label</div><input id="pageInput"></div>
+</div>
+
+<div class="label">Source / highlighted text</div>
+<div class="tools compactTools">
+<button class="small fmt" data-target="quoteInput" data-cmd="bold"><b>B</b></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="italic"><i>I</i></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="underline"><u>U</u></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="removeFormat">Clear</button>
+</div>
+<div id="quoteInput" class="quoteBox" contenteditable="true" spellcheck="true"></div>
+
+<div class="label">Main commentary</div>
+<div class="tools">
+<button class="small fmt" data-target="commentEditor" data-cmd="bold"><b>B</b></button>
+<button class="small fmt" data-target="commentEditor" data-cmd="italic"><i>I</i></button>
+<button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
+<button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
+<button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
+<button id="linkBtn" class="small">Link</button>
+<button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
+<button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
+<button class="small fmt" data-target="commentEditor" data-cmd="removeFormat">Clear</button>
+</div>
+<div id="commentEditor" class="editor" contenteditable="true" spellcheck="true"></div>
+
+<div class="label">Cleanup tools</div>
+<div class="tools">
+<button class="small clean" data-clean="spaces">Remove Double Spaces</button>
+<button class="small clean" data-clean="quotes">Fix Smart Quotes</button>
+<button class="small clean" data-clean="formatting">Clean Pasted Formatting</button>
+<button class="small clean" data-clean="headings">Normalize Headings</button>
+</div>
+
+<div class="label">Collapsible commentary sections</div>
+<div class="actions">
+<button id="addSectionBtn" class="good">Add Section</button>
+<span class="sub">Empty sections stay out of exports.</span>
+</div>
+<div id="sectionsBox"></div>
+
+<div class="grid2">
+<div>
+<div class="label">Footnotes linked to markers</div>
+<div class="actions">
+<button id="addFootnoteBtn">Add Footnote Without Marker</button>
+<button id="renumberFootnotesBtn">Renumber Footnotes</button>
+</div>
+<div id="footnotesBox"></div>
+</div>
+<div>
+<div class="label">Citations linked to markers</div>
+<div class="actions">
+<button id="addEndnoteBtn">Add Citation</button>
+<button id="renumberEndnotesBtn">Renumber Citations</button>
+</div>
+<div id="endnotesBox"></div>
+</div>
+</div>
+<div class="status">
+<span id="saveStatus">Ready.</span>
+<span id="entryInfo"></span>
+</div>
+</div>
+
+<div id="readView" class="workBody hidden">
+<article class="readArticle">
+<h2 id="readTitle"></h2>
+<div id="readMeta" class="readMeta"></div>
+<div class="label">Text</div>
+<blockquote id="readQuote" class="readQuote"></blockquote>
+<div class="label">Commentary</div>
+<section id="readComment"></section>
+<div id="readSections"></div>
+<div id="readNotes"></div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const DB_NAME = 'CatenaStudioBetaDB';
+const STORE = 'project';
+const KEY = 'main';
+let db = null;
+let entries = [];
+let current = -1;
+let activeView = 'active';
+let activeFolder = '';
+let selected = new Set();
+let draggedId = null;
+let saveTimer = null;
+const DEFAULT_SECTIONS = [
+  'Literal meaning',
+  'Historical context',
+  'Greek/Hebrew notes',
+  'Theological significance',
+  'Application',
+  'Cross-references'
+];
+const BETA_SETTINGS_KEY = 'CatenaBetaSettings';
+let appSettings = {
+  mode:'universal',
+  exportStyle:'church',
+  autoTitle:true,
+  scriptureSort:true
+};
+const BIBLE_ORDER = [
+  'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth',
+  '1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra',
+  'Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon',
+  'Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos',
+  'Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah',
+  'Malachi','Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians',
+  '2 Corinthians','Galatians','Ephesians','Philippians','Colossians',
+  '1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon',
+  'Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
+];
+const BOOK_ALIASES = {
+  'gen':'Genesis','exod':'Exodus','exodus':'Exodus','lev':'Leviticus','num':'Numbers',
+  'deut':'Deuteronomy','ps':'Psalms','psalm':'Psalms','rom':'Romans','matt':'Matthew',
+  'rev':'Revelation'
+};
+
+const $ = id => document.getElementById(id);
+
+function uid(){
+  return 'e-' + Date.now().toString(36) + '-' +
+    Math.random().toString(36).slice(2);
+}
+function nid(){
+  return 'n-' + Date.now().toString(36) + '-' +
+    Math.random().toString(36).slice(2);
+}
+function now(){
+  return new Date().toISOString();
+}
+function esc(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+function stripHtml(s){
+  const d = document.createElement('div');
+  d.innerHTML = s || '';
+  return d.innerText || '';
+}
+function cleanHtml(s){
+  const d = document.createElement('div');
+  d.innerHTML = s || '';
+  d.querySelectorAll('script,style,iframe,object,embed').forEach(n => n.remove());
+  d.querySelectorAll('*').forEach(el => {
+    Array.from(el.attributes).forEach(a => {
+      const n = a.name.toLowerCase();
+      const v = String(a.value || '').trim().toLowerCase();
+      if (n.startsWith('on')) el.removeAttribute(a.name);
+      if ((n === 'href' || n === 'src') && v.startsWith('javascript:')) {
+        el.removeAttribute(a.name);
+      }
+    });
+  });
+  return d.innerHTML;
+}
+function htmlToPlain(s){
+  return stripHtml(s || '').replace(/\u00a0/g,' ').trim();
+}
+function quoteHtmlOf(e){
+  return e.quoteHtml || esc(e.quote || '');
+}
+function normSections(s){
+  const source = Array.isArray(s)
+    ? s
+    : DEFAULT_SECTIONS.map(t => ({title:t, html:'', collapsed:false}));
+  return source.map(x => ({
+    title:x.title || 'Section',
+    html:x.html || '',
+    collapsed:!!x.collapsed
+  }));
+}
+function normNotes(n){
+  if (Array.isArray(n)) {
+    return n.map((x,i) => ({
+      id:x.id || nid(),
+      num:x.num || i + 1,
+      text:x.text || ''
+    }));
+  }
+  if (typeof n === 'string') {
+    return n.split(/\n+/).map((t,i) => {
+      t = t.trim();
+      return t ? {id:nid(), num:i+1, text:t} : null;
+    }).filter(Boolean);
+  }
+  return [];
+}
+function norm(e,i){
+  e = e || {};
+  return {
+    id:e.id || uid(),
+    order:Number.isFinite(e.order) ? e.order : (i || 0) + 1,
+    title:e.title || 'Untitled Commentary Entry',
+    reference:e.reference || '',
+    collection:e.collection || 'Commentary',
+    folder:e.folder || '',
+    status:e.status || 'Draft',
+    tags:e.tags || '',
+    page:e.page || 'Manual',
+    quote:e.quote || htmlToPlain(e.quoteHtml) || '',
+    quoteHtml:e.quoteHtml || esc(e.quote || ''),
+    commentHtml:e.commentHtml || 'Write your commentary here.',
+    sections:normSections(e.sections),
+    footnotes:normNotes(e.footnotes),
+    endnotes:normNotes(e.endnotes),
+    favorite:!!e.favorite,
+    deleted:!!e.deleted,
+    createdAt:e.createdAt || now(),
+    updatedAt:e.updatedAt || now()
+  };
+}
+function blank(){
+  return norm({
+    id:uid(),
+    order:entries.length + 1,
+    title:'Untitled Commentary Entry',
+    quote:'Paste or type the source text here.',
+    quoteHtml:'Paste or type the source text here.',
+    commentHtml:'Write your commentary here.',
+    sections:DEFAULT_SECTIONS.map(t => ({title:t, html:'', collapsed:false}))
+  }, entries.length);
+}
+function decodeSeed(){
+  try {
+    const raw = atob($('seedData').textContent.trim());
+    return JSON.parse(decodeURIComponent(escape(raw))).map(norm);
+  } catch(e) {
+    return [blank()];
+  }
+}
+function canonicalBook(raw){
+  raw = String(raw || '').trim();
+  const key = raw.toLowerCase();
+  if (BOOK_ALIASES[key]) return BOOK_ALIASES[key];
+  const found = BIBLE_ORDER.find(b => b.toLowerCase() === key);
+  return found || raw;
+}
+function parseReference(ref){
+  const m = String(ref || '').trim().match(/^((?:[1-3]\s+)?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?(?:\s+[A-Za-z]+)?)\s+(\d{1,3})(?::(\d{1,3})(?:[-–](\d{1,3}))?)?/);
+  if (!m) return null;
+  const book = canonicalBook(m[1]);
+  const bi = BIBLE_ORDER.indexOf(book);
+  return {
+    book:book,
+    bookIndex:bi < 0 ? 999 : bi,
+    chapter:parseInt(m[2] || '0',10),
+    verse:parseInt(m[3] || '0',10),
+    endVerse:parseInt(m[4] || m[3] || '0',10)
+  };
+}
+function displayTitle(e){
+  if (appSettings.mode === 'scripture' && appSettings.autoTitle && e.reference) {
+    if (!e.title || e.title === 'Untitled Commentary Entry') return e.reference;
+  }
+  if (appSettings.mode === 'book') {
+    if (!e.title || e.title === 'Untitled Commentary Entry') {
+      return [e.collection, e.folder, e.page && e.page !== 'Manual' ? e.page : '']
+        .filter(Boolean).join(' — ') || 'Untitled Book Note';
+    }
+  }
+  return e.title || e.reference || 'Untitled Commentary Entry';
+}
+function titleOf(e){
+  return displayTitle(e);
+}
+function sortByOrder(){
+  entries.sort((a,b) => (a.order || 0) - (b.order || 0));
+  entries.forEach((e,i) => e.order = i + 1);
+}
+function openDB(){
+  return new Promise((res,rej) => {
+    const r = indexedDB.open(DB_NAME,1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => {
+      db = r.result;
+      res();
+    };
+    r.onerror = () => rej(r.error);
+  });
+}
+function idbGet(k){
+  return new Promise((res,rej) => {
+    const tx = db.transaction(STORE,'readonly');
+    const r = tx.objectStore(STORE).get(k);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function idbSet(k,v){
+  return new Promise((res,rej) => {
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put(v,k);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function load(){
+  await openDB();
+  const saved = await idbGet(KEY);
+  entries = Array.isArray(saved) && saved.length ? saved.map(norm) : decodeSeed();
+  sortByOrder();
+  if (entries.length) openEntry(0);
+  renderAll();
+}
+async function manualSave(){
+  pull();
+  try {
+    await idbSet(KEY, entries);
+    setStatus('Manual save completed at ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setStatus('Save failed: ' + e.message, false);
+  }
+  renderAll();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => manualSave(), 900);
+}
+function setStatus(s, ok){
+  $('saveStatus').textContent = s;
+  $('saveStatus').className = ok === false ? 'bad' : 'ok';
+}
+function folders(){
+  const s = new Set();
+  entries.filter(e => !e.deleted).forEach(e => s.add(e.folder || 'Unfiled'));
+  return Array.from(s).sort((a,b) => a.localeCompare(b));
+}
+function filtered(){
+  const q = $('search').value.trim().toLowerCase();
+  const st = $('statusFilter').value;
+  const sort = $('sortMode').value;
+  let arr = entries.map((e,i) => ({e,i}));
+  if (activeView === 'active') arr = arr.filter(x => !x.e.deleted);
+  if (activeView === 'drafts') {
+    arr = arr.filter(x => !x.e.deleted && x.e.status === 'Draft');
+  }
+  if (activeView === 'final') {
+    arr = arr.filter(x => !x.e.deleted &&
+      (x.e.status === 'Final' || x.e.status === 'Published'));
+  }
+  if (activeView === 'favorites') {
+    arr = arr.filter(x => !x.e.deleted && x.e.favorite);
+  }
+  if (activeView === 'trash') arr = arr.filter(x => x.e.deleted);
+  if (activeFolder) {
+    arr = arr.filter(x => (x.e.folder || 'Unfiled') === activeFolder);
+  }
+  if (st) arr = arr.filter(x => x.e.status === st);
+  if (q) {
+    arr = arr.filter(x => [
+      x.e.title,
+      x.e.reference,
+      x.e.folder,
+      x.e.quote,
+      stripHtml(x.e.commentHtml),
+      x.e.tags,
+      x.e.footnotes.map(n => n.text).join(' '),
+      x.e.endnotes.map(n => n.text).join(' ')
+    ].join(' ').toLowerCase().includes(q));
+  }
+  if (sort === 'updated') {
+    arr.sort((a,b) => String(b.e.updatedAt).localeCompare(String(a.e.updatedAt)));
+  }
+  if (sort === 'title') {
+    arr.sort((a,b) => titleOf(a.e).localeCompare(titleOf(b.e)));
+  }
+  if (sort === 'reference') {
+    arr.sort((a,b) => String(a.e.reference).localeCompare(String(b.e.reference)));
+  }
+  return arr;
+}
+function renderCounts(){
+  const a = entries.filter(e => !e.deleted);
+  $('nActive').textContent = a.length;
+  $('nDrafts').textContent = a.filter(e => e.status === 'Draft').length;
+  $('nFinal').textContent =
+    a.filter(e => e.status === 'Final' || e.status === 'Published').length;
+  $('nFav').textContent = a.filter(e => e.favorite).length;
+  $('nTrash').textContent = entries.filter(e => e.deleted).length;
+  $('selectedCount').textContent = selected.size + ' selected';
+}
+function renderFolders(){
+  const box = $('folderButtons');
+  box.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'navBtn' + (!activeFolder ? ' active' : '');
+  all.innerHTML = 'All Folders <span>' +
+    entries.filter(e => !e.deleted).length + '</span>';
+  all.onclick = () => {
+    activeFolder = '';
+    renderAll();
+  };
+  box.appendChild(all);
+  folders().forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'navBtn' + (activeFolder === f ? ' active' : '');
+    const count = entries.filter(e => !e.deleted &&
+      (e.folder || 'Unfiled') === f).length;
+    b.innerHTML = esc(f) + ' <span>' + count + '</span>';
+    b.onclick = () => {
+      activeFolder = f;
+      renderAll();
+    };
+    box.appendChild(b);
+  });
+}
+function renderList(){
+  const box = $('entries');
+  box.innerHTML = '';
+  document.querySelectorAll('.navBtn[data-view]').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === activeView);
+  });
+  filtered().forEach(({e,i}) => {
+    const row = document.createElement('article');
+    row.className = 'row' + (i === current ? ' active' : '');
+    row.draggable = true;
+    row.dataset.id = e.id;
+    row.innerHTML =
+      '<div class="rowTop">' +
+      '<input type="checkbox" ' + (selected.has(e.id) ? 'checked' : '') + '>' +
+      '<span>' + (e.favorite ? '★ ' : '') + esc(e.status) +
+      ' · ' + esc(e.folder || 'Unfiled') + '</span>' +
+      '<span class="pill">' + e.order + '</span>' +
+      '</div>' +
+      '<div class="rowTitle">' + esc(titleOf(e)) + '</div>' +
+      '<div class="rowQuote">' + esc((e.quote || '').slice(0,140)) + '</div>';
+    row.querySelector('input').onclick = ev => {
+      ev.stopPropagation();
+      if (ev.target.checked) selected.add(e.id);
+      else selected.delete(e.id);
+      renderCounts();
+    };
+    row.onclick = () => openEntry(i);
+    row.ondragstart = () => {
+      draggedId = e.id;
+      row.classList.add('dragging');
+    };
+    row.ondragend = () => row.classList.remove('dragging');
+    row.ondragover = ev => {
+      ev.preventDefault();
+      row.classList.add('dragOver');
+    };
+    row.ondragleave = () => row.classList.remove('dragOver');
+    row.ondrop = ev => {
+      ev.preventDefault();
+      row.classList.remove('dragOver');
+      reorder(draggedId, e.id);
+    };
+    box.appendChild(row);
+  });
+}
+function renderAll(){
+  renderCounts();
+  renderFolders();
+  renderList();
+  updateRead();
+}
+function pull(){
+  if (current < 0 || !entries[current]) return;
+  pullSections();
+  pullNotes();
+  const e = entries[current];
+  e.title = $('titleInput').value.trim() || 'Untitled Commentary Entry';
+  e.reference = $('referenceInput').value.trim();
+  e.collection = $('collectionInput').value.trim() || 'Commentary';
+  e.folder = $('folderInput').value.trim();
+  e.status = $('statusInput').value;
+  e.tags = $('tagsInput').value.trim();
+  e.page = $('pageInput').value.trim() || 'Manual';
+  e.quoteHtml = cleanHtml($('quoteInput').innerHTML);
+  e.quote = htmlToPlain(e.quoteHtml);
+  e.commentHtml = cleanHtml($('commentEditor').innerHTML);
+  e.updatedAt = now();
+}
+function push(){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  $('entryTitle').textContent = titleOf(e);
+  $('titleInput').value = e.title || '';
+  $('referenceInput').value = e.reference || '';
+  $('collectionInput').value = e.collection || 'Commentary';
+  $('folderInput').value = e.folder || '';
+  $('statusInput').value = e.status || 'Draft';
+  $('tagsInput').value = e.tags || '';
+  $('pageInput').value = e.page || 'Manual';
+  $('quoteInput').innerHTML = quoteHtmlOf(e);
+  $('commentEditor').innerHTML = e.commentHtml || '';
+  renderSections();
+  renderNotes();
+  $('entryInfo').textContent = 'Updated: ' +
+    new Date(e.updatedAt || now()).toLocaleString();
+}
+function openEntry(i){
+  if (current >= 0) {
+    pull();
+    scheduleSave();
+  }
+  current = i;
+  push();
+  renderList();
+  updateRead();
+}
+function changed(){
+  pull();
+  updateRead();
+  scheduleSave();
+}
+function newEntry(){
+  entries.push(blank());
+  openEntry(entries.length - 1);
+  changed();
+}
+function add(){
+  entries.push(blank());
+  sortByOrder();
+  openEntry(entries.length - 1);
+  changed();
+}
+function duplicate(){
+  if (current < 0) return;
+  pull();
+  const c = JSON.parse(JSON.stringify(entries[current]));
+  c.id = uid();
+  c.title = titleOf(c) + ' copy';
+  c.deleted = false;
+  c.createdAt = now();
+  c.updatedAt = now();
+  entries.splice(current + 1, 0, c);
+  sortByOrder();
+  openEntry(current + 1);
+  changed();
+}
+function fav(){
+  if (current < 0) return;
+  entries[current].favorite = !entries[current].favorite;
+  changed();
+}
+function del(){
+  if (current < 0) return;
+  entries[current].deleted = !entries[current].deleted;
+  changed();
+  renderAll();
+}
+function deleteSelected(){
+  if (!selected.size) return;
+  const trash = activeView === 'trash';
+  const msg = trash
+    ? 'Permanently delete selected entries?'
+    : 'Move selected entries to Trash?';
+  if (!confirm(msg)) return;
+  if (trash) {
+    entries = entries.filter(e => !selected.has(e.id));
+  } else {
+    entries.forEach(e => {
+      if (selected.has(e.id)) e.deleted = true;
+    });
+  }
+  selected.clear();
+  current = Math.min(current, entries.length - 1);
+  changed();
+  renderAll();
+  if (entries[current]) push();
+}
+function emptyTrash(){
+  const count = entries.filter(e => e.deleted).length;
+  if (!count) return;
+  if (!confirm('Permanently delete all entries in Trash?')) return;
+  entries = entries.filter(e => !e.deleted);
+  selected.clear();
+  current = Math.min(current, entries.length - 1);
+  changed();
+  renderAll();
+  if (entries[current]) push();
+}
+function reorder(fromId, toId){
+  if (!fromId || !toId || fromId === toId) return;
+  const from = entries.findIndex(e => e.id === fromId);
+  const to = entries.findIndex(e => e.id === toId);
+  if (from < 0 || to < 0) return;
+  const moved = entries.splice(from,1)[0];
+  entries.splice(to,0,moved);
+  sortByOrder();
+  current = entries.findIndex(e => e.id === moved.id);
+  changed();
+  renderAll();
+}
+function renderSections(){
+  if (current < 0) return;
+  const e = entries[current];
+  const box = $('sectionsBox');
+  box.innerHTML = '';
+  e.sections.forEach((s,idx) => {
+    const card = document.createElement('div');
+    card.className = 'sectionCard';
+    card.innerHTML =
+      '<div class="sectionHead">' +
+      '<button class="small toggle">▾</button>' +
+      '<input class="secTitle" value="' + esc(s.title) + '">' +
+      '<button class="small delete">Delete</button>' +
+      '<button class="small move">Move Up</button>' +
+      '</div>' +
+      '<div class="sectionBody ' + (s.collapsed ? 'collapsed' : '') + '">' +
+      '<div class="sectionContent" contenteditable="true">' +
+      (s.html || '') + '</div></div>';
+    card.querySelector('.toggle').onclick = () => {
+      e.sections[idx].collapsed = !e.sections[idx].collapsed;
+      renderSections();
+      changed();
+    };
+    card.querySelector('.delete').onclick = () => {
+      e.sections.splice(idx,1);
+      renderSections();
+      changed();
+    };
+    card.querySelector('.move').onclick = () => {
+      if (idx > 0) {
+        const one = e.sections.splice(idx,1)[0];
+        e.sections.splice(idx-1,0,one);
+        renderSections();
+        changed();
+      }
+    };
+    card.querySelector('.secTitle').oninput = changed;
+    card.querySelector('.sectionContent').oninput = changed;
+    box.appendChild(card);
+  });
+}
+function pullSections(){
+  if (current < 0 || !entries[current]) return;
+  entries[current].sections =
+    Array.from(document.querySelectorAll('.sectionCard')).map((card,idx) => ({
+      title:card.querySelector('.secTitle').value || 'Section',
+      html:cleanHtml(card.querySelector('.sectionContent').innerHTML),
+      collapsed:entries[current].sections[idx]
+        ? entries[current].sections[idx].collapsed
+        : false
+    }));
+}
+function addSection(){
+  if (current < 0) return;
+  entries[current].sections.push({
+    title:'Custom section',
+    html:'',
+    collapsed:false
+  });
+  renderSections();
+  changed();
+}
+function renderNotes(){
+  renderNoteBox('footnotesBox','footnotes');
+  renderNoteBox('endnotesBox','endnotes');
+}
+function renderNoteBox(boxId,type){
+  if (current < 0) return;
+  const e = entries[current];
+  const box = $(boxId);
+  box.innerHTML = '';
+  e[type].forEach((n,idx) => {
+    n.num = idx + 1;
+    const row = document.createElement('div');
+    row.className = 'noteRow';
+    const label = type === 'footnotes'
+      ? '[' + (idx + 1) + ']'
+      : '[C' + (idx + 1) + ']';
+    row.innerHTML =
+      '<div class="noteHead">' +
+      '<span class="noteNum">' + label + '</span>' +
+      '<span>' + (type === 'footnotes'
+        ? 'Footnote marker'
+        : 'Citation marker') + '</span>' +
+      '<button class="small insert">Insert Marker</button>' +
+      '<button class="small danger delete">Delete</button>' +
+      '</div>' +
+      '<div class="noteText" contenteditable="true">' + esc(n.text) + '</div>';
+    row.querySelector('.insert').onclick = () => insertExistingNoteMarker(type,idx);
+    row.querySelector('.delete').onclick = () => {
+      e[type].splice(idx,1);
+      renderNotes();
+      changed();
+    };
+    row.querySelector('.noteText').oninput = changed;
+    box.appendChild(row);
+  });
+}
+function pullNotes(){
+  if (current < 0 || !entries[current]) return;
+  ['footnotes','endnotes'].forEach(type => {
+    const box = $(type === 'footnotes' ? 'footnotesBox' : 'endnotesBox');
+    entries[current][type] =
+      Array.from(box.querySelectorAll('.noteRow')).map((row,i) => ({
+        id:entries[current][type][i]
+          ? entries[current][type][i].id
+          : nid(),
+        num:i + 1,
+        text:row.querySelector('.noteText').innerText.trim()
+      }));
+  });
+}
+function addNote(type,insert){
+  if (current < 0) return;
+  const e = entries[current];
+  e[type].push({
+    id:nid(),
+    num:e[type].length + 1,
+    text:''
+  });
+  renderNotes();
+  if (insert) insertExistingNoteMarker(type, e[type].length - 1);
+  changed();
+}
+function insertExistingNoteMarker(type,idx){
+  const label = type === 'footnotes'
+    ? '[' + (idx + 1) + ']'
+    : '[C' + (idx + 1) + ']';
+  const html =
+    '<sup class="note-ref" data-type="' + type +
+    '" data-index="' + (idx + 1) + '">' + label + '</sup>';
+  insertHtmlAtCursor(html);
+  changed();
+}
+function insertHtmlAtCursor(html){
+  const ed = $('commentEditor');
+  ed.focus();
+  let sel = window.getSelection();
+  if (!sel.rangeCount || !ed.contains(sel.anchorNode)) {
+    const r = document.createRange();
+    r.selectNodeContents(ed);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  document.execCommand('insertHTML', false, html);
+}
+function renumberNotes(type){
+  if (current < 0) return;
+  entries[current][type].forEach((n,i) => n.num = i + 1);
+  const ed = $('commentEditor');
+  ed.querySelectorAll('sup.note-ref[data-type="' + type + '"]').forEach((sup,i) => {
+    const num = i + 1;
+    sup.dataset.index = num;
+    sup.textContent = type === 'footnotes'
+      ? '[' + num + ']'
+      : '[C' + num + ']';
+  });
+  pull();
+  renderNotes();
+  updateRead();
+  scheduleSave();
+}
+function normalizeMarkers(html,e,withLinks){
+  const root = document.createElement('div');
+  root.innerHTML = cleanHtml(html || '');
+  root.querySelectorAll('sup.note-ref').forEach(s => {
+    const type = s.dataset.type || 'footnotes';
+    let idx = parseInt(s.dataset.index || '1', 10);
+    if (!idx || idx < 1) idx = 1;
+    const label = type === 'endnotes'
+      ? '[C' + idx + ']'
+      : '[' + idx + ']';
+    if (withLinks) {
+      const base = (type === 'endnotes' ? 'en' : 'fn') + '-' + e.id + '-' + idx;
+      const ref = (type === 'endnotes' ? 'enref' : 'fnref') + '-' + e.id + '-' + idx;
+      s.innerHTML = '<a id="' + ref + '" href="#' + base + '">' + label + '</a>';
+    } else {
+      s.textContent = label;
+    }
+  });
+  return root.innerHTML;
+}
+function notesHtml(e){
+  let out = '';
+  if (e.footnotes.some(n => n.text)) {
+    out += '<section class="readSection"><h3>Footnotes</h3><ol class="notesList">';
+    e.footnotes.forEach((n,i) => {
+      if (n.text) {
+        out += '<li id="fn-' + e.id + '-' + (i + 1) + '">' +
+          linkifyPlain(n.text) + ' <a href="#fnref-' + e.id + '-' +
+          (i + 1) + '">↩</a></li>';
+      }
+    });
+    out += '</ol></section>';
+  }
+  if (e.endnotes.some(n => n.text)) {
+    out += '<section class="readSection"><h3>Citations</h3>';
+    out += '<ol class="notesList">';
+    e.endnotes.forEach((n,i) => {
+      if (n.text) {
+        out += '<li id="en-' + e.id + '-' + (i + 1) + '">' +
+          linkifyPlain(n.text) + ' <a href="#enref-' + e.id + '-' +
+          (i + 1) + '">↩</a></li>';
+      }
+    });
+    out += '</ol></section>';
+  }
+  return out;
+}
+const books =
+  'Genesis|Gen|Exodus|Exod|Leviticus|Lev|Numbers|Num|Deuteronomy|Deut|' +
+  'Joshua|Judges|Ruth|1 Samuel|2 Samuel|1 Kings|2 Kings|' +
+  '1 Chronicles|2 Chronicles|Ezra|Nehemiah|Esther|Job|Psalms|Psalm|Ps|' +
+  'Proverbs|Ecclesiastes|Song of Solomon|Isaiah|Jeremiah|Lamentations|' +
+  'Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|' +
+  'Zephaniah|Haggai|Zechariah|Malachi|Matthew|Matt|Mark|Luke|John|' +
+  'Acts|Romans|Rom|1 Corinthians|2 Corinthians|Galatians|Ephesians|' +
+  'Philippians|Colossians|1 Thessalonians|2 Thessalonians|1 Timothy|' +
+  '2 Timothy|Titus|Philemon|Hebrews|James|1 Peter|2 Peter|1 John|' +
+  '2 John|3 John|Jude|Revelation|Rev';
+const refRegex = new RegExp(
+  '\\b(?:' + books + ')\\s+' +
+  '\\d{1,3}' +
+  '(?:' +
+    ':\\d{1,3}(?:\\s*[-–]\\s*(?:\\d{1,3}:)?\\d{1,3})?' +
+    '|\\s*[-–]\\s*\\d{1,3}' +
+  ')?' +
+  '\\b',
+  'gi'
+);
+const urlRegex = /(https?:\/\/[^\s<>"']+)/gi;
+function normalizeBibleReference(r){
+  return String(r || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*[-–]\s*/g, '-')
+    .trim();
+}
+function bibleUrl(r){
+  return 'https://www.biblegateway.com/passage/?search=' +
+    encodeURIComponent(normalizeBibleReference(r)) +
+    '&version=NKJV,YLT';
+}
+function linkifyPlain(s){
+  let out = esc(s || '');
+  out = out.replace(urlRegex, m =>
+    '<a href="' + m + '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
+  );
+  out = out.replace(refRegex, m =>
+    '<a href="' + bibleUrl(m) +
+    '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
+  );
+  return out;
+}
+function linkifyHtml(html){
+  const root = document.createElement('div');
+  root.innerHTML = cleanHtml(html || '');
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(n){
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (n.parentElement && n.parentElement.closest('a,sup')) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => {
+    const span = document.createElement('span');
+    span.innerHTML = linkifyPlain(n.nodeValue);
+    n.parentNode.replaceChild(span, n);
+  });
+  return root.innerHTML;
+}
+function updateRead(){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  $('readTitle').textContent = titleOf(e);
+  $('readMeta').textContent = [
+    e.reference,
+    e.collection,
+    e.folder,
+    e.status,
+    e.tags ? 'Tags: ' + e.tags : ''
+  ].filter(Boolean).join(' | ');
+  $('readQuote').innerHTML = linkifyHtml(quoteHtmlOf(e));
+  $('readComment').innerHTML =
+    linkifyHtml(normalizeMarkers(e.commentHtml, e, true));
+  $('readSections').innerHTML = e.sections
+    .filter(s => stripHtml(s.html).trim())
+    .map(s =>
+      '<section class="readSection"><h3>' + esc(s.title) + '</h3>' +
+      linkifyHtml(s.html) + '</section>'
+    ).join('');
+  $('readNotes').innerHTML = notesHtml(e);
+}
+function setMode(read){
+  $('editView').classList.toggle('hidden', read);
+  $('readView').classList.toggle('hidden', !read);
+  updateRead();
+}
+function applyToTextNodes(root,fn){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(x => x.nodeValue = fn(x.nodeValue));
+}
+function cleanup(kind){
+  const ed = $('commentEditor');
+  if (kind === 'formatting') {
+    ed.innerHTML = esc(stripHtml(ed.innerHTML)).replace(/\n/g,'<br>');
+  }
+  if (kind === 'spaces') {
+    applyToTextNodes(ed, s => s.replace(/[ \t]{2,}/g,' '));
+    applyToTextNodes($('quoteInput'), s => s.replace(/[ \t]{2,}/g,' '));
+  }
+  if (kind === 'quotes') {
+    applyToTextNodes(ed, s => s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'"));
+    applyToTextNodes($('quoteInput'), s => s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'"));
+  }
+  if (kind === 'headings') {
+    ed.querySelectorAll('div').forEach(d => {
+      if (/^#{1,6}\s+/.test(d.innerText.trim())) {
+        d.innerHTML = '<b>' + esc(d.innerText.replace(/^#{1,6}\s+/,'')) + '</b>';
+      }
+    });
+  }
+  changed();
+}
+function entryHtml(e){
+  const sections = e.sections
+    .filter(s => stripHtml(s.html).trim())
+    .map(s => '<h3>' + esc(s.title) + '</h3>' + linkifyHtml(s.html))
+    .join('');
+  return '<article class="entry">' +
+    '<h2>' + esc(titleOf(e)) + '</h2>' +
+    '<div class="meta">' + esc([e.reference,e.folder,e.status]
+      .filter(Boolean).join(' | ')) + '</div>' +
+    '<blockquote>' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
+    linkifyHtml(normalizeMarkers(e.commentHtml, e, true)) +
+    sections +
+    notesHtml(e) +
+    '</article>';
+}
+function bookHtml(list,title){
+  list = list || exportList();
+  title = title || (
+    appSettings.mode === 'scripture'
+      ? 'Scripture Commentary'
+      : appSettings.mode === 'book'
+        ? 'Book and PDF Commentary'
+        : 'My Commentary Book'
+  );
+
+  const style = appSettings.exportStyle || 'church';
+  let css = '';
+  if (style === 'church') {
+    css =
+      '@page{margin:.78in}' +
+      '*{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word}' +
+      'body{font-family:Georgia,serif;max-width:850px;margin:50px auto;padding:0 24px;color:#181818;line-height:1.72;background:#fffdf8}' +
+      'h1{text-align:center;font-size:38px;letter-spacing:.03em}' +
+      'h2{font-variant:small-caps;border-bottom:1px solid #d8c7a2;padding-bottom:6px}' +
+      '.entry{break-inside:avoid;margin-bottom:38px;padding-bottom:24px;border-bottom:1px solid #ddd}' +
+      '.meta{font-family:Arial,sans-serif;color:#666;font-size:13px}' +
+      'blockquote{border-left:4px solid #8a6412;padding-left:14px;color:#333;background:#fff8e8}' +
+      'a{color:#6a4a0b;text-decoration:none}sup{font-size:.75em}.notesList{font-family:Arial,sans-serif;font-size:13px}';
+  } else if (style === 'academic') {
+    css =
+      '@page{margin:.8in}' +
+      '*{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word}' +
+      'body{font-family:"Times New Roman",serif;max-width:820px;margin:45px auto;padding:0 24px;color:#111;line-height:1.65}' +
+      'h1{text-align:center;font-size:30px}h2{font-size:22px;margin-top:34px}' +
+      'h3{font-size:17px}.entry{break-inside:avoid;margin-bottom:30px}' +
+      '.meta{font-family:Arial,sans-serif;color:#555;font-size:12px}' +
+      'blockquote{margin:14px 28px;color:#333}.notesList{font-size:13px}a{color:#111}';
+  } else if (style === 'study') {
+    css =
+      '@page{margin:.65in}' +
+      '*{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word}' +
+      'body{font-family:Georgia,serif;max-width:900px;margin:35px auto;padding:0 22px;color:#182033;line-height:1.62}' +
+      'h1{text-align:center;font-size:34px}h2{background:#f0e4ca;padding:10px;border-radius:8px}' +
+      'h3{border-left:4px solid #8a6412;padding-left:8px}.entry{break-inside:avoid;margin-bottom:28px}' +
+      '.meta{font-family:Arial,sans-serif;color:#58606f;font-size:13px}' +
+      'blockquote{background:#fbf5e9;border-left:5px solid #8a6412;padding:12px 15px}' +
+      '.notesList{font-family:Arial,sans-serif;font-size:13px}';
+  } else {
+    css =
+      '@page{margin:.7in}' +
+      '*{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word}' +
+      'body{font-family:Arial,sans-serif;max-width:820px;margin:35px auto;padding:0 22px;color:#111;line-height:1.55}' +
+      'h1{text-align:center}h2{font-size:22px}.entry{break-inside:avoid;margin-bottom:24px;border-bottom:1px solid #ddd}' +
+      'blockquote{border-left:3px solid #999;padding-left:12px;color:#333}.meta{color:#666;font-size:12px}';
+  }
+
+  let body = '';
+  let lastBook = '';
+  list.forEach(e => {
+    if (appSettings.mode === 'scripture') {
+      const p = parseReference(e.reference);
+      if (p && p.book !== lastBook) {
+        lastBook = p.book;
+        body += '<h1 style="font-size:28px;margin-top:42px">' + esc(p.book) + '</h1>';
+      }
+    }
+    body += entryHtml(e);
+  });
+
+  return '<!doctype html><html><head><meta charset="utf-8"><title>' +
+    esc(title) + '</title><style>' + css + '</style></head><body><h1>' +
+    esc(title) + '</h1>' + body + '</body></html>';
+}
+function previewPdf(){
+  pull();
+  updateRead();
+  manualSave();
+  const w = window.open('','_blank');
+  w.document.write(bookHtml());
+  w.document.close();
+  setStatus('PDF preview opened. It will not force the print prompt.', true);
+}
+function downloadPdf(){
+  pull();
+  updateRead();
+  manualSave();
+  const old = $('printFrame');
+  if (old) old.remove();
+  const f = document.createElement('iframe');
+  f.id = 'printFrame';
+  f.style.position = 'fixed';
+  f.style.width = '0';
+  f.style.height = '0';
+  f.style.opacity = '0';
+  f.style.border = '0';
+  f.onload = () => setTimeout(() => {
+    f.contentWindow.focus();
+    f.contentWindow.print();
+    setStatus('Print dialog opened. Choose Save as PDF.', true);
+  }, 300);
+  f.srcdoc = bookHtml();
+  document.body.appendChild(f);
+}
+function download(name,content,type){
+  const b = new Blob([content], {type:type || 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exportJson(){
+  pull();
+  download('catena_project_beta.json',
+    JSON.stringify(entries,null,2),
+    'application/json');
+}
+function importJson(file){
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      entries = JSON.parse(r.result).map(norm);
+      selected.clear();
+      current = -1;
+      if (entries.length) openEntry(0);
+      manualSave();
+    } catch(e) {
+      alert('Import failed: ' + e.message);
+    }
+  };
+  r.readAsText(file);
+}
+function exportMd(){
+  pull();
+  const md = exportList().map(e => {
+    const secs = e.sections.filter(s => stripHtml(s.html).trim())
+      .map(s => '### ' + s.title + '\n\n' + stripHtml(s.html)).join('\n\n');
+    const fn = e.footnotes.length
+      ? '### Footnotes\n' +
+        e.footnotes.map((n,i) => (i+1) + '. ' + n.text).join('\n')
+      : '';
+    const en = e.endnotes.length
+      ? '### Citations\n' +
+        e.endnotes.map((n,i) => (i+1) + '. ' + n.text).join('\n')
+      : '';
+    return '## ' + titleOf(e) + '\n\n' +
+      (e.reference ? '**Reference:** ' + e.reference + '\n\n' : '') +
+      '> ' + (e.quote || '').replace(/\n/g,'\n> ') + '\n\n' +
+      stripHtml(e.commentHtml) + '\n\n' + secs + '\n\n' + fn + '\n\n' + en;
+  }).join('\n\n---\n\n');
+  download('catena_commentary_beta.md', md, 'text/markdown');
+}
+function exportToml(){
+  pull();
+  const q = String.fromCharCode(39,39,39);
+  const safe = s => String(s || '').split(q).join('[TRIPLE_QUOTE]');
+  const toml = exportList().map(e => {
+    return '[[commentary]]\n' +
+      'title=' + q + safe(titleOf(e)) + q + '\n' +
+      'reference=' + q + safe(e.reference) + q + '\n' +
+      'folder=' + q + safe(e.folder) + q + '\n' +
+      'quote=' + q + safe(e.quote) + q + '\n' +
+      'commentary=' + q + safe(stripHtml(e.commentHtml)) + q + '\n' +
+      'footnotes=' + q +
+      safe(e.footnotes.map((n,i) => (i+1) + '. ' + n.text).join('\\n')) +
+      q + '\n' +
+      'citations=' + q +
+      safe(e.endnotes.map((n,i) => (i+1) + '. ' + n.text).join('\\n')) +
+      q + '\n';
+  }).join('\n');
+  download('catena_commentary_beta.toml', toml, 'text/plain');
+}
+
+function loadBetaSettings(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(BETA_SETTINGS_KEY) || '{}');
+    appSettings = Object.assign(appSettings, saved);
+  } catch(e) {}
+  const savedTheme = localStorage.getItem('CatenaThemeV55');
+  if (savedTheme === 'dark') document.body.classList.add('dark');
+}
+function pushBetaSettings(){
+  if ($('modeSetting')) $('modeSetting').value = appSettings.mode || 'universal';
+  if ($('styleSetting')) $('styleSetting').value = appSettings.exportStyle || 'church';
+  if ($('autoTitleToggle')) $('autoTitleToggle').checked = !!appSettings.autoTitle;
+  if ($('scriptureSortToggle')) $('scriptureSortToggle').checked = !!appSettings.scriptureSort;
+  if ($('darkThemeToggle')) $('darkThemeToggle').checked = document.body.classList.contains('dark');
+}
+function saveBetaSettings(){
+  localStorage.setItem(BETA_SETTINGS_KEY, JSON.stringify(appSettings));
+}
+function applyBetaSettings(){
+  appSettings.mode = $('modeSetting').value;
+  appSettings.exportStyle = $('styleSetting').value;
+  appSettings.autoTitle = $('autoTitleToggle').checked;
+  appSettings.scriptureSort = $('scriptureSortToggle').checked;
+  saveBetaSettings();
+  renderAll();
+  setStatus('Settings saved.', true);
+}
+function exportList(){
+  let list = entries.filter(e => !e.deleted).slice();
+  if (appSettings.mode === 'scripture' && appSettings.scriptureSort) {
+    list.sort((a,b) => {
+      const pa = parseReference(a.reference);
+      const pb = parseReference(b.reference);
+      if (!pa && !pb) return (a.order || 0) - (b.order || 0);
+      if (!pa) return 1;
+      if (!pb) return -1;
+      return (pa.bookIndex - pb.bookIndex) ||
+        (pa.chapter - pb.chapter) ||
+        (pa.verse - pb.verse) ||
+        ((a.order || 0) - (b.order || 0));
+    });
+  }
+  return list;
+}
+
+function bind(){
+  document.querySelectorAll('.navBtn[data-view]').forEach(b => {
+    b.onclick = () => {
+      activeView = b.dataset.view;
+      renderAll();
+    };
+  });
+  ['search','statusFilter','sortMode'].forEach(id => $(id).oninput = renderAll);
+  [
+    'titleInput',
+    'referenceInput',
+    'collectionInput',
+    'folderInput',
+    'statusInput',
+    'tagsInput',
+    'pageInput',
+    'quoteInput',
+    'commentEditor'
+  ].forEach(id => {
+    $(id).addEventListener('input', changed);
+    $(id).addEventListener('change', changed);
+  });
+  $('manualSaveBtn').onclick = manualSave;
+  $('manualSaveTop').onclick = manualSave;
+  $('newBtn').onclick = newEntry;
+  $('addBtn').onclick = add;
+  $('duplicateBtn').onclick = duplicate;
+  $('favoriteBtn').onclick = fav;
+  $('deleteBtn').onclick = del;
+  $('deleteSelectedBtn').onclick = deleteSelected;
+  $('emptyTrashBtn').onclick = emptyTrash;
+  $('selectVisibleBtn').onclick = () => {
+    filtered().forEach(x => selected.add(x.e.id));
+    renderList();
+    renderCounts();
+  };
+  $('clearSelectionBtn').onclick = () => {
+    selected.clear();
+    renderList();
+    renderCounts();
+  };
+  $('addSectionBtn').onclick = addSection;
+  $('addFootnoteBtn').onclick = () => addNote('footnotes', false);
+  $('addEndnoteBtn').onclick = () => addNote('endnotes', false);
+  $('insertFootnoteBtn').onclick = () => addNote('footnotes', true);
+  $('insertCitationBtn').onclick = () => addNote('endnotes', true);
+  $('renumberFootnotesBtn').onclick = () => renumberNotes('footnotes');
+  $('renumberEndnotesBtn').onclick = () => renumberNotes('endnotes');
+  document.querySelectorAll('.fmt').forEach(b => {
+    b.onclick = () => {
+      const target = $(b.dataset.target || 'commentEditor');
+      if (target) target.focus();
+      document.execCommand(b.dataset.cmd,false,null);
+      changed();
+    };
+  });
+  document.querySelectorAll('.clean').forEach(b => {
+    b.onclick = () => cleanup(b.dataset.clean);
+  });
+  $('linkBtn').onclick = () => {
+    $('commentEditor').focus();
+    const u = prompt('Paste website or video URL:');
+    if (u) {
+      document.execCommand('createLink', false, u);
+      changed();
+    }
+  };
+  $('editBtn').onclick = () => setMode(false);
+  $('readBtn').onclick = () => setMode(true);
+  $('previewPdfBtn').onclick = previewPdf;
+  $('downloadPdfBtn').onclick = downloadPdf;
+  $('exportJsonBtn').onclick = exportJson;
+  $('exportMdBtn').onclick = exportMd;
+  $('exportTomlBtn').onclick = exportToml;
+  $('exportHtmlBtn').onclick = () => {
+    download('catena_book_beta.html', bookHtml(), 'text/html');
+  };
+  $('openBtn').onclick = () => $('importFile').click();
+  $('importFile').onchange = e => importJson(e.target.files[0]);
+  
+  loadBetaSettings();
+  pushBetaSettings();
+  $('settingsBtn').onclick = () => $('settingsPanel').classList.toggle('hidden');
+  $('closeSettingsBtn').onclick = () => $('settingsPanel').classList.add('hidden');
+  $('settingsSaveBtn').onclick = manualSave;
+  $('darkThemeToggle').onchange = () => {
+    document.body.classList.toggle('dark', $('darkThemeToggle').checked);
+    localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
+  };
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle'].forEach(id => {
+    $(id).addEventListener('change', applyBetaSettings);
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      manualSave();
+    }
+  });
+}
+bind();
+load();
+})();
+</script>
+</body>
+</html>
