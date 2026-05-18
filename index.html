@@ -314,6 +314,26 @@ h1{
   padding:14px 18px;
   font-size:18px;
 }
+.editor blockquote,.sectionContent blockquote{
+  margin:12px 0;
+  padding:10px 14px;
+  border-left:4px solid var(--accent);
+  background:var(--field);
+  color:var(--text);
+}
+a.cf-link{
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.cf-missing{
+  color:var(--danger);
+  font-weight:800;
+}
+.modeHint{
+  margin-top:7px;
+  min-height:18px;
+}
 .readSection{
   border-top:1px solid var(--line);
   margin-top:18px;
@@ -597,11 +617,16 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
       <div class="settingRow">
         <div>
           <strong>Writing mode</strong>
-          <div class="sub">Universal is normal. Scripture organizes by Bible references. Book organizes by source/page.</div>
+          <div class="sub">Universal is normal. Scripture and verse-by-verse modes organize by Bible references. The other modes add structured writing templates.</div>
         </div>
         <select id="modeSetting">
           <option value="universal">Universal</option>
           <option value="scripture">Scripture Mode</option>
+          <option value="verse">Verse-by-Verse Commentary</option>
+          <option value="sermon">Homily / Sermon Mode</option>
+          <option value="academic">Academic Treatise Mode</option>
+          <option value="contemplative">Contemplative Mode</option>
+          <option value="polemical">Polemical Mode</option>
           <option value="book">Book Mode</option>
         </select>
       </div>
@@ -779,6 +804,26 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <div><div class="label">Entry title</div><input id="titleInput" placeholder="Leave blank in Scripture Mode to use the reference"></div>
 <div><div class="label">Reference</div><input id="referenceInput" placeholder="John 1:1"></div>
 </div>
+<div class="grid2">
+<div>
+<div class="label">Writing mode for this entry</div>
+<select id="workModeInput">
+<option value="universal">Universal Commentary</option>
+<option value="scripture">Scripture Commentary</option>
+<option value="verse">Verse-by-Verse Commentary</option>
+<option value="sermon">Homily / Sermon</option>
+<option value="academic">Academic Treatise</option>
+<option value="contemplative">Contemplative</option>
+<option value="polemical">Polemical</option>
+<option value="book">Book / Source Note</option>
+</select>
+</div>
+<div>
+<div class="label">Mode template</div>
+<button id="applyModeTemplateBtn" class="small good">Add Missing Mode Sections</button>
+<div id="modeHint" class="sub modeHint"></div>
+</div>
+</div>
 <div class="grid3">
 <div><div class="label">Collection</div><input id="collectionInput" placeholder="Commentary"></div>
 <div><div class="label">Folder</div><input id="folderInput" placeholder="John / Chapter 1"></div>
@@ -814,6 +859,8 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
 <button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
 <button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
+<button id="blockquoteBtn" class="small">Blockquote</button>
+<button id="cfBtn" class="small">cf.</button>
 <button id="linkBtn" class="small">Link</button>
 <button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
 <button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
@@ -898,6 +945,46 @@ const DEFAULT_SECTIONS = [
   'Application',
   'Cross-references'
 ];
+const MODE_LABELS = {
+  universal:'Universal Commentary',
+  scripture:'Scripture Commentary',
+  verse:'Verse-by-Verse Commentary',
+  sermon:'Homily / Sermon',
+  academic:'Academic Treatise',
+  contemplative:'Contemplative',
+  polemical:'Polemical',
+  book:'Book / Source Note'
+};
+const MODE_SECTIONS = {
+  universal:DEFAULT_SECTIONS,
+  scripture:DEFAULT_SECTIONS,
+  book:['Source summary','Argument or theme','Key quotations','Critical notes','Application','Cross-references'],
+  verse:['Verse text','Immediate context','Literal sense','Verse-by-verse commentary','Cross-references','Theological meaning','Application'],
+  sermon:['Passage','Big idea','Introduction','Homiletic outline','Illustrations','Applications','Conclusion','Prayer'],
+  academic:['Abstract','Thesis','Status quaestionis','Argument','Sources and evidence','Objections and replies','Conclusion','Bibliography notes'],
+  contemplative:['Text for contemplation','Stillness and attention','Christological mystery','Interior application','Prayer','Resolution'],
+  polemical:['Opposing claim','Orthodox thesis','Terms and distinctions','Scriptural refutation','Historical or patristic witness','Logical response','Conclusion']
+};
+function validMode(m){
+  return MODE_LABELS[m] ? m : 'universal';
+}
+function modeLabel(m){
+  return MODE_LABELS[validMode(m)];
+}
+function sectionListForMode(m){
+  return (MODE_SECTIONS[validMode(m)] || DEFAULT_SECTIONS).slice();
+}
+function modeHintText(m){
+  m = validMode(m);
+  if (m === 'verse') return 'Structured for passage-by-passage or verse-by-verse exposition with cross-references and application.';
+  if (m === 'sermon') return 'Structured for homily preparation: passage, central claim, outline, illustrations, applications, and prayer.';
+  if (m === 'academic') return 'Structured for a treatise: thesis, scholarly state of the question, argument, objections, replies, and bibliography notes.';
+  if (m === 'contemplative') return 'Structured for meditative theological writing, prayer, interior application, and contemplation.';
+  if (m === 'polemical') return 'Structured for controversy: opposing claim, orthodox thesis, distinctions, refutation, witnesses, and conclusion.';
+  if (m === 'book') return 'Structured for notes on a book, source, page, chapter, or author.';
+  if (m === 'scripture') return 'Structured for normal Scripture commentary organized by biblical reference.';
+  return 'General flexible commentary sections.';
+}
 const BETA_SETTINGS_KEY = 'CatenaBetaSettings';
 let appSettings = {
   mode:'universal',
@@ -949,11 +1036,13 @@ function frontMatterFromInputs(){
 function defaultBookTitle(){
   const fm = normalizeFrontMatter(appSettings.frontMatter);
   if (fm.title) return fm.title;
-  return appSettings.mode === 'scripture'
-    ? 'Scripture Commentary'
-    : appSettings.mode === 'book'
-      ? 'Book and PDF Commentary'
-      : 'My Commentary Book';
+  if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') return 'Scripture Commentary';
+  if (appSettings.mode === 'sermon') return 'Homilies and Sermons';
+  if (appSettings.mode === 'academic') return 'Academic Treatise';
+  if (appSettings.mode === 'contemplative') return 'Contemplative Writings';
+  if (appSettings.mode === 'polemical') return 'Polemical Writings';
+  if (appSettings.mode === 'book') return 'Book and PDF Commentary';
+  return 'My Commentary Book';
 }
 function folderExportTitle(folder){
   const base = defaultBookTitle();
@@ -1031,10 +1120,10 @@ function htmlToPlain(s){
 function quoteHtmlOf(e){
   return e.quoteHtml || esc(e.quote || '');
 }
-function normSections(s){
+function normSections(s, mode){
   const source = Array.isArray(s)
     ? s
-    : DEFAULT_SECTIONS.map(t => ({title:t, html:'', collapsed:false}));
+    : sectionListForMode(mode).map(t => ({title:t, html:'', collapsed:false}));
   return source.map(x => ({
     title:x.title || 'Section',
     html:x.html || '',
@@ -1046,33 +1135,37 @@ function normNotes(n){
     return n.map((x,i) => ({
       id:x.id || nid(),
       num:x.num || i + 1,
-      text:x.text || ''
+      text:x.text || '',
+      linked:x.linked === undefined ? false : !!x.linked
     }));
   }
   if (typeof n === 'string') {
     return n.split(/\n+/).map((t,i) => {
       t = t.trim();
-      return t ? {id:nid(), num:i+1, text:t} : null;
+      return t ? {id:nid(), num:i+1, text:t, linked:false} : null;
     }).filter(Boolean);
   }
   return [];
 }
 function norm(e,i){
   e = e || {};
+  const workMode = validMode(e.workMode || e.mode || appSettings.mode || 'universal');
+  const title = e.title || (workMode === 'verse' ? 'Untitled Verse Commentary' : 'Untitled Commentary Entry');
   return {
     id:e.id || uid(),
     order:Number.isFinite(e.order) ? e.order : (i || 0) + 1,
-    title:e.title || 'Untitled Commentary Entry',
+    title:title,
     reference:e.reference || '',
     collection:e.collection || 'Commentary',
     folder:e.folder || '',
     status:e.status || 'Draft',
     tags:e.tags || '',
     page:e.page || 'Manual',
+    workMode:workMode,
     quote:e.quote || htmlToPlain(e.quoteHtml) || '',
     quoteHtml:e.quoteHtml || esc(e.quote || ''),
     commentHtml:e.commentHtml || 'Write your commentary here.',
-    sections:normSections(e.sections),
+    sections:normSections(e.sections, workMode),
     footnotes:normNotes(e.footnotes),
     endnotes:normNotes(e.endnotes),
     favorite:!!e.favorite,
@@ -1082,14 +1175,16 @@ function norm(e,i){
   };
 }
 function blank(){
+  const workMode = validMode(appSettings.mode || 'universal');
   return norm({
     id:uid(),
     order:entries.length + 1,
-    title:'Untitled Commentary Entry',
+    workMode:workMode,
+    title:workMode === 'verse' ? 'Untitled Verse Commentary' : 'Untitled Commentary Entry',
     quote:'Paste or type the source text here.',
     quoteHtml:'Paste or type the source text here.',
-    commentHtml:'Write your commentary here.',
-    sections:DEFAULT_SECTIONS.map(t => ({title:t, html:'', collapsed:false}))
+    commentHtml:'Write your ' + modeLabel(workMode).toLowerCase() + ' here.',
+    sections:sectionListForMode(workMode).map(t => ({title:t, html:'', collapsed:false}))
   }, entries.length);
 }
 function decodeSeed(){
@@ -1120,12 +1215,16 @@ function parseReference(ref){
     endVerse:parseInt(m[4] || m[3] || '0',10)
   };
 }
+function isUntitledEntryTitle(t){
+  return !t || t === 'Untitled Commentary Entry' || t === 'Untitled Verse Commentary';
+}
 function displayTitle(e){
-  if (appSettings.mode === 'scripture' && appSettings.autoTitle && e.reference) {
-    if (!e.title || e.title === 'Untitled Commentary Entry') return e.reference;
+  const mode = validMode(e.workMode || appSettings.mode);
+  if ((mode === 'scripture' || mode === 'verse') && appSettings.autoTitle && e.reference) {
+    if (isUntitledEntryTitle(e.title)) return e.reference;
   }
-  if (appSettings.mode === 'book') {
-    if (!e.title || e.title === 'Untitled Commentary Entry') {
+  if (mode === 'book') {
+    if (isUntitledEntryTitle(e.title)) {
       return [e.collection, e.folder, e.page && e.page !== 'Manual' ? e.page : '']
         .filter(Boolean).join(' — ') || 'Untitled Book Note';
     }
@@ -1226,6 +1325,8 @@ function filtered(){
       x.e.quote,
       stripHtml(x.e.commentHtml),
       x.e.tags,
+      modeLabel(x.e.workMode || 'universal'),
+      (x.e.sections || []).map(s => s.title + ' ' + stripHtml(s.html)).join(' '),
       x.e.footnotes.map(n => n.text).join(' '),
       x.e.endnotes.map(n => n.text).join(' ')
     ].join(' ').toLowerCase().includes(q));
@@ -1367,9 +1468,14 @@ function pull(){
   e.status = $('statusInput').value;
   e.tags = $('tagsInput').value.trim();
   e.page = $('pageInput').value.trim() || 'Manual';
+  e.workMode = validMode($('workModeInput') ? $('workModeInput').value : e.workMode);
   e.quoteHtml = cleanHtml($('quoteInput').innerHTML);
   e.quote = htmlToPlain(e.quoteHtml);
   e.commentHtml = cleanHtml($('commentEditor').innerHTML);
+  const active = document.activeElement;
+  const fromComment = active && $('commentEditor').contains(active);
+  const noteChanged = syncNotesWithComment(e, fromComment);
+  if (noteChanged && fromComment) renderNotes();
   e.updatedAt = now();
 }
 function push(){
@@ -1383,6 +1489,8 @@ function push(){
   $('statusInput').value = e.status || 'Draft';
   $('tagsInput').value = e.tags || '';
   $('pageInput').value = e.page || 'Manual';
+  if ($('workModeInput')) $('workModeInput').value = validMode(e.workMode || appSettings.mode);
+  renderModeHint();
   $('quoteInput').innerHTML = quoteHtmlOf(e);
   $('commentEditor').innerHTML = e.commentHtml || '';
   renderSections();
@@ -1558,6 +1666,33 @@ function addSection(){
   renderSections();
   changed();
 }
+function renderModeHint(){
+  if (!$('modeHint')) return;
+  const mode = validMode($('workModeInput') ? $('workModeInput').value : appSettings.mode);
+  $('modeHint').textContent = modeHintText(mode);
+}
+function addMissingModeSections(mode){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  mode = validMode(mode || e.workMode || appSettings.mode);
+  const existing = new Set((e.sections || []).map(s => String(s.title || '').trim().toLowerCase()));
+  sectionListForMode(mode).forEach(title => {
+    if (!existing.has(title.toLowerCase())) {
+      e.sections.push({title:title, html:'', collapsed:false});
+    }
+  });
+  renderSections();
+}
+function applyModeTemplate(){
+  if (current < 0 || !entries[current]) return;
+  pull();
+  const e = entries[current];
+  e.workMode = validMode($('workModeInput').value);
+  addMissingModeSections(e.workMode);
+  renderModeHint();
+  changed();
+  setStatus(modeLabel(e.workMode) + ' template sections checked.', true);
+}
 function renderNotes(){
   renderNoteBox('footnotesBox','footnotes');
   renderNoteBox('endnotesBox','endnotes');
@@ -1577,19 +1712,15 @@ function renderNoteBox(boxId,type){
     row.innerHTML =
       '<div class="noteHead">' +
       '<span class="noteNum">' + label + '</span>' +
-      '<span>' + (type === 'footnotes'
-        ? 'Footnote marker'
-        : 'Citation marker') + '</span>' +
+      '<span>' + (n.linked ? 'Linked ' : 'Standalone ') + (type === 'footnotes'
+        ? 'footnote'
+        : 'citation') + '</span>' +
       '<button class="small insert">Insert Marker</button>' +
       '<button class="small danger delete">Delete</button>' +
       '</div>' +
       '<div class="noteText" contenteditable="true">' + esc(n.text) + '</div>';
     row.querySelector('.insert').onclick = () => insertExistingNoteMarker(type,idx);
-    row.querySelector('.delete').onclick = () => {
-      e[type].splice(idx,1);
-      renderNotes();
-      changed();
-    };
+    row.querySelector('.delete').onclick = () => deleteNote(type,idx);
     row.querySelector('.noteText').oninput = changed;
     box.appendChild(row);
   });
@@ -1599,35 +1730,65 @@ function pullNotes(){
   ['footnotes','endnotes'].forEach(type => {
     const box = $(type === 'footnotes' ? 'footnotesBox' : 'endnotesBox');
     entries[current][type] =
-      Array.from(box.querySelectorAll('.noteRow')).map((row,i) => ({
-        id:entries[current][type][i]
-          ? entries[current][type][i].id
-          : nid(),
-        num:i + 1,
-        text:row.querySelector('.noteText').innerText.trim()
-      }));
+      Array.from(box.querySelectorAll('.noteRow')).map((row,i) => {
+        const old = entries[current][type][i] || {};
+        return {
+          id:old.id || nid(),
+          num:i + 1,
+          text:row.querySelector('.noteText').innerText.trim(),
+          linked:!!old.linked
+        };
+      });
   });
+}
+function noteLabel(type,num){
+  return type === 'footnotes' ? '[' + num + ']' : '[C' + num + ']';
+}
+function deleteNote(type,idx){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  const note = e[type][idx];
+  if (!note) return;
+  const ed = $('commentEditor');
+  ed.querySelectorAll('sup.note-ref[data-type="' + type + '"]').forEach(s => {
+    if ((note.id && s.dataset.noteId === note.id) || parseInt(s.dataset.index || '0',10) === idx + 1) {
+      s.remove();
+    }
+  });
+  e[type].splice(idx,1);
+  e.commentHtml = cleanHtml(ed.innerHTML);
+  syncNotesWithComment(e,true);
+  renderNotes();
+  changed();
 }
 function addNote(type,insert){
   if (current < 0) return;
   const e = entries[current];
-  e[type].push({
+  const note = {
     id:nid(),
     num:e[type].length + 1,
-    text:''
-  });
+    text:'',
+    linked:!!insert
+  };
+  e[type].push(note);
   renderNotes();
   if (insert) insertExistingNoteMarker(type, e[type].length - 1);
   changed();
 }
 function insertExistingNoteMarker(type,idx){
-  const label = type === 'footnotes'
-    ? '[' + (idx + 1) + ']'
-    : '[C' + (idx + 1) + ']';
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  const note = e[type][idx];
+  if (!note) return;
+  note.linked = true;
+  const label = noteLabel(type, idx + 1);
   const html =
     '<sup class="note-ref" data-type="' + type +
-    '" data-index="' + (idx + 1) + '">' + label + '</sup>';
+    '" data-index="' + (idx + 1) + '" data-note-id="' +
+    esc(note.id) + '">' + label + '</sup>';
   insertHtmlAtCursor(html);
+  syncNotesWithComment(e,true);
+  renderNotes();
   changed();
 }
 function insertHtmlAtCursor(html){
@@ -1643,18 +1804,62 @@ function insertHtmlAtCursor(html){
   }
   document.execCommand('insertHTML', false, html);
 }
+function noteArraysEqual(a,b){
+  if (a.length !== b.length) return false;
+  for (let i=0;i<a.length;i++) {
+    if (a[i].id !== b[i].id || a[i].num !== b[i].num || a[i].text !== b[i].text || !!a[i].linked !== !!b[i].linked) return false;
+  }
+  return true;
+}
+function syncNotesWithComment(e, mutateEditor){
+  if (!e) return false;
+  const root = mutateEditor ? $('commentEditor') : document.createElement('div');
+  if (!mutateEditor) root.innerHTML = cleanHtml(e.commentHtml || '');
+  let changed = false;
+  ['footnotes','endnotes'].forEach(type => {
+    const old = Array.isArray(e[type]) ? e[type] : [];
+    const oldById = new Map(old.map(n => [n.id,n]));
+    const usedIds = new Set();
+    const next = [];
+    const refs = Array.from(root.querySelectorAll('sup.note-ref[data-type="' + type + '"]'));
+    refs.forEach((sup) => {
+      let note = null;
+      const noteId = sup.dataset.noteId;
+      if (noteId && oldById.has(noteId) && !usedIds.has(noteId)) {
+        note = oldById.get(noteId);
+      } else {
+        const index = parseInt(sup.dataset.index || '0',10) - 1;
+        if (old[index] && !usedIds.has(old[index].id)) note = old[index];
+      }
+      if (!note) note = {id:nid(), num:next.length + 1, text:'', linked:true};
+      if (usedIds.has(note.id)) {
+        note = {id:nid(), num:next.length + 1, text:note.text || '', linked:true};
+      }
+      usedIds.add(note.id);
+      note.linked = true;
+      note.num = next.length + 1;
+      sup.dataset.type = type;
+      sup.dataset.noteId = note.id;
+      sup.dataset.index = String(note.num);
+      sup.textContent = noteLabel(type,note.num);
+      next.push(note);
+    });
+    old.forEach(n => {
+      if (!n.linked && !usedIds.has(n.id)) {
+        n.num = next.length + 1;
+        next.push(n);
+      }
+    });
+    if (!noteArraysEqual(old,next)) changed = true;
+    e[type] = next;
+  });
+  e.commentHtml = cleanHtml(root.innerHTML);
+  return changed;
+}
 function renumberNotes(type){
   if (current < 0) return;
-  entries[current][type].forEach((n,i) => n.num = i + 1);
-  const ed = $('commentEditor');
-  ed.querySelectorAll('sup.note-ref[data-type="' + type + '"]').forEach((sup,i) => {
-    const num = i + 1;
-    sup.dataset.index = num;
-    sup.textContent = type === 'footnotes'
-      ? '[' + num + ']'
-      : '[C' + num + ']';
-  });
-  pull();
+  pullNotes();
+  syncNotesWithComment(entries[current], true);
   renderNotes();
   updateRead();
   scheduleSave();
@@ -1664,11 +1869,13 @@ function normalizeMarkers(html,e,withLinks){
   root.innerHTML = cleanHtml(html || '');
   root.querySelectorAll('sup.note-ref').forEach(s => {
     const type = s.dataset.type || 'footnotes';
-    let idx = parseInt(s.dataset.index || '1', 10);
+    const list = Array.isArray(e[type]) ? e[type] : [];
+    let idx = 0;
+    const noteId = s.dataset.noteId;
+    if (noteId) idx = list.findIndex(n => n.id === noteId) + 1;
+    if (!idx) idx = parseInt(s.dataset.index || '1', 10);
     if (!idx || idx < 1) idx = 1;
-    const label = type === 'endnotes'
-      ? '[C' + idx + ']'
-      : '[' + idx + ']';
+    const label = noteLabel(type,idx);
     if (withLinks) {
       const base = (type === 'endnotes' ? 'en' : 'fn') + '-' + e.id + '-' + idx;
       const ref = (type === 'endnotes' ? 'enref' : 'fnref') + '-' + e.id + '-' + idx;
@@ -1707,6 +1914,96 @@ function notesHtml(e, includeEndnotes){
   }
   return out;
 }
+function safeDomId(s){
+  return String(s || '')
+    .replace(/[^A-Za-z0-9_-]+/g,'-')
+    .replace(/^-+|-+$/g,'') || 'item';
+}
+function slugify(s){
+  return String(s || 'Unfiled')
+    .toLowerCase()
+    .replace(/&/g,'and')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'') || 'unfiled';
+}
+function entryAnchorId(eOrId){
+  const id = typeof eOrId === 'string' ? eOrId : eOrId.id;
+  return 'entry-' + safeDomId(id);
+}
+function folderAnchorId(folder){
+  return 'folder-' + slugify(folder || 'Unfiled');
+}
+function cfTextOf(e){
+  return [e.id,titleOf(e),e.title,e.reference,e.folder,e.collection,e.page].filter(Boolean).join(' ').toLowerCase();
+}
+function findCfTarget(raw, allowPrompt){
+  if (allowPrompt === undefined) allowPrompt = true;
+  const q0 = String(raw || '').trim();
+  if (!q0) return null;
+  const folderMatch = q0.match(/^folder\s*:\s*(.+)$/i);
+  if (folderMatch) return {kind:'folder', folder:folderMatch[1].trim() || 'Unfiled'};
+  const q = q0.toLowerCase();
+  const exact = entries.find(e => [e.id,titleOf(e),e.title,e.reference].filter(Boolean).some(v => String(v).toLowerCase() === q));
+  if (exact) return {kind:'entry', entry:exact};
+  const matches = entries.filter(e => !e.deleted && cfTextOf(e).includes(q)).slice(0,9);
+  if (matches.length === 1) return {kind:'entry', entry:matches[0]};
+  if (matches.length > 1) {
+    if (!allowPrompt) return null;
+    const lines = matches.map((e,i) => (i + 1) + '. ' + titleOf(e) + (e.reference ? ' — ' + e.reference : '') + (e.folder ? ' [' + e.folder + ']' : '')).join('\n');
+    const chosen = prompt('Choose cf. target by number:\n\n' + lines);
+    const n = parseInt(chosen || '',10);
+    if (n >= 1 && n <= matches.length) return {kind:'entry', entry:matches[n - 1]};
+  }
+  const folder = folders().find(f => f.toLowerCase() === q || f.toLowerCase().includes(q));
+  if (folder) return {kind:'folder', folder:folder};
+  return null;
+}
+function cfAnchorFromTarget(target,label){
+  if (!target) return '';
+  if (target.kind === 'entry') {
+    const text = label || ('cf. ' + titleOf(target.entry));
+    return '<a class="cf-link" data-cf-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'folder') {
+    const text = label || ('cf. ' + target.folder);
+    return '<a class="cf-link" data-cf-folder="' + esc(target.folder) + '" href="#' + folderAnchorId(target.folder) + '">' + esc(text) + '</a>';
+  }
+  return '';
+}
+function cfAnchorFromLabel(label){
+  const target = findCfTarget(label, false);
+  if (!target) return '<span class="cf-missing">[[' + esc(label) + ']]</span>';
+  return cfAnchorFromTarget(target,'cf. ' + label);
+}
+function updateExistingCfLinks(root){
+  root.querySelectorAll('a.cf-link').forEach(a => {
+    const id = a.dataset.cfId;
+    const folder = a.dataset.cfFolder;
+    if (id) {
+      const e = entries.find(x => x.id === id);
+      if (e) {
+        a.setAttribute('href','#' + entryAnchorId(e));
+        if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + titleOf(e);
+      }
+    } else if (folder) {
+      a.setAttribute('href','#' + folderAnchorId(folder));
+      if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + folder;
+    }
+  });
+}
+function insertCfReference(){
+  if (current < 0) return;
+  pull();
+  const q = prompt('Type an entry title/reference, or type folder:Folder Name. You can also type [[Title]], [[John 1:1]], or [[folder:Chapter 1]] directly in the editor later.');
+  if (!q) return;
+  const target = findCfTarget(q.replace(/^\[\[|\]\]$/g,''), true);
+  if (!target) {
+    insertHtmlAtCursor('cf. [[' + esc(q) + ']]');
+  } else {
+    insertHtmlAtCursor(cfAnchorFromTarget(target));
+  }
+  changed();
+}
 const books =
   'Genesis|Gen|Exodus|Exod|Leviticus|Lev|Numbers|Num|Deuteronomy|Deut|' +
   'Joshua|Judges|Ruth|1 Samuel|2 Samuel|1 Kings|2 Kings|' +
@@ -1742,6 +2039,12 @@ function bibleUrl(r){
 }
 function linkifyPlain(s){
   let out = esc(s || '');
+  const cfParts = [];
+  out = out.replace(/\[\[([^\]\n]{1,160})\]\]/g, (m,label) => {
+    const token = '%%CATENA_CF_' + cfParts.length + '%%';
+    cfParts.push(cfAnchorFromLabel(label));
+    return token;
+  });
   out = out.replace(urlRegex, m =>
     '<a href="' + m + '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
   );
@@ -1749,6 +2052,9 @@ function linkifyPlain(s){
     '<a href="' + bibleUrl(m) +
     '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
   );
+  cfParts.forEach((html,i) => {
+    out = out.replace('%%CATENA_CF_' + i + '%%', html);
+  });
   return out;
 }
 function linkifyHtml(html){
@@ -1763,6 +2069,7 @@ function linkifyHtml(html){
       return NodeFilter.FILTER_ACCEPT;
     }
   });
+  updateExistingCfLinks(root);
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
   nodes.forEach(n => {
@@ -1778,6 +2085,7 @@ function updateRead(){
   $('readTitle').textContent = titleOf(e);
   $('readMeta').textContent = [
     e.reference,
+    modeLabel(e.workMode || 'universal'),
     e.collection,
     e.folder,
     e.status,
@@ -1835,7 +2143,7 @@ function exportMetaForEntry(e){
   return parts;
 }
 function endnoteGroupKey(e){
-  if (appSettings.mode === 'scripture') {
+  if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') {
     const p = parseReference(e.reference);
     if (p) return p.book + ' ' + p.chapter;
   }
@@ -1871,7 +2179,7 @@ function entryHtml(e){
     if (meta) head += '<div class="meta">' + esc(meta) + '</div>';
   }
   const includeEntryEndnotes = (appSettings.endnotePlacement || 'entry') === 'entry';
-  return '<article class="entry">' +
+  return '<article class="entry" id="' + entryAnchorId(e) + '" data-entry-id="' + esc(e.id) + '">' +
     head +
     '<blockquote>' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
     linkifyHtml(normalizeMarkers(e.commentHtml, e, true)) +
@@ -1892,7 +2200,8 @@ function exportCss(style){
     '.frontMatter{page-break-after:always;margin-bottom:34px}' +
     '.frontMatter h2{margin-top:32px}' +
     '.frontMatter .dedication{font-style:italic;text-align:center;margin:42px auto;max-width:620px}' +
-    '.endnotesBlock{page-break-before:always;margin-top:36px}.endnotesBlock h2{text-align:left}.noteContext{font-weight:bold}';
+    '.endnotesBlock{page-break-before:always;margin-top:36px}.endnotesBlock h2{text-align:left}.noteContext{font-weight:bold}' +
+    '.folderHeading{page-break-before:always;margin-top:42px}.cf-link{text-decoration:underline;font-weight:bold}.cf-missing{color:#900;font-weight:bold}';
   if (style === 'church') {
     return base +
       'body{font-family:Georgia,serif;max-width:850px;margin:50px auto;padding:0 24px;color:#181818;line-height:1.72;background:#fffdf8}' +
@@ -2039,6 +2348,7 @@ function bookHtml(list,title){
 
   let body = '';
   let lastBook = '';
+  let lastFolder = null;
   let currentEndnoteGroup = null;
   let endnoteGroupEntries = [];
   function flushEndnoteGroup(){
@@ -2055,12 +2365,17 @@ function bookHtml(list,title){
       }
       currentEndnoteGroup = groupKey;
     }
-    if (appSettings.mode === 'scripture') {
+    if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') {
       const p = parseReference(e.reference);
       if (p && p.book !== lastBook) {
         lastBook = p.book;
-        body += '<h1 style="font-size:28px;margin-top:42px">' + esc(p.book) + '</h1>';
+        body += '<h1 style="font-size:28px;margin-top:42px" id="book-' + slugify(p.book) + '">' + esc(p.book) + '</h1>';
       }
+    }
+    const folderKey = e.folder || 'Unfiled';
+    if (folderKey !== lastFolder) {
+      lastFolder = folderKey;
+      body += '<h1 class="folderHeading" id="' + folderAnchorId(folderKey) + '">' + esc(folderKey) + '</h1>';
     }
     body += entryHtml(e);
     if (endnotePlacement === 'chapter') endnoteGroupEntries.push(e);
@@ -2251,6 +2566,7 @@ function loadBetaSettings(){
   try {
     const saved = JSON.parse(localStorage.getItem(BETA_SETTINGS_KEY) || '{}');
     appSettings = Object.assign(appSettings, saved);
+    appSettings.mode = validMode(appSettings.mode);
     if (appSettings.exportShowEntryTitle === undefined) appSettings.exportShowEntryTitle = true;
     if (appSettings.exportShowMeta === undefined) appSettings.exportShowMeta = true;
     if (appSettings.exportShowStatus === undefined) appSettings.exportShowStatus = true;
@@ -2287,7 +2603,7 @@ function saveBetaSettings(){
   localStorage.setItem(BETA_SETTINGS_KEY, JSON.stringify(appSettings));
 }
 function applyBetaSettings(){
-  appSettings.mode = $('modeSetting').value;
+  appSettings.mode = validMode($('modeSetting').value);
   appSettings.exportStyle = $('styleSetting').value;
   appSettings.autoTitle = $('autoTitleToggle').checked;
   appSettings.scriptureSort = $('scriptureSortToggle').checked;
@@ -2303,7 +2619,7 @@ function applyBetaSettings(){
 }
 function exportList(){
   let list = entries.filter(e => !e.deleted).slice();
-  if (appSettings.mode === 'scripture' && appSettings.scriptureSort) {
+  if ((appSettings.mode === 'scripture' || appSettings.mode === 'verse') && appSettings.scriptureSort) {
     list.sort((a,b) => {
       const pa = parseReference(a.reference);
       const pb = parseReference(b.reference);
@@ -2344,6 +2660,7 @@ function bind(){
     'statusInput',
     'tagsInput',
     'pageInput',
+    'workModeInput',
     'quoteInput',
     'commentEditor'
   ].forEach(id => {
@@ -2370,6 +2687,15 @@ function bind(){
     renderCounts();
   };
   $('addSectionBtn').onclick = addSection;
+  if ($('applyModeTemplateBtn')) $('applyModeTemplateBtn').onclick = applyModeTemplate;
+  if ($('workModeInput')) $('workModeInput').onchange = () => {
+    if (current >= 0 && entries[current]) {
+      entries[current].workMode = validMode($('workModeInput').value);
+      addMissingModeSections(entries[current].workMode);
+      renderModeHint();
+    }
+    changed();
+  };
   $('addFootnoteBtn').onclick = () => addNote('footnotes', false);
   $('addEndnoteBtn').onclick = () => addNote('endnotes', false);
   $('insertFootnoteBtn').onclick = () => addNote('footnotes', true);
@@ -2387,6 +2713,12 @@ function bind(){
   document.querySelectorAll('.clean').forEach(b => {
     b.onclick = () => cleanup(b.dataset.clean);
   });
+  $('blockquoteBtn').onclick = () => {
+    $('commentEditor').focus();
+    document.execCommand('formatBlock', false, 'blockquote');
+    changed();
+  };
+  $('cfBtn').onclick = insertCfReference;
   $('linkBtn').onclick = () => {
     $('commentEditor').focus();
     const u = prompt('Paste website or video URL:');
@@ -2440,6 +2772,16 @@ function bind(){
     'frontIntroductionInput'
   ].forEach(id => {
     $(id).addEventListener('input', applyBetaSettings);
+  });
+
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a.cf-link[data-cf-id]');
+    if (!a) return;
+    const idx = entries.findIndex(x => x.id === a.dataset.cfId);
+    if (idx >= 0 && (!a.getAttribute('href') || a.getAttribute('href').charAt(0) === '#')) {
+      e.preventDefault();
+      openEntry(idx);
+    }
   });
 
   document.addEventListener('keydown', e => {
