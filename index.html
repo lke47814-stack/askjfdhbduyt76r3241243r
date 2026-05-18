@@ -1,0 +1,4493 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catena Studio v12 Mega Alpha</title>
+<style>
+:root{
+  --bg:#f6efe2;
+  --panel:#fffaf1;
+  --field:#fffdf8;
+  --ink:#202632;
+  --muted:#697386;
+  --line:#d7c8ad;
+  --accent:#8a6412;
+  --danger:#a61b34;
+  --good:#2e7d32;
+  --shadow:0 12px 28px rgba(73,48,12,.12);
+  --ui:Inter,"Segoe UI",Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+  --panel2:var(--field);
+  --text:var(--ink);
+  --source-quote-bg:#fffdf8;
+  --source-quote-border:#8a6412;
+  --source-quote-ink:#202632;
+  --source-quote-font-size:18px;
+  --comment-bg:#fffdf8;
+  --comment-ink:#202632;
+  --comment-font-size:16px;
+  --comment-line-height:1.68;
+  --comment-font-family:Inter,"Segoe UI",Arial,sans-serif;
+  --blockquote-bg:#fff8e8;
+  --blockquote-border:#8a6412;
+  --blockquote-ink:#202632;
+  --blockquote-font-size:16px;
+  --blockquote-line-height:1.55;
+  --blockquote-pad-y:9px;
+  --blockquote-pad-x:13px;
+  --blockquote-min-height:38px;
+  --blockquote-border-width:4px;
+  --blockquote-radius:10px;
+  --rail-width:230px;
+  --list-width:380px;
+}
+body.dark{
+  --bg:#10141f;
+  --panel:#141b29;
+  --field:#0f1726;
+  --ink:#edf2ff;
+  --muted:#a7b2c5;
+  --line:#303b52;
+  --accent:#d8b85a;
+  --shadow:0 14px 34px rgba(0,0,0,.25);
+}
+*{
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  overflow-x:hidden;
+}
+button,input,select,textarea{font:inherit}
+button{
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--panel);
+  color:var(--ink);
+  padding:8px 11px;
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:white}
+button.good{background:var(--good);border-color:var(--good);color:white}
+button.danger{background:var(--danger);border-color:var(--danger);color:white}
+button.small{padding:5px 8px;font-size:12px}
+input,select,textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--field);
+  color:var(--ink);
+  padding:9px 10px;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.header{
+  max-width:1560px;
+  margin:auto;
+  padding:13px 16px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+h1{
+  font-family:var(--serif);
+  font-size:28px;
+  margin:0;
+}
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.toolbar{
+  display:grid;
+  grid-template-columns:1fr 135px 135px auto auto auto;
+  gap:8px;
+  margin-top:11px;
+}
+.app{
+  max-width:1560px;
+  margin:16px auto;
+  padding:0 16px 42px;
+  display:grid;
+  grid-template-columns:var(--rail-width) 8px var(--list-width) 8px minmax(0,1fr);
+  grid-template-areas:"rail railResize list listResize work";
+  gap:7px;
+  align-items:start;
+}
+.rail{grid-area:rail;min-width:0}
+#railResizer{grid-area:railResize}
+.listPane{grid-area:list;min-width:0}
+#listResizer{grid-area:listResize}
+.workPane{grid-area:work;min-width:0}
+.app.libraryCollapsed{
+  --rail-width:0px;
+  grid-template-columns:minmax(280px,var(--list-width)) 8px minmax(0,1fr);
+  grid-template-areas:"list listResize work";
+}
+.app.entriesCollapsed{
+  --list-width:0px;
+  grid-template-columns:var(--rail-width) 8px minmax(0,1fr);
+  grid-template-areas:"rail railResize work";
+}
+.app.libraryCollapsed.entriesCollapsed{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"work";
+}
+.app.libraryCollapsed .rail,
+.app.libraryCollapsed #railResizer,
+.app.entriesCollapsed .listPane,
+.app.entriesCollapsed #listResizer{display:none}
+.paneResizer{
+  align-self:stretch;
+  min-height:calc(100vh - 162px);
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:linear-gradient(180deg, transparent, var(--field), transparent);
+  cursor:col-resize;
+  opacity:.78;
+}
+.paneResizer:hover{
+  background:var(--accent);
+  opacity:.95;
+}
+body.resizing,
+body.resizing *{
+  cursor:col-resize!important;
+  user-select:none!important;
+}
+.paneMiniHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.paneMiniHead strong{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.rail{padding:12px}
+.navTitle{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  font-weight:900;
+  margin:10px 0 8px;
+}
+.navBtn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  background:transparent;
+}
+.navBtn.active{
+  border-color:var(--accent);
+  background:var(--field);
+  color:var(--accent);
+}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.stack{display:grid;gap:7px}
+.listHead,.paneHead{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:12px 14px;
+  background:var(--field);
+  border-bottom:1px solid var(--line);
+}
+.entries{
+  max-height:calc(100vh - 220px);
+  overflow:auto;
+  padding:9px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.row{
+  border:1px solid transparent;
+  border-bottom:1px solid var(--line);
+  border-radius:11px;
+  padding:9px;
+  background:transparent;
+  cursor:pointer;
+}
+.row:hover,.row.active{
+  border-color:var(--line);
+  background:var(--field);
+}
+.row.dragging{opacity:.45}
+.row.dragOver{outline:2px solid var(--accent)}
+.row.dragBefore{box-shadow:0 -4px 0 var(--accent) inset}
+.row.dragAfter{box-shadow:0 4px 0 var(--accent) inset}
+.rowTop{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:7px;
+  align-items:center;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+.rowTitle{font-weight:900;margin:5px 0}
+.rowQuote{
+  font-family:var(--serif);
+  font-size:14px;
+  line-height:1.45;
+}
+.pill{
+  font-size:10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:2px 6px;
+  color:var(--muted);
+}
+.workBody{padding:16px}
+.workTitle{
+  font-family:var(--serif);
+  font-size:24px;
+  font-weight:900;
+}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--accent);
+  font-weight:900;
+  margin:14px 0 6px;
+}
+.quoteBox,.editor,.sectionContent,.noteText{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--field);
+  padding:13px;
+  line-height:1.68;
+  outline:none;
+  resize:vertical;
+  overflow:auto;
+}
+.quoteBox{
+  font-family:var(--serif);
+  font-size:var(--source-quote-font-size);
+  border-left:5px solid var(--source-quote-border);
+  background:var(--source-quote-bg);
+  color:var(--source-quote-ink);
+  min-height:92px;
+  white-space:pre-wrap;
+}
+.tools{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  background:var(--field);
+  border:1px solid var(--line);
+  border-radius:12px 12px 0 0;
+  padding:8px;
+  align-items:center;
+}
+.mainTools{
+  padding:7px;
+  gap:8px;
+}
+.toolGroup{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  padding:5px;
+  border:1px solid rgba(128,128,128,.22);
+  border-radius:10px;
+  background:rgba(255,255,255,.25);
+}
+.toolGroupLabel{
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+  padding:0 2px;
+}
+.toolColor{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--muted);
+}
+.toolColor input[type=color]{
+  width:30px;
+  height:28px;
+  padding:2px;
+  border-radius:8px;
+}
+.compactTools{
+  margin-bottom:0;
+}
+.editor{
+  border-radius:0 0 12px 12px;
+  min-height:240px;
+  white-space:pre-wrap;
+}
+#commentEditor,#readComment{
+  font-family:var(--comment-font-family);
+  font-size:var(--comment-font-size);
+  line-height:var(--comment-line-height);
+  color:var(--comment-ink);
+}
+#commentEditor{
+  background:var(--comment-bg);
+}
+.sectionCard{
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--field);
+  margin:9px 0;
+  overflow:hidden;
+}
+.sectionHead{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:7px;
+  align-items:center;
+  padding:8px;
+  border-bottom:1px solid var(--line);
+}
+.sectionBody{padding:10px}
+.sectionBody.collapsed{display:none}
+.sectionContent{
+  min-height:85px;
+  background:var(--panel);
+}
+.noteRow{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--field);
+  padding:10px;
+  margin:8px 0;
+}
+.noteHead{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:8px;
+  align-items:center;
+}
+.noteNum{
+  font-weight:900;
+  color:var(--accent);
+  font-family:var(--serif);
+  font-size:18px;
+}
+.noteText{
+  min-height:70px;
+  margin-top:8px;
+  background:var(--panel);
+}
+.readArticle{
+  font-family:var(--serif);
+  max-width:900px;
+  margin:auto;
+}
+.readArticle h2{font-size:32px;margin:0 0 8px}
+.readMeta{
+  font-family:var(--ui);
+  font-size:13px;
+  color:var(--muted);
+  border-bottom:1px solid var(--line);
+  padding-bottom:10px;
+  margin-bottom:16px;
+}
+.readQuote{
+  border-left:5px solid var(--source-quote-border);
+  background:var(--source-quote-bg);
+  color:var(--source-quote-ink);
+  padding:14px 18px;
+  font-size:var(--source-quote-font-size);
+}
+.editor blockquote,.sectionContent blockquote{
+  margin:calc(var(--blockquote-font-size) * .7) 0;
+  padding:var(--blockquote-pad-y) var(--blockquote-pad-x);
+  border-left:var(--blockquote-border-width) solid var(--blockquote-border);
+  border-radius:var(--blockquote-radius);
+  background:var(--blockquote-bg);
+  color:var(--blockquote-ink);
+  font-size:var(--blockquote-font-size);
+  line-height:var(--blockquote-line-height);
+  resize:both;
+  overflow:auto;
+  min-height:var(--blockquote-min-height);
+  max-width:100%;
+}
+.editor blockquote:hover,.sectionContent blockquote:hover{
+  outline:1px dashed var(--line);
+}
+a.internal-link{
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+.tab-space{
+  display:inline-block;
+  white-space:pre;
+  height:1em;
+  vertical-align:baseline;
+}
+a.cf-link{
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.cf-missing{
+  color:var(--danger);
+  font-weight:800;
+}
+.modeHint{
+  margin-top:7px;
+  min-height:18px;
+}
+.readSection{
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:12px;
+}
+.notesList{
+  font-family:var(--ui);
+  font-size:14px;
+}
+.notesList li{margin-bottom:7px}
+sup.note-ref{
+  font-family:var(--ui);
+  font-size:.75em;
+  color:var(--accent);
+  font-weight:900;
+  cursor:pointer;
+  padding:0 2px;
+  user-select:none;
+  white-space:nowrap;
+}
+sup.note-ref[contenteditable="false"]{
+  -webkit-user-select:none;
+  user-select:none;
+}
+.status{
+  font-size:13px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.ok{color:var(--good)}
+.bad{color:var(--danger)}
+
+.settingsPanel{
+  position:fixed;
+  inset:72px 18px 18px 18px;
+  z-index:50;
+  width:min(1040px,calc(100vw - 36px));
+  margin:0 auto;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:0;
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto;
+  overflow:hidden;
+}
+.settingsPanel h2{
+  font-family:var(--serif);
+  margin:0;
+  font-size:30px;
+}
+.settingsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 20px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(212,175,55,.13),transparent);
+}
+.settingsTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--panel2);
+}
+.settingsTabBtn{
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:9px 13px;
+}
+.settingsTabBtn.active{
+  background:var(--accent);
+  color:#111;
+  border-color:var(--accent);
+}
+.settingsContent{
+  overflow:auto;
+  padding:20px;
+}
+.settingsFooter{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:14px 20px;
+  border-top:1px solid var(--line);
+  background:var(--panel2);
+}
+.settingTabSection{display:none;max-width:880px;margin:0 auto}
+.settingTabSection.active{display:block}
+.settingTabSection h3{
+  font-family:var(--serif);
+  font-size:25px;
+  margin:0 0 6px;
+}
+.settingRow{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:center;
+  border-top:1px solid var(--line);
+  padding:14px 0;
+}
+.settingRow:first-of-type{border-top:0}
+.toggleSwitch{
+  width:auto;
+  transform:scale(1.2);
+  flex:0 0 auto;
+}
+.settingRow select{max-width:290px}
+.settingsPanel .settingRow input[type="text"],
+.settingsPanel .settingRow input:not([type]),
+.settingsPanel .settingRow select,
+.settingsPanel textarea{
+  width:min(360px,100%);
+}
+.settingsPanel textarea{min-height:110px}
+.exportHint{
+  margin:10px 0 0;
+  padding:12px 14px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
+}
+@media(max-width:760px){
+  .settingsPanel{inset:58px 8px 8px 8px;width:auto}
+  .settingRow{display:block}
+  .settingRow select,.settingsPanel .settingRow input,.settingsPanel textarea{width:100%;max-width:none;margin-top:8px}
+}
+
+.passwordScreen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#10141f,#2a1d0c);
+  padding:22px;
+}
+.loginCard{
+  width:min(420px,100%);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 22px 60px rgba(0,0,0,.35);
+  padding:28px;
+  text-align:center;
+}
+.loginCard h2{
+  font-family:var(--serif);
+  margin:0 0 8px;
+  font-size:34px;
+}
+.loginCard p{
+  color:var(--muted);
+  margin:0 0 18px;
+}
+.loginCard input{
+  text-align:center;
+  font-size:18px;
+  margin-bottom:12px;
+}
+.loginCard button{width:100%;padding:11px 14px}
+#passwordMsg{min-height:22px;margin-top:12px;font-size:13px;font-weight:800}
+body.locked header,
+body.locked main,
+body.locked .settingsPanel{
+  display:none!important;
+}
+.settingBlock{
+  border-top:1px solid var(--line);
+  padding:12px 0;
+}
+.settingBlock .sub{margin-bottom:9px}
+.settingBlock textarea{
+  min-height:82px;
+  resize:vertical;
+  margin-top:7px;
+}
+.settingBlock .frontGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:8px 0;
+}
+@media(max-width:520px){.settingBlock .frontGrid{grid-template-columns:1fr}}
+
+.sectionAnchorBadge{display:inline-flex;align-items:center;margin-left:8px;padding:3px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--soft);font-size:12px;cursor:pointer}
+.sectionCard.linkFlash,.readSection.linkFlash{outline:3px solid rgba(156,111,42,.45);outline-offset:3px}
+
+/* v12 Mega Alpha additions */
+.megaRibbon{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(120px,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.megaStat{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel),var(--field));
+  border-radius:16px;
+  padding:10px 12px;
+  box-shadow:0 6px 18px rgba(73,48,12,.06);
+}
+.megaStat strong{display:block;font-size:18px;line-height:1.1}
+.megaStat span{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.megaTools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.megaTools .pill{cursor:default}
+.projectHealth.ok{color:var(--good);border-color:rgba(46,125,50,.35);background:rgba(46,125,50,.08)}
+.projectHealth.bad{color:var(--danger);border-color:rgba(166,27,52,.35);background:rgba(166,27,52,.08)}
+.exportMiniGrid,.toolMiniGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.exportMiniGrid button,.toolMiniGrid button{min-height:34px}
+.commandOverlay{
+  position:fixed;inset:0;background:rgba(20,14,8,.42);z-index:70;
+  display:flex;align-items:flex-start;justify-content:center;padding:9vh 18px;
+}
+.commandBox{
+  width:min(720px,96vw);background:var(--panel);border:1px solid var(--line);
+  border-radius:22px;box-shadow:0 28px 70px rgba(0,0,0,.25);overflow:hidden;
+}
+.commandBox input{
+  border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--field);
+  padding:16px 18px;font-size:17px;
+}
+.commandList{max-height:55vh;overflow:auto;padding:8px}
+.commandItem{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid transparent;background:transparent;text-align:left;border-radius:14px;padding:11px 12px;cursor:pointer;
+}
+.commandItem:hover,.commandItem.active{border-color:var(--accent);background:rgba(138,100,18,.09)}
+.commandItem strong{display:block}.commandItem span{color:var(--muted);font-size:12px}
+.commandKbd{font-family:Consolas,monospace;border:1px solid var(--line);border-radius:8px;padding:2px 6px;color:var(--muted);font-size:12px}
+body.focusMode .rail,body.focusMode .listPane,body.focusMode .paneResizer{display:none!important}
+body.focusMode .app{grid-template-columns:minmax(0,1fr)!important;max-width:980px}
+body.focusMode .workPane{min-height:calc(100vh - 150px)}
+body.compactUi .tools{gap:5px}body.compactUi button{padding:7px 9px}body.compactUi .card{border-radius:14px}
+.integrityReport{
+  white-space:pre-wrap;font-family:Consolas,monospace;font-size:12px;background:var(--field);
+  border:1px solid var(--line);border-radius:12px;padding:10px;max-height:220px;overflow:auto;margin-top:8px;
+}
+@media(max-width:1040px){.megaRibbon{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){.megaRibbon{grid-template-columns:1fr 1fr}.exportMiniGrid,.toolMiniGrid{grid-template-columns:1fr}}
+
+.hidden{display:none!important}
+a{color:var(--accent)}
+@media(max-width:1240px){
+  .toolbar{grid-template-columns:1fr 1fr}
+}
+@media(max-width:850px){
+  .app{grid-template-columns:1fr}
+  .paneResizer{display:none!important}
+  .app.libraryCollapsed .rail,
+  .app.entriesCollapsed .listPane{display:none!important}
+  .grid2,.grid3,.toolbar{grid-template-columns:1fr}
+  .top{display:block}
+}
+</style>
+</head>
+<body class="locked">
+<div id="passwordScreen" class="passwordScreen">
+  <div class="loginCard">
+    <h2>Catena v12</h2>
+    <p>Enter the password to open the editor.</p>
+    <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="passwordBtn" class="primary">Unlock</button>
+    <div id="passwordMsg" class="bad"></div>
+  </div>
+</div>
+<script id="seedData" type="text/plain">W3siaWQiOiAiZW50cnktMSIsICJvcmRlciI6IDEsICJ0aXRsZSI6ICJVbnRpdGxlZCBDb21tZW50YXJ5IEVudHJ5IiwgInJlZmVyZW5jZSI6ICIiLCAiY29sbGVjdGlvbiI6ICJDb21tZW50YXJ5IiwgImZvbGRlciI6ICIiLCAic3RhdHVzIjogIkRyYWZ0IiwgInRhZ3MiOiAiIiwgInBhZ2UiOiAiTWFudWFsIiwgInF1b3RlIjogIlBhc3RlIG9yIHR5cGUgdGhlIHNvdXJjZSB0ZXh0IGhlcmUuIiwgImNvbW1lbnRIdG1sIjogIldyaXRlIHlvdXIgY29tbWVudGFyeSBoZXJlLiIsICJzZWN0aW9ucyI6IFt7InRpdGxlIjogIkxpdGVyYWwgbWVhbmluZyIsICJodG1sIjogIiIsICJjb2xsYXBzZWQiOiBmYWxzZX0sIHsidGl0bGUiOiAiSGlzdG9yaWNhbCBjb250ZXh0IiwgImh0bWwiOiAiIiwgImNvbGxhcHNlZCI6IGZhbHNlfSwgeyJ0aXRsZSI6ICJHcmVlay9IZWJyZXcgbm90ZXMiLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9LCB7InRpdGxlIjogIlRoZW9sb2dpY2FsIHNpZ25pZmljYW5jZSIsICJodG1sIjogIiIsICJjb2xsYXBzZWQiOiBmYWxzZX0sIHsidGl0bGUiOiAiQXBwbGljYXRpb24iLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9LCB7InRpdGxlIjogIkNyb3NzLXJlZmVyZW5jZXMiLCAiaHRtbCI6ICIiLCAiY29sbGFwc2VkIjogZmFsc2V9XSwgImZvb3Rub3RlcyI6IFtdLCAiZW5kbm90ZXMiOiBbXSwgImZhdm9yaXRlIjogZmFsc2UsICJkZWxldGVkIjogZmFsc2UsICJjcmVhdGVkQXQiOiAiMjAyNi0wNS0xOFQxMzo1Mzo1NiIsICJ1cGRhdGVkQXQiOiAiMjAyNi0wNS0xOFQxMzo1Mzo1NiJ9XQ==</script>
+<header>
+<div class="header">
+<div class="top">
+<div>
+<h1>Catena Studio v12 Mega Alpha</h1>
+<div class="sub">
+Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes, exports, project tools, and internal links.
+</div>
+</div>
+<div class="actions">
+<button id="toggleLibraryBtn">Hide Library</button>
+<button id="toggleEntriesBtn">Hide Entries</button>
+<button id="commandBtn">Command</button>
+<button id="focusModeBtn">Focus</button>
+<button id="settingsBtn">Settings</button>
+<button id="manualSaveTop" class="primary">Manual Save</button>
+</div>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="Search entries">
+<select id="statusFilter">
+<option value="">All status</option>
+<option>Draft</option>
+<option>Needs Review</option>
+<option>Reviewed</option>
+<option>Final</option>
+<option>Published</option>
+</select>
+<select id="sortMode">
+<option value="order">Manual order</option>
+<option value="updated">Recently edited</option>
+<option value="title">Title A-Z</option>
+<option value="reference">Reference</option>
+</select>
+<button id="newBtn">New</button>
+<button id="openBtn">Open JSON</button>
+<button id="exportJsonBtn">Export JSON</button>
+</div>
+<div class="megaRibbon" aria-label="Project dashboard">
+  <div class="megaStat"><strong id="statEntries">0</strong><span>Entries</span></div>
+  <div class="megaStat"><strong id="statWords">0</strong><span>Words</span></div>
+  <div class="megaStat"><strong id="statNotes">0</strong><span>Notes</span></div>
+  <div class="megaStat"><strong id="statLinks">0</strong><span>Links</span></div>
+  <div class="megaStat"><strong id="statFolders">0</strong><span>Folders</span></div>
+  <div class="megaStat"><strong id="statUpdated">—</strong><span>Updated</span></div>
+</div>
+<div class="megaTools">
+  <span id="projectHealth" class="pill projectHealth ok">Health: unchecked</span>
+  <button id="quickIntegrityBtn" class="small">Integrity Check</button>
+  <button id="snapshotNowBtn" class="small">Snapshot</button>
+  <button id="openCommandHintBtn" class="small">Ctrl+K Commands</button>
+</div>
+</div>
+</header>
+
+<div id="settingsPanel" class="settingsPanel hidden" role="dialog" aria-modal="true" aria-label="Catena settings">
+  <div class="settingsHead">
+    <div>
+      <h2>Settings</h2>
+      <div class="sub">Formal export, writing, front matter, and note controls.</div>
+    </div>
+    <button id="closeSettingsBtn" class="small">Close</button>
+  </div>
+
+  <div class="settingsTabs">
+    <button class="settingsTabBtn active" data-settings-tab="general">General</button>
+    <button class="settingsTabBtn" data-settings-tab="export">Export</button>
+    <button class="settingsTabBtn" data-settings-tab="front">Book Front Matter</button>
+    <button class="settingsTabBtn" data-settings-tab="notes">Footnotes / Endnotes</button>
+    <button class="settingsTabBtn" data-settings-tab="style">Style Freedom</button>
+    <button class="settingsTabBtn" data-settings-tab="project">Project Tools</button>
+  </div>
+
+  <div class="settingsContent">
+    <section class="settingTabSection active" data-settings-section="general">
+      <h3>General writing controls</h3>
+      <div class="sub">These affect how the editor organizes and displays your material.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Dark theme</strong>
+          <div class="sub">Saved automatically and remembered after reload.</div>
+        </div>
+        <input id="darkThemeToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Writing mode</strong>
+          <div class="sub">Universal is normal. Scripture and verse-by-verse modes organize by Bible references. The other modes add structured writing templates.</div>
+        </div>
+        <select id="modeSetting">
+          <option value="universal">Universal</option>
+          <option value="scripture">Scripture Mode</option>
+          <option value="verse">Verse-by-Verse Commentary</option>
+          <option value="sermon">Homily / Sermon Mode</option>
+          <option value="academic">Academic Treatise Mode</option>
+          <option value="contemplative">Contemplative Mode</option>
+          <option value="polemical">Polemical Mode</option>
+          <option value="book">Book Mode</option>
+          <option value="article">Article / Essay</option>
+          <option value="lecture">Lecture Notes</option>
+          <option value="catechism">Catechism / Q&amp;A</option>
+          <option value="prayer">Prayer / Devotional Office</option>
+          <option value="research">Research Dossier</option>
+          <option value="translation">Translation Notes</option>
+          <option value="outline">Structured Outline</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Auto-title from reference</strong>
+          <div class="sub">In Scripture Mode, blank titles become the verse reference.</div>
+        </div>
+        <input id="autoTitleToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Scripture export sorting</strong>
+          <div class="sub">Sorts export by biblical book/chapter/verse when possible.</div>
+        </div>
+        <input id="scriptureSortToggle" class="toggleSwitch" type="checkbox">
+      </div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="export">
+      <h3>Export appearance</h3>
+      <div class="sub">These options affect Book HTML, PDF Preview, Download PDF, and folder exports.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Export style</strong>
+          <div class="sub">Changes the visual style of exported books and PDFs.</div>
+        </div>
+        <select id="styleSetting">
+          <option value="church">Church Fathers / Catena</option>
+          <option value="academic">Modern Academic</option>
+          <option value="study">Study Bible</option>
+          <option value="minimal">Minimal Notes</option>
+          <option value="patristic_ornate">Patristic Ornate</option>
+          <option value="oriental_liturgical">Oriental Liturgical</option>
+          <option value="seminary">Seminary Paper</option>
+          <option value="journal">Journal Article</option>
+          <option value="devotional">Devotional Reader</option>
+          <option value="two_column">Two-Column Study</option>
+          <option value="compact">Compact Print</option>
+          <option value="manuscript">Manuscript Draft</option>
+          <option value="sermon">Homily / Sermon Notes</option>
+          <option value="codex">Codex / Manuscript Leaf</option>
+          <option value="monastery">Monastery Reader</option>
+          <option value="wide_margin">Wide-Margin Study Copy</option>
+          <option value="thesis">Formal Thesis</option>
+          <option value="plain_book">Plain Book Interior</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show entry titles in exports</strong>
+          <div class="sub">Turn this off when the title repeats the reference or passage heading.</div>
+        </div>
+        <input id="exportTitleToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show entry metadata in exports</strong>
+          <div class="sub">Controls the small reference / folder / status line under each title.</div>
+        </div>
+        <input id="exportMetaToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show Draft / Final / Published status in exports</strong>
+          <div class="sub">Turn this off to remove Draft, Final, Finished, Published, etc. from PDF output.</div>
+        </div>
+        <input id="exportStatusToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="exportHint">For a clean book/PDF: turn off entry titles if they repeat your references, and turn off status labels when you do not want Draft / Finished language in the manuscript.</div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="front">
+      <h3>Book front matter</h3>
+      <div class="sub">Used at the beginning of full-book and folder exports.</div>
+      <div class="settingBlock">
+        <input id="frontTitleInput" placeholder="Book title">
+        <input id="frontSubtitleInput" placeholder="Subtitle" style="margin-top:7px">
+        <div class="frontGrid">
+          <input id="frontAuthorInput" placeholder="Author name">
+          <input id="frontEditionInput" placeholder="Edition / volume">
+        </div>
+        <input id="frontDateInput" placeholder="Date shown on title page">
+        <textarea id="frontDedicationInput" placeholder="Dedication"></textarea>
+        <textarea id="frontPrefaceInput" placeholder="Preface"></textarea>
+        <textarea id="frontIntroductionInput" placeholder="Introduction"></textarea>
+      </div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="notes">
+      <h3>Footnotes and endnotes</h3>
+      <div class="sub">Controls how note material is placed when exported.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Footnote placement</strong>
+          <div class="sub">Footnotes remain directly beneath each entry so the linked marker stays near the note.</div>
+        </div>
+        <select id="footnotePlacementSetting">
+          <option value="entry">Footnotes at bottom of each entry</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Endnote / citation placement</strong>
+          <div class="sub">Choose where citation-style notes are collected in exported books and PDFs.</div>
+        </div>
+        <select id="endnotePlacementSetting">
+          <option value="entry">Citations at bottom of each entry</option>
+          <option value="chapter">Endnotes at end of chapter / folder</option>
+          <option value="book">Endnotes at end of whole book</option>
+        </select>
+      </div>
+      <div class="exportHint">Scripture references inside footnotes and endnotes, such as John 3:16, Psalm 51, or Ruth 1-4, are automatically linked to Bible Gateway NKJV + YLT.</div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="style">
+      <h3>Quote and blockquote styling</h3>
+      <div class="sub">These controls affect the live editor and exported PDF/Book HTML. Drag the lower-right corner of a commentary blockquote to resize it; the resized width and height save with the entry.</div>
+      <div class="settingBlock">
+        <h4>Source / passage quote box</h4>
+        <div class="styleGrid">
+          <div class="styleControl"><label for="sourceQuoteBgInput">Quote background</label><input id="sourceQuoteBgInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteBorderInput">Quote border</label><input id="sourceQuoteBorderInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteInkInput">Quote text</label><input id="sourceQuoteInkInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteFontInput">Quote font size px</label><input id="sourceQuoteFontInput" type="number" min="10" max="34" step="1"></div>
+        </div>
+        <h4>Main commentary text</h4>
+        <div class="styleGrid">
+          <div class="styleControl"><label for="commentBgInput">Commentary background</label><input id="commentBgInput" type="color"></div>
+          <div class="styleControl"><label for="commentInkInput">Commentary text</label><input id="commentInkInput" type="color"></div>
+          <div class="styleControl"><label for="commentFontInput">Commentary font size px</label><input id="commentFontInput" type="number" min="11" max="34" step="1"></div>
+          <div class="styleControl"><label for="commentLineHeightInput">Commentary line height</label><input id="commentLineHeightInput" type="number" min="1.1" max="2.4" step="0.05"></div>
+          <div class="styleControl"><label for="commentFontFamilyInput">Commentary font</label><select id="commentFontFamilyInput"><option value="system">System / clean</option><option value="serif">Serif / book</option><option value="mono">Monospace</option></select></div>
+          <div class="styleControl"><label for="commentTabSizeInput">Tab / indent size px</label><input id="commentTabSizeInput" type="number" min="12" max="96" step="2"></div>
+        </div>
+        <h4>Main commentary blockquotes</h4>
+        <div class="styleGrid">
+          <div class="styleControl"><label for="blockquoteBgInput">Blockquote background</label><input id="blockquoteBgInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteBorderInput">Blockquote border</label><input id="blockquoteBorderInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteInkInput">Blockquote text</label><input id="blockquoteInkInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteFontInput">Blockquote font size px</label><input id="blockquoteFontInput" type="number" min="10" max="34" step="1"></div>
+          <div class="styleControl"><label for="blockquoteLineHeightInput">Blockquote line height</label><input id="blockquoteLineHeightInput" type="number" min="1.1" max="2.4" step="0.05"></div>
+          <div class="styleControl"><label for="blockquotePaddingInput">Blockquote padding scale</label><input id="blockquotePaddingInput" type="number" min="0.45" max="2.2" step="0.05"></div>
+          <div class="styleControl"><label for="blockquoteBorderWidthInput">Border width px</label><input id="blockquoteBorderWidthInput" type="number" min="1" max="18" step="1"></div>
+          <div class="styleControl"><label for="blockquoteRadiusInput">Corner radius px</label><input id="blockquoteRadiusInput" type="number" min="0" max="32" step="1"></div>
+        </div>
+      </div>
+      <div class="exportHint">Use the normal Blockquote button for a resizable styled quote inside the main commentary. Blockquote padding, line height, and minimum height scale with the blockquote font size, so smaller quote text makes the box tighten proportionally. Tab indents selected text or inserts a visible tab space at the cursor.</div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="project">
+      <h3>Project tools</h3>
+      <div class="sub">Backups, diagnostics, manuscript reports, and clean export formats.</div>
+      <div class="settingBlock">
+        <h4>Diagnostics</h4>
+        <div class="toolMiniGrid">
+          <button id="settingsIntegrityBtn">Run Integrity Check</button>
+          <button id="settingsRepairBtn">Repair Safe Issues</button>
+          <button id="settingsSnapshotBtn">Create Snapshot</button>
+          <button id="settingsRestoreSnapshotBtn">Restore Snapshot</button>
+        </div>
+        <div id="integrityReport" class="integrityReport">No report yet.</div>
+      </div>
+      <div class="settingBlock">
+        <h4>Extra exports</h4>
+        <div class="exportMiniGrid">
+          <button id="exportTxtBtn">Plain Text Book</button>
+          <button id="exportCsvBtn">CSV Index</button>
+          <button id="exportLatexBtn">LaTeX Draft</button>
+          <button id="exportOutlineBtn">Outline</button>
+          <button id="exportReportBtn">Project Report</button>
+          <button id="exportBackupBtn">Full Backup JSON</button>
+        </div>
+      </div>
+      <div class="settingBlock">
+        <h4>Interface</h4>
+        <div class="settingRow">
+          <div><strong>Compact interface</strong><div class="sub">Reduces button padding and card spacing without removing features.</div></div>
+          <input id="compactUiToggle" class="toggleSwitch" type="checkbox">
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="settingsFooter">
+    <button id="settingsSaveBtn" class="primary small">Save Now</button>
+  </div>
+</div>
+
+<main id="appGrid" class="app">
+<aside class="rail card">
+<div class="paneMiniHead"><strong>Library</strong><button id="collapseLibraryBtn" class="small">Hide</button></div>
+<button class="navBtn active" data-view="active">Active <span id="nActive">0</span></button>
+<button class="navBtn" data-view="drafts">Drafts <span id="nDrafts">0</span></button>
+<button class="navBtn" data-view="final">Final <span id="nFinal">0</span></button>
+<button class="navBtn" data-view="favorites">Favorites <span id="nFav">0</span></button>
+<button class="navBtn" data-view="trash">Trash <span id="nTrash">0</span></button>
+<div class="navTitle">Folders</div>
+<div id="folderButtons"></div>
+<div class="navTitle">Selected</div>
+<div class="stack">
+<button id="selectVisibleBtn">Select Visible</button>
+<button id="clearSelectionBtn">Clear Selection</button>
+<button id="deleteSelectedBtn" class="danger">Delete Selected</button>
+<button id="emptyTrashBtn" class="danger">Empty Trash</button>
+</div>
+<div class="navTitle">Entry</div>
+<div class="stack">
+<button id="addBtn" class="good">Add</button>
+<button id="duplicateBtn">Duplicate</button>
+<button id="favoriteBtn">Favorite</button>
+<button id="deleteBtn" class="danger">Delete / Restore</button>
+</div>
+<div class="navTitle">Exports</div>
+<div class="stack">
+<button id="previewPdfBtn">PDF Preview</button>
+<button id="downloadPdfBtn" class="primary">Download PDF</button>
+<button id="folderPreviewBtn">Folder PDF Preview</button>
+<button id="folderPdfBtn">Folder PDF</button>
+<button id="folderHtmlBtn">Folder HTML</button>
+<button id="exportMdBtn">Markdown</button>
+<button id="exportTomlBtn">TOML</button>
+<button id="exportHtmlBtn">Book HTML</button>
+<button id="exportTxtRailBtn">Plain Text</button>
+<button id="exportOutlineRailBtn">Outline</button>
+<button id="exportReportRailBtn">Report</button>
+</div>
+<input id="importFile" type="file" class="hidden" accept=".json,application/json">
+</aside>
+
+<div id="railResizer" class="paneResizer" title="Drag to resize the Library pane. Double-click to reset." aria-label="Resize Library"></div>
+
+<section class="listPane card">
+<div class="listHead">
+<strong id="listTitle">Active Entries</strong>
+<div class="actions">
+<span id="selectedCount" class="pill">0 selected</span>
+<button id="collapseEntriesBtn" class="small">Hide</button>
+</div>
+</div>
+<div id="entries" class="entries"></div>
+</section>
+
+<div id="listResizer" class="paneResizer" title="Drag to resize the Entries pane. Double-click to reset." aria-label="Resize Entries"></div>
+
+<section class="card workPane">
+<div class="paneHead">
+<div id="entryTitle" class="workTitle">Select entry</div>
+<div class="actions">
+<button id="editBtn">Edit</button>
+<button id="readBtn">Read</button>
+<button id="manualSaveBtn" class="primary">Manual Save</button>
+</div>
+</div>
+
+<div id="editView" class="workBody">
+<div class="grid2">
+<div><div class="label">Entry title</div><input id="titleInput" placeholder="Leave blank in Scripture Mode to use the reference"></div>
+<div><div class="label">Reference</div><input id="referenceInput" placeholder="John 1:1"></div>
+</div>
+<div class="grid2">
+<div>
+<div class="label">Writing mode for this entry</div>
+<select id="workModeInput">
+<option value="universal">Universal Commentary</option>
+<option value="scripture">Scripture Commentary</option>
+<option value="verse">Verse-by-Verse Commentary</option>
+<option value="sermon">Homily / Sermon</option>
+<option value="academic">Academic Treatise</option>
+<option value="contemplative">Contemplative</option>
+<option value="polemical">Polemical</option>
+<option value="book">Book / Source Note</option>
+<option value="article">Article / Essay</option>
+<option value="lecture">Lecture Notes</option>
+<option value="catechism">Catechism / Q&amp;A</option>
+<option value="prayer">Prayer / Devotional Office</option>
+<option value="research">Research Dossier</option>
+<option value="translation">Translation Notes</option>
+<option value="outline">Structured Outline</option>
+</select>
+</div>
+<div>
+<div class="label">Mode template</div>
+<button id="applyModeTemplateBtn" class="small good">Add Missing Mode Sections</button>
+<div id="modeHint" class="sub modeHint"></div>
+</div>
+</div>
+<div class="grid3">
+<div><div class="label">Collection</div><input id="collectionInput" placeholder="Commentary"></div>
+<div><div class="label">Folder</div><input id="folderInput" placeholder="John / Chapter 1"></div>
+<div>
+<div class="label">Status</div>
+<select id="statusInput">
+<option>Draft</option>
+<option>Needs Review</option>
+<option>Reviewed</option>
+<option>Final</option>
+<option>Published</option>
+</select>
+</div>
+</div>
+<div class="grid2">
+<div><div class="label">Tags</div><input id="tagsInput"></div>
+<div><div class="label">Page / source label</div><input id="pageInput"></div>
+</div>
+
+<div class="label">Source / highlighted text</div>
+<div class="tools compactTools">
+<button class="small fmt" data-target="quoteInput" data-cmd="bold"><b>B</b></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="italic"><i>I</i></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="underline"><u>U</u></button>
+<button class="small fmt" data-target="quoteInput" data-cmd="removeFormat">Clear</button>
+</div>
+<div id="quoteInput" class="quoteBox" contenteditable="true" spellcheck="true"></div>
+
+<div class="label">Main commentary</div>
+<div class="tools mainTools">
+  <span class="toolGroup"><span class="toolGroupLabel">Text</span>
+    <button class="small fmt" data-target="commentEditor" data-cmd="bold"><b>B</b></button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="italic"><i>I</i></button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
+    <button id="commentTextSmallerBtn" class="small" title="Make selected commentary text smaller; with no selection, reduce the whole commentary font">A−</button>
+    <button id="commentTextLargerBtn" class="small" title="Make selected commentary text larger; with no selection, increase the whole commentary font">A+</button>
+    <label class="toolColor" title="Selected text color">Text <input id="commentTextColorInput" type="color" value="#202632"></label>
+    <label class="toolColor" title="Selected highlight color">Highlight <input id="commentHighlightColorInput" type="color" value="#fff3a3"></label>
+    <button class="small fmt" data-target="commentEditor" data-cmd="removeFormat">Clear</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Paragraph</span>
+    <button id="commentOutdentBtn" class="small" title="Outdent selected text or current paragraph">Outdent</button>
+    <button id="commentIndentBtn" class="small" title="Indent selected text or current paragraph. Tab also works.">Indent</button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Quote</span>
+    <button id="blockquoteBtn" class="small">Blockquote</button>
+    <button id="blockquoteSmallerBtn" class="small" title="Make commentary blockquotes smaller">BQ−</button>
+    <button id="blockquoteLargerBtn" class="small" title="Make commentary blockquotes larger">BQ+</button>
+    <button id="openStyleSettingsBtn" class="small" title="Open text and blockquote style settings">Style</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Links / Notes</span>
+    <button id="cfBtn" class="small">cf.</button>
+    <button id="linkBtn" class="small">Link</button>
+    <button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
+    <button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
+  </span>
+</div>
+<div id="commentEditor" class="editor" contenteditable="true" spellcheck="true"></div>
+
+<div class="label">Cleanup tools</div>
+<div class="tools">
+<button class="small clean" data-clean="spaces">Remove Double Spaces</button>
+<button class="small clean" data-clean="quotes">Fix Smart Quotes</button>
+<button class="small clean" data-clean="formatting">Clean Pasted Formatting</button>
+<button class="small clean" data-clean="headings">Normalize Headings</button>
+</div>
+
+<div class="label">Collapsible commentary sections</div>
+<div class="actions">
+<button id="addSectionBtn" class="good">Add Section</button>
+<span class="sub">Empty sections stay out of exports.</span>
+</div>
+<div id="sectionsBox"></div>
+
+<div class="grid2">
+<div>
+<div class="label">Footnotes linked to markers</div>
+<div class="actions">
+<button id="addFootnoteBtn">Add Footnote Without Marker</button>
+<button id="renumberFootnotesBtn">Renumber Footnotes</button>
+</div>
+<div id="footnotesBox"></div>
+</div>
+<div>
+<div class="label">Citations linked to markers</div>
+<div class="actions">
+<button id="addEndnoteBtn">Add Citation</button>
+<button id="renumberEndnotesBtn">Renumber Citations</button>
+</div>
+<div id="endnotesBox"></div>
+</div>
+</div>
+<div class="status">
+<span id="saveStatus">Ready.</span>
+<span id="entryInfo"></span>
+</div>
+</div>
+
+<div id="readView" class="workBody hidden">
+<article class="readArticle">
+<h2 id="readTitle"></h2>
+<div id="readMeta" class="readMeta"></div>
+<div class="label">Text</div>
+<blockquote id="readQuote" class="readQuote"></blockquote>
+<div class="label">Commentary</div>
+<section id="readComment" class="entryBody"></section>
+<div id="readSections"></div>
+<div id="readNotes"></div>
+</article>
+</div>
+</section>
+</main>
+
+
+<div id="commandOverlay" class="commandOverlay hidden" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="commandBox">
+    <input id="commandInput" placeholder="Type a command or search an entry…" autocomplete="off">
+    <div id="commandList" class="commandList"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const DB_NAME = 'CatenaStudioBetaDB';
+const STORE = 'project';
+const KEY = 'main';
+let db = null;
+let entries = [];
+let current = -1;
+let activeView = 'active';
+let activeFolder = '';
+let selected = new Set();
+let draggedId = null;
+let suppressRowClick = false;
+let saveTimer = null;
+const DEFAULT_SECTIONS = [
+  'Literal meaning',
+  'Historical context',
+  'Greek/Hebrew notes',
+  'Theological significance',
+  'Application',
+  'Cross-references'
+];
+const MODE_LABELS = {
+  universal:'Universal Commentary',
+  scripture:'Scripture Commentary',
+  verse:'Verse-by-Verse Commentary',
+  sermon:'Homily / Sermon',
+  academic:'Academic Treatise',
+  contemplative:'Contemplative',
+  polemical:'Polemical',
+  book:'Book / Source Note',
+  article:'Article / Essay',
+  lecture:'Lecture Notes',
+  catechism:'Catechism / Q&A',
+  prayer:'Prayer / Devotional Office',
+  research:'Research Dossier',
+  translation:'Translation Notes',
+  outline:'Structured Outline'
+};
+const MODE_SECTIONS = {
+  universal:DEFAULT_SECTIONS,
+  scripture:DEFAULT_SECTIONS,
+  book:['Source summary','Argument or theme','Key quotations','Critical notes','Application','Cross-references'],
+  verse:['Verse text','Immediate context','Literal sense','Verse-by-verse commentary','Cross-references','Theological meaning','Application'],
+  sermon:['Passage','Big idea','Introduction','Homiletic outline','Illustrations','Applications','Conclusion','Prayer'],
+  academic:['Abstract','Thesis','Status quaestionis','Argument','Sources and evidence','Objections and replies','Conclusion','Bibliography notes'],
+  contemplative:['Text for contemplation','Stillness and attention','Christological mystery','Interior application','Prayer','Resolution'],
+  polemical:['Opposing claim','Orthodox thesis','Terms and distinctions','Scriptural refutation','Historical or patristic witness','Logical response','Conclusion'],
+  article:['Working title','Thesis','Lead paragraph','Argument sections','Evidence','Transitions','Conclusion'],
+  lecture:['Lecture aim','Opening problem','Key terms','Main points','Illustrations','Discussion questions','Summary'],
+  catechism:['Question','Short answer','Expanded answer','Scripture witnesses','Theological notes','Practical instruction'],
+  prayer:['Invocation','Thanksgiving','Confession','Petition','Contemplation','Doxology'],
+  research:['Research question','Sources to examine','Primary evidence','Secondary evidence','Findings','Open questions','Bibliography notes'],
+  translation:['Source text','Literal rendering','Polished rendering','Vocabulary','Grammar notes','Textual questions','Commentary'],
+  outline:['Thesis','Part I','Part II','Part III','Subpoints','Unplaced material','Next revision']
+};
+function validMode(m){
+  return MODE_LABELS[m] ? m : 'universal';
+}
+function modeLabel(m){
+  return MODE_LABELS[validMode(m)];
+}
+function sectionListForMode(m){
+  return (MODE_SECTIONS[validMode(m)] || DEFAULT_SECTIONS).slice();
+}
+function modeHintText(m){
+  m = validMode(m);
+  if (m === 'verse') return 'Structured for passage-by-passage or verse-by-verse exposition with cross-references and application.';
+  if (m === 'sermon') return 'Structured for homily preparation: passage, central claim, outline, illustrations, applications, and prayer.';
+  if (m === 'academic') return 'Structured for a treatise: thesis, scholarly state of the question, argument, objections, replies, and bibliography notes.';
+  if (m === 'contemplative') return 'Structured for meditative theological writing, prayer, interior application, and contemplation.';
+  if (m === 'polemical') return 'Structured for controversy: opposing claim, orthodox thesis, distinctions, refutation, witnesses, and conclusion.';
+  if (m === 'article') return 'Structured for essays, articles, and polished arguments with thesis, evidence, transitions, and conclusion.';
+  if (m === 'lecture') return 'Structured for teaching notes: aim, key terms, main points, illustrations, discussion questions, and summary.';
+  if (m === 'catechism') return 'Structured for question-and-answer doctrinal instruction with Scripture witnesses and practical teaching.';
+  if (m === 'prayer') return 'Structured for prayer, devotional offices, invocation, confession, petition, contemplation, and doxology.';
+  if (m === 'research') return 'Structured for research dossiers, sources, evidence, findings, open questions, and bibliography notes.';
+  if (m === 'translation') return 'Structured for translation work with source text, literal and polished renderings, vocabulary, grammar, and textual notes.';
+  if (m === 'outline') return 'Structured for long-form outlines and planning where material still needs organization.';
+  if (m === 'book') return 'Structured for notes on a book, source, page, chapter, or author.';
+  if (m === 'scripture') return 'Structured for normal Scripture commentary organized by biblical reference.';
+  return 'General flexible commentary sections.';
+}
+const DEFAULT_STYLE_CONTROLS = {
+  sourceQuoteBg:'#fffdf8',
+  sourceQuoteBorder:'#8a6412',
+  sourceQuoteInk:'#202632',
+  sourceQuoteFontSize:18,
+  commentBg:'#ffffff',
+  commentInk:'#202632',
+  commentFontSize:16,
+  commentLineHeight:1.68,
+  commentFontFamily:'system',
+  commentTabSize:32,
+  blockquoteBg:'#fff8e8',
+  blockquoteBorder:'#8a6412',
+  blockquoteInk:'#202632',
+  blockquoteFontSize:16,
+  blockquoteLineHeight:1.55,
+  blockquotePaddingScale:1,
+  blockquoteBorderWidth:4,
+  blockquoteRadius:10
+};
+const BETA_SETTINGS_KEY = 'CatenaBetaSettings';
+let appSettings = {
+  mode:'universal',
+  exportStyle:'church',
+  autoTitle:true,
+  scriptureSort:true,
+  exportShowEntryTitle:true,
+  exportShowMeta:true,
+  exportShowStatus:true,
+  compactUi:false,
+  footnotePlacement:'entry',
+  endnotePlacement:'entry',
+  styleControls:Object.assign({}, DEFAULT_STYLE_CONTROLS),
+  frontMatter:{
+    title:'',
+    subtitle:'',
+    author:'',
+    edition:'',
+    date:'',
+    dedication:'',
+    preface:'',
+    introduction:''
+  }
+};
+
+function normalizeFrontMatter(fm){
+  fm = fm || {};
+  return {
+    title:fm.title || '',
+    subtitle:fm.subtitle || '',
+    author:fm.author || '',
+    edition:fm.edition || '',
+    date:fm.date || '',
+    dedication:fm.dedication || '',
+    preface:fm.preface || '',
+    introduction:fm.introduction || ''
+  };
+}
+function frontMatterFromInputs(){
+  return normalizeFrontMatter({
+    title:$('frontTitleInput') ? $('frontTitleInput').value.trim() : '',
+    subtitle:$('frontSubtitleInput') ? $('frontSubtitleInput').value.trim() : '',
+    author:$('frontAuthorInput') ? $('frontAuthorInput').value.trim() : '',
+    edition:$('frontEditionInput') ? $('frontEditionInput').value.trim() : '',
+    date:$('frontDateInput') ? $('frontDateInput').value.trim() : '',
+    dedication:$('frontDedicationInput') ? $('frontDedicationInput').value.trim() : '',
+    preface:$('frontPrefaceInput') ? $('frontPrefaceInput').value.trim() : '',
+    introduction:$('frontIntroductionInput') ? $('frontIntroductionInput').value.trim() : ''
+  });
+}
+function defaultBookTitle(){
+  const fm = normalizeFrontMatter(appSettings.frontMatter);
+  if (fm.title) return fm.title;
+  if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') return 'Scripture Commentary';
+  if (appSettings.mode === 'sermon') return 'Homilies and Sermons';
+  if (appSettings.mode === 'academic') return 'Academic Treatise';
+  if (appSettings.mode === 'contemplative') return 'Contemplative Writings';
+  if (appSettings.mode === 'polemical') return 'Polemical Writings';
+  if (appSettings.mode === 'book') return 'Book and PDF Commentary';
+  return 'My Commentary Book';
+}
+function folderExportTitle(folder){
+  const base = defaultBookTitle();
+  return base + ' — ' + (folder || 'Unfiled');
+}
+function fileSlug(s){
+  return String(s || 'catena')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'') || 'catena';
+}
+const BIBLE_ORDER = [
+  'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth',
+  '1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra',
+  'Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon',
+  'Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos',
+  'Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah',
+  'Malachi','Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians',
+  '2 Corinthians','Galatians','Ephesians','Philippians','Colossians',
+  '1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon',
+  'Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
+];
+const BOOK_ALIASES = {
+  'gen':'Genesis','exod':'Exodus','exodus':'Exodus','lev':'Leviticus','num':'Numbers',
+  'deut':'Deuteronomy','ps':'Psalms','psalm':'Psalms','rom':'Romans','matt':'Matthew',
+  'rev':'Revelation'
+};
+
+const $ = id => document.getElementById(id);
+
+function uid(){
+  return 'e-' + Date.now().toString(36) + '-' +
+    Math.random().toString(36).slice(2);
+}
+function nid(){
+  return 'n-' + Date.now().toString(36) + '-' +
+    Math.random().toString(36).slice(2);
+}
+function now(){
+  return new Date().toISOString();
+}
+function esc(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+function stripHtml(s){
+  const d = document.createElement('div');
+  d.innerHTML = s || '';
+  return d.innerText || '';
+}
+function cleanHtml(s){
+  const d = document.createElement('div');
+  d.innerHTML = s || '';
+  d.querySelectorAll('script,style,iframe,object,embed').forEach(n => n.remove());
+  d.querySelectorAll('*').forEach(el => {
+    Array.from(el.attributes).forEach(a => {
+      const n = a.name.toLowerCase();
+      const v = String(a.value || '').trim().toLowerCase();
+      if (n.startsWith('on')) el.removeAttribute(a.name);
+      if ((n === 'href' || n === 'src') && v.startsWith('javascript:')) {
+        el.removeAttribute(a.name);
+      }
+    });
+  });
+  return d.innerHTML;
+}
+function htmlToPlain(s){
+  return stripHtml(s || '').replace(/\u00a0/g,' ').trim();
+}
+function quoteHtmlOf(e){
+  return e.quoteHtml || esc(e.quote || '');
+}
+function normSections(s, mode){
+  const source = Array.isArray(s)
+    ? s
+    : sectionListForMode(mode).map(t => ({id:uid(), title:t, html:'', collapsed:false}));
+  return source.map(x => ({
+    id:x.id || uid(),
+    title:x.title || 'Section',
+    html:x.html || '',
+    collapsed:!!x.collapsed
+  }));
+}
+function normNotes(n){
+  if (Array.isArray(n)) {
+    return n.map((x,i) => ({
+      id:x.id || nid(),
+      num:x.num || i + 1,
+      text:x.text || '',
+      linked:x.linked === undefined ? false : !!x.linked
+    }));
+  }
+  if (typeof n === 'string') {
+    return n.split(/\n+/).map((t,i) => {
+      t = t.trim();
+      return t ? {id:nid(), num:i+1, text:t, linked:false} : null;
+    }).filter(Boolean);
+  }
+  return [];
+}
+function norm(e,i){
+  e = e || {};
+  const workMode = validMode(e.workMode || e.mode || appSettings.mode || 'universal');
+  const title = e.title || (workMode === 'verse' ? 'Untitled Verse Commentary' : 'Untitled Commentary Entry');
+  return {
+    id:e.id || uid(),
+    order:Number.isFinite(e.order) ? e.order : (i || 0) + 1,
+    title:title,
+    reference:e.reference || '',
+    collection:e.collection || 'Commentary',
+    folder:e.folder || '',
+    status:e.status || 'Draft',
+    tags:e.tags || '',
+    page:e.page || 'Manual',
+    workMode:workMode,
+    quote:e.quote || htmlToPlain(e.quoteHtml) || '',
+    quoteHtml:e.quoteHtml || esc(e.quote || ''),
+    commentHtml:e.commentHtml || 'Write your commentary here.',
+    sections:normSections(e.sections, workMode),
+    footnotes:normNotes(e.footnotes),
+    endnotes:normNotes(e.endnotes),
+    favorite:!!e.favorite,
+    deleted:!!e.deleted,
+    createdAt:e.createdAt || now(),
+    updatedAt:e.updatedAt || now()
+  };
+}
+function blank(){
+  const workMode = validMode(appSettings.mode || 'universal');
+  return norm({
+    id:uid(),
+    order:entries.length + 1,
+    workMode:workMode,
+    title:workMode === 'verse' ? 'Untitled Verse Commentary' : 'Untitled Commentary Entry',
+    quote:'Paste or type the source text here.',
+    quoteHtml:'Paste or type the source text here.',
+    commentHtml:'Write your ' + modeLabel(workMode).toLowerCase() + ' here.',
+    sections:sectionListForMode(workMode).map(t => ({title:t, html:'', collapsed:false}))
+  }, entries.length);
+}
+function decodeSeed(){
+  try {
+    const raw = atob($('seedData').textContent.trim());
+    return JSON.parse(decodeURIComponent(escape(raw))).map(norm);
+  } catch(e) {
+    return [blank()];
+  }
+}
+function canonicalBook(raw){
+  raw = String(raw || '').trim();
+  const key = raw.toLowerCase();
+  if (BOOK_ALIASES[key]) return BOOK_ALIASES[key];
+  const found = BIBLE_ORDER.find(b => b.toLowerCase() === key);
+  return found || raw;
+}
+function parseReference(ref){
+  const m = String(ref || '').trim().match(/^((?:[1-3]\s+)?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?(?:\s+[A-Za-z]+)?)\s+(\d{1,3})(?:(?::(\d{1,3})(?:[-–](?:(\d{1,3}):)?(\d{1,3}))?)|(?:\s*[-–]\s*(\d{1,3})))?/);
+  if (!m) return null;
+  const book = canonicalBook(m[1]);
+  const bi = BIBLE_ORDER.indexOf(book);
+  const chapter = parseInt(m[2] || '0',10);
+  const verse = parseInt(m[3] || '0',10);
+  const endChapter = parseInt(m[4] || m[6] || m[2] || '0',10);
+  const endVerse = parseInt(m[5] || m[3] || '0',10);
+  return {
+    book:book,
+    bookIndex:bi < 0 ? 999 : bi,
+    chapter:chapter,
+    verse:verse,
+    endChapter:endChapter,
+    endVerse:endVerse
+  };
+}
+function isUntitledEntryTitle(t){
+  return !t || t === 'Untitled Commentary Entry' || t === 'Untitled Verse Commentary';
+}
+function displayTitle(e){
+  const mode = validMode(e.workMode || appSettings.mode);
+  if ((mode === 'scripture' || mode === 'verse') && appSettings.autoTitle && e.reference) {
+    if (isUntitledEntryTitle(e.title)) return e.reference;
+  }
+  if (mode === 'book') {
+    if (isUntitledEntryTitle(e.title)) {
+      return [e.collection, e.folder, e.page && e.page !== 'Manual' ? e.page : '']
+        .filter(Boolean).join(' — ') || 'Untitled Book Note';
+    }
+  }
+  return e.title || e.reference || 'Untitled Commentary Entry';
+}
+function titleOf(e){
+  return displayTitle(e);
+}
+function sortByOrder(){
+  entries.sort((a,b) => (a.order || 0) - (b.order || 0));
+  entries.forEach((e,i) => e.order = i + 1);
+}
+function openDB(){
+  return new Promise((res,rej) => {
+    const r = indexedDB.open(DB_NAME,1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => {
+      db = r.result;
+      res();
+    };
+    r.onerror = () => rej(r.error);
+  });
+}
+function idbGet(k){
+  return new Promise((res,rej) => {
+    const tx = db.transaction(STORE,'readonly');
+    const r = tx.objectStore(STORE).get(k);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function idbSet(k,v){
+  return new Promise((res,rej) => {
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put(v,k);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function load(){
+  await openDB();
+  const saved = await idbGet(KEY);
+  entries = Array.isArray(saved) && saved.length ? saved.map(norm) : decodeSeed();
+  sortByOrder();
+  if (entries.length) openEntry(0);
+  renderAll();
+}
+async function manualSave(){
+  pull();
+  try {
+    await idbSet(KEY, entries);
+    makeSnapshot('auto-save', true);
+    setStatus('Manual save completed at ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setStatus('Save failed: ' + e.message, false);
+  }
+  renderAll();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => manualSave(), 900);
+}
+function setStatus(s, ok){
+  $('saveStatus').textContent = s;
+  $('saveStatus').className = ok === false ? 'bad' : 'ok';
+}
+function folders(){
+  const s = new Set();
+  entries.filter(e => !e.deleted).forEach(e => s.add(e.folder || 'Unfiled'));
+  return Array.from(s).sort((a,b) => a.localeCompare(b));
+}
+function filtered(){
+  const q = $('search').value.trim().toLowerCase();
+  const st = $('statusFilter').value;
+  const sort = $('sortMode').value;
+  let arr = entries.map((e,i) => ({e,i}));
+  if (activeView === 'active') arr = arr.filter(x => !x.e.deleted);
+  if (activeView === 'drafts') {
+    arr = arr.filter(x => !x.e.deleted && x.e.status === 'Draft');
+  }
+  if (activeView === 'final') {
+    arr = arr.filter(x => !x.e.deleted &&
+      (x.e.status === 'Final' || x.e.status === 'Published'));
+  }
+  if (activeView === 'favorites') {
+    arr = arr.filter(x => !x.e.deleted && x.e.favorite);
+  }
+  if (activeView === 'trash') arr = arr.filter(x => x.e.deleted);
+  if (activeFolder) {
+    arr = arr.filter(x => (x.e.folder || 'Unfiled') === activeFolder);
+  }
+  if (st) arr = arr.filter(x => x.e.status === st);
+  if (q) {
+    arr = arr.filter(x => [
+      x.e.title,
+      x.e.reference,
+      x.e.folder,
+      x.e.quote,
+      stripHtml(x.e.commentHtml),
+      x.e.tags,
+      modeLabel(x.e.workMode || 'universal'),
+      (x.e.sections || []).map(s => s.title + ' ' + stripHtml(s.html)).join(' '),
+      x.e.footnotes.map(n => n.text).join(' '),
+      x.e.endnotes.map(n => n.text).join(' ')
+    ].join(' ').toLowerCase().includes(q));
+  }
+  if (sort === 'updated') {
+    arr.sort((a,b) => String(b.e.updatedAt).localeCompare(String(a.e.updatedAt)));
+  }
+  if (sort === 'title') {
+    arr.sort((a,b) => titleOf(a.e).localeCompare(titleOf(b.e)));
+  }
+  if (sort === 'reference') {
+    arr.sort((a,b) => String(a.e.reference).localeCompare(String(b.e.reference)));
+  }
+  return arr;
+}
+function renderCounts(){
+  const a = entries.filter(e => !e.deleted);
+  $('nActive').textContent = a.length;
+  $('nDrafts').textContent = a.filter(e => e.status === 'Draft').length;
+  $('nFinal').textContent =
+    a.filter(e => e.status === 'Final' || e.status === 'Published').length;
+  $('nFav').textContent = a.filter(e => e.favorite).length;
+  $('nTrash').textContent = entries.filter(e => e.deleted).length;
+  $('selectedCount').textContent = selected.size + ' selected';
+}
+function renderFolders(){
+  const box = $('folderButtons');
+  box.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'navBtn' + (!activeFolder ? ' active' : '');
+  all.innerHTML = 'All Folders <span>' +
+    entries.filter(e => !e.deleted).length + '</span>';
+  all.onclick = () => {
+    activeFolder = '';
+    renderAll();
+  };
+  box.appendChild(all);
+  folders().forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'navBtn' + (activeFolder === f ? ' active' : '');
+    const count = entries.filter(e => !e.deleted &&
+      (e.folder || 'Unfiled') === f).length;
+    b.innerHTML = esc(f) + ' <span>' + count + '</span>';
+    b.onclick = () => {
+      activeFolder = f;
+      renderAll();
+    };
+    box.appendChild(b);
+  });
+}
+function renderList(){
+  const box = $('entries');
+  box.innerHTML = '';
+  document.querySelectorAll('.navBtn[data-view]').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === activeView);
+  });
+  filtered().forEach(({e,i}) => {
+    const row = document.createElement('article');
+    row.className = 'row' + (i === current ? ' active' : '');
+    row.draggable = true;
+    row.dataset.id = e.id;
+    row.innerHTML =
+      '<div class="rowTop">' +
+      '<input type="checkbox" ' + (selected.has(e.id) ? 'checked' : '') + '>' +
+      '<span>' + (e.favorite ? '★ ' : '') + esc(e.status) +
+      ' · ' + esc(e.folder || 'Unfiled') + '</span>' +
+      '<span class="pill">' + e.order + '</span>' +
+      '</div>' +
+      '<div class="rowTitle">' + esc(titleOf(e)) + '</div>' +
+      '<div class="rowQuote">' + esc((e.quote || '').slice(0,140)) + '</div>';
+    row.querySelector('input').onclick = ev => {
+      ev.stopPropagation();
+      if (ev.target.checked) selected.add(e.id);
+      else selected.delete(e.id);
+      renderCounts();
+    };
+    row.onclick = ev => {
+      if (suppressRowClick) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        return;
+      }
+      openEntry(i);
+    };
+    row.ondragstart = ev => {
+      if (current >= 0) pull();
+      draggedId = e.id;
+      suppressRowClick = true;
+      row.classList.add('dragging');
+      if (ev.dataTransfer) {
+        ev.dataTransfer.effectAllowed = 'move';
+        ev.dataTransfer.setData('text/plain', e.id);
+      }
+    };
+    row.ondragend = () => {
+      row.classList.remove('dragging','dragOver','dragBefore','dragAfter');
+      draggedId = null;
+      setTimeout(() => suppressRowClick = false, 80);
+    };
+    row.ondragover = ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const after = ev.clientY > row.getBoundingClientRect().top + row.offsetHeight / 2;
+      row.classList.add('dragOver');
+      row.classList.toggle('dragBefore', !after);
+      row.classList.toggle('dragAfter', after);
+      if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+    };
+    row.ondragleave = () => {
+      row.classList.remove('dragOver','dragBefore','dragAfter');
+    };
+    row.ondrop = ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const after = ev.clientY > row.getBoundingClientRect().top + row.offsetHeight / 2;
+      row.classList.remove('dragOver','dragBefore','dragAfter');
+      reorder(draggedId || (ev.dataTransfer && ev.dataTransfer.getData('text/plain')), e.id, after);
+      suppressRowClick = true;
+      setTimeout(() => suppressRowClick = false, 120);
+    };
+    box.appendChild(row);
+  });
+}
+function renderAll(){
+  renderCounts();
+  renderFolders();
+  renderList();
+  updateRead();
+  updateDashboard();
+}
+function pull(){
+  if (current < 0 || !entries[current]) return;
+  pullSections();
+  pullNotes();
+  const e = entries[current];
+  e.title = $('titleInput').value.trim() || 'Untitled Commentary Entry';
+  e.reference = $('referenceInput').value.trim();
+  e.collection = $('collectionInput').value.trim() || 'Commentary';
+  e.folder = $('folderInput').value.trim();
+  e.status = $('statusInput').value;
+  e.tags = $('tagsInput').value.trim();
+  e.page = $('pageInput').value.trim() || 'Manual';
+  e.workMode = validMode($('workModeInput') ? $('workModeInput').value : e.workMode);
+  e.quoteHtml = cleanHtml($('quoteInput').innerHTML);
+  e.quote = htmlToPlain(e.quoteHtml);
+  const ed = $('commentEditor');
+  makeNoteRefsSafe(ed);
+  e.commentHtml = cleanHtml(ed.innerHTML);
+  const active = document.activeElement;
+  const fromComment = active && ed.contains(active);
+  /*
+    Do not rewrite the live commentary DOM while the user is typing.
+    The previous build normalized <sup> note markers on every input event,
+    which could trap the caret around a footnote/citation marker and make it
+    feel impossible to type after it or delete it naturally.  We still scan the
+    current HTML immediately, remove notes whose markers were deleted, and save
+    normalized HTML; we only rewrite the live editor when focus is elsewhere.
+  */
+  const noteChanged = syncNotesWithComment(e, false);
+  if (noteChanged) renderNotes();
+  if (!fromComment) {
+    ed.innerHTML = e.commentHtml || '';
+    makeNoteRefsSafe(ed);
+  }
+  e.updatedAt = now();
+}
+function push(){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  $('entryTitle').textContent = titleOf(e);
+  $('titleInput').value = e.title || '';
+  $('referenceInput').value = e.reference || '';
+  $('collectionInput').value = e.collection || 'Commentary';
+  $('folderInput').value = e.folder || '';
+  $('statusInput').value = e.status || 'Draft';
+  $('tagsInput').value = e.tags || '';
+  $('pageInput').value = e.page || 'Manual';
+  if ($('workModeInput')) $('workModeInput').value = validMode(e.workMode || appSettings.mode);
+  renderModeHint();
+  $('quoteInput').innerHTML = quoteHtmlOf(e);
+  $('commentEditor').innerHTML = e.commentHtml || '';
+  makeNoteRefsSafe($('commentEditor'));
+  renderSections();
+  renderNotes();
+  $('entryInfo').textContent = 'Updated: ' +
+    new Date(e.updatedAt || now()).toLocaleString();
+}
+function openEntry(i){
+  if (current >= 0) {
+    pull();
+    scheduleSave();
+  }
+  current = i;
+  push();
+  renderList();
+  updateRead();
+}
+function changed(){
+  pull();
+  updateRead();
+  scheduleSave();
+}
+function newEntry(){
+  entries.push(blank());
+  openEntry(entries.length - 1);
+  changed();
+}
+function add(){
+  entries.push(blank());
+  sortByOrder();
+  openEntry(entries.length - 1);
+  changed();
+}
+function duplicate(){
+  if (current < 0) return;
+  pull();
+  const c = JSON.parse(JSON.stringify(entries[current]));
+  c.id = uid();
+  c.title = titleOf(c) + ' copy';
+  c.deleted = false;
+  c.createdAt = now();
+  c.updatedAt = now();
+  entries.splice(current + 1, 0, c);
+  sortByOrder();
+  openEntry(current + 1);
+  changed();
+}
+function fav(){
+  if (current < 0) return;
+  entries[current].favorite = !entries[current].favorite;
+  changed();
+}
+function del(){
+  if (current < 0) return;
+  entries[current].deleted = !entries[current].deleted;
+  changed();
+  renderAll();
+}
+function deleteSelected(){
+  if (!selected.size) return;
+  const trash = activeView === 'trash';
+  const msg = trash
+    ? 'Permanently delete selected entries?'
+    : 'Move selected entries to Trash?';
+  if (!confirm(msg)) return;
+  if (trash) {
+    entries = entries.filter(e => !selected.has(e.id));
+  } else {
+    entries.forEach(e => {
+      if (selected.has(e.id)) e.deleted = true;
+    });
+  }
+  selected.clear();
+  current = Math.min(current, entries.length - 1);
+  changed();
+  renderAll();
+  if (entries[current]) push();
+}
+function emptyTrash(){
+  const count = entries.filter(e => e.deleted).length;
+  if (!count) return;
+  if (!confirm('Permanently delete all entries in Trash?')) return;
+  entries = entries.filter(e => !e.deleted);
+  selected.clear();
+  current = Math.min(current, entries.length - 1);
+  changed();
+  renderAll();
+  if (entries[current]) push();
+}
+function reorder(fromId, toId, after){
+  if (!fromId || !toId || fromId === toId) return;
+  if (current >= 0 && entries[current]) pull();
+  const keepId = entries[current] ? entries[current].id : fromId;
+  const from = entries.findIndex(e => e.id === fromId);
+  if (from < 0) return;
+  const moved = entries.splice(from,1)[0];
+  let to = entries.findIndex(e => e.id === toId);
+  if (to < 0) {
+    entries.splice(from,0,moved);
+    return;
+  }
+  if (after) to += 1;
+  entries.splice(to,0,moved);
+  entries.forEach((e,i) => e.order = i + 1);
+  if ($('sortMode')) $('sortMode').value = 'order';
+  const keepIndex = entries.findIndex(e => e.id === keepId);
+  current = keepIndex >= 0 ? keepIndex : entries.findIndex(e => e.id === moved.id);
+  scheduleSave();
+  renderAll();
+  if (entries[current]) push();
+  updateRead();
+  setStatus('Entry moved. Manual order updated.', true);
+}
+function renderSections(){
+  if (current < 0) return;
+  const e = entries[current];
+  const box = $('sectionsBox');
+  box.innerHTML = '';
+  e.sections.forEach((s,idx) => {
+    const card = document.createElement('div');
+    card.className = 'sectionCard';
+    card.dataset.sectionId = s.id || (s.id = uid());
+    card.innerHTML =
+      '<div class="sectionHead">' +
+      '<button class="small toggle">▾</button>' +
+      '<input class="secTitle" value="' + esc(s.title) + '">' +
+      '<button class="small copySecLink" title="Copy section link text">Copy Link</button>' +
+      '<button class="small delete">Delete</button>' +
+      '<button class="small move">Move Up</button>' +
+      '</div>' +
+      '<div class="sectionBody ' + (s.collapsed ? 'collapsed' : '') + '">' +
+      '<div class="sectionContent" contenteditable="true">' +
+      (s.html || '') + '</div></div>';
+    card.querySelector('.toggle').onclick = () => {
+      e.sections[idx].collapsed = !e.sections[idx].collapsed;
+      renderSections();
+      changed();
+    };
+    card.querySelector('.copySecLink').onclick = () => {
+      const txt = 'section:' + titleOf(e) + ' > ' + (e.sections[idx].title || 'Section');
+      navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : prompt('Copy this section reference:', txt);
+      setStatus('Section link text copied.', true);
+    };
+    card.querySelector('.delete').onclick = () => {
+      e.sections.splice(idx,1);
+      renderSections();
+      changed();
+    };
+    card.querySelector('.move').onclick = () => {
+      if (idx > 0) {
+        const one = e.sections.splice(idx,1)[0];
+        e.sections.splice(idx-1,0,one);
+        renderSections();
+        changed();
+      }
+    };
+    card.querySelector('.secTitle').oninput = changed;
+    card.querySelector('.sectionContent').oninput = changed;
+    card.querySelector('.sectionContent').addEventListener('keydown', ev => handleEditableTab(ev, ev.currentTarget));
+    box.appendChild(card);
+  });
+}
+function pullSections(){
+  if (current < 0 || !entries[current]) return;
+  entries[current].sections =
+    Array.from(document.querySelectorAll('.sectionCard')).map((card,idx) => ({
+      id:card.dataset.sectionId || (entries[current].sections[idx] && entries[current].sections[idx].id) || uid(),
+      title:card.querySelector('.secTitle').value || 'Section',
+      html:cleanHtml(card.querySelector('.sectionContent').innerHTML),
+      collapsed:entries[current].sections[idx]
+        ? entries[current].sections[idx].collapsed
+        : false
+    }));
+}
+function addSection(){
+  if (current < 0) return;
+  entries[current].sections.push({
+    id:uid(),
+    title:'Custom section',
+    html:'',
+    collapsed:false
+  });
+  renderSections();
+  changed();
+}
+function renderModeHint(){
+  if (!$('modeHint')) return;
+  const mode = validMode($('workModeInput') ? $('workModeInput').value : appSettings.mode);
+  $('modeHint').textContent = modeHintText(mode);
+}
+function addMissingModeSections(mode){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  mode = validMode(mode || e.workMode || appSettings.mode);
+  const existing = new Set((e.sections || []).map(s => String(s.title || '').trim().toLowerCase()));
+  sectionListForMode(mode).forEach(title => {
+    if (!existing.has(title.toLowerCase())) {
+      e.sections.push({id:uid(), title:title, html:'', collapsed:false});
+    }
+  });
+  renderSections();
+}
+function applyModeTemplate(){
+  if (current < 0 || !entries[current]) return;
+  pull();
+  const e = entries[current];
+  e.workMode = validMode($('workModeInput').value);
+  addMissingModeSections(e.workMode);
+  renderModeHint();
+  changed();
+  setStatus(modeLabel(e.workMode) + ' template sections checked.', true);
+}
+function renderNotes(){
+  renderNoteBox('footnotesBox','footnotes');
+  renderNoteBox('endnotesBox','endnotes');
+}
+function renderNoteBox(boxId,type){
+  if (current < 0) return;
+  const e = entries[current];
+  const box = $(boxId);
+  box.innerHTML = '';
+  e[type].forEach((n,idx) => {
+    n.num = idx + 1;
+    const row = document.createElement('div');
+    row.className = 'noteRow';
+    const label = type === 'footnotes'
+      ? '[' + (idx + 1) + ']'
+      : '[C' + (idx + 1) + ']';
+    row.innerHTML =
+      '<div class="noteHead">' +
+      '<span class="noteNum">' + label + '</span>' +
+      '<span>' + (n.linked ? 'Linked ' : 'Standalone ') + (type === 'footnotes'
+        ? 'footnote'
+        : 'citation') + '</span>' +
+      '<button class="small insert">Insert Marker</button>' +
+      '<button class="small danger delete">Delete</button>' +
+      '</div>' +
+      '<div class="noteText" contenteditable="true">' + esc(n.text) + '</div>';
+    row.querySelector('.insert').onclick = () => insertExistingNoteMarker(type,idx);
+    row.querySelector('.delete').onclick = () => deleteNote(type,idx);
+    row.querySelector('.noteText').oninput = changed;
+    box.appendChild(row);
+  });
+}
+function pullNotes(){
+  if (current < 0 || !entries[current]) return;
+  ['footnotes','endnotes'].forEach(type => {
+    const box = $(type === 'footnotes' ? 'footnotesBox' : 'endnotesBox');
+    entries[current][type] =
+      Array.from(box.querySelectorAll('.noteRow')).map((row,i) => {
+        const old = entries[current][type][i] || {};
+        return {
+          id:old.id || nid(),
+          num:i + 1,
+          text:row.querySelector('.noteText').innerText.trim(),
+          linked:!!old.linked
+        };
+      });
+  });
+}
+function noteLabel(type,num){
+  return type === 'footnotes' ? '[' + num + ']' : '[C' + num + ']';
+}
+const NOTE_SPACE = '\u200B';
+function isNoteRefNode(n){
+  return !!(n && n.nodeType === 1 && n.matches && n.matches('sup.note-ref'));
+}
+function isNoteSpacerNode(n){
+  return !!(n && n.nodeType === 3 && /^\u200B*$/.test(n.nodeValue || ''));
+}
+function makeNoteRefsSafe(root){
+  if (!root) return;
+  root.querySelectorAll('sup.note-ref').forEach(s => {
+    s.setAttribute('contenteditable','false');
+    s.setAttribute('draggable','false');
+    s.title = 'Footnote/citation marker. Backspace or Delete beside it removes it.';
+    if (!s.nextSibling || !isNoteSpacerNode(s.nextSibling)) {
+      s.parentNode.insertBefore(document.createTextNode(NOTE_SPACE), s.nextSibling);
+    }
+  });
+}
+function removeNoteMarkerNode(marker){
+  if (!marker || !marker.parentNode) return false;
+  const next = marker.nextSibling;
+  const prev = marker.previousSibling;
+  if (next && isNoteSpacerNode(next)) next.remove();
+  if (prev && isNoteSpacerNode(prev)) prev.remove();
+  marker.remove();
+  return true;
+}
+function markerNextToCaret(sel, forward){
+  if (!sel || !sel.rangeCount) return null;
+  const r = sel.getRangeAt(0);
+  if (!r.collapsed) return null;
+  let node = r.startContainer;
+  let offset = r.startOffset;
+  if (node.nodeType === 3) {
+    const text = node.nodeValue || '';
+    if (!forward && offset > 0) {
+      if (text.charAt(offset - 1) === NOTE_SPACE) {
+        if (isNoteRefNode(node.previousSibling)) return node.previousSibling;
+      }
+      return null;
+    }
+    if (forward && offset < text.length) {
+      if (text.charAt(offset) === NOTE_SPACE) {
+        if (isNoteRefNode(node.previousSibling)) return node.previousSibling;
+        if (isNoteRefNode(node.nextSibling)) return node.nextSibling;
+      }
+      return null;
+    }
+    let cand = forward ? node.nextSibling : node.previousSibling;
+    if (isNoteSpacerNode(cand)) cand = forward ? cand.nextSibling : cand.previousSibling;
+    return isNoteRefNode(cand) ? cand : null;
+  }
+  let cand = forward ? node.childNodes[offset] : node.childNodes[offset - 1];
+  if (isNoteSpacerNode(cand)) cand = forward ? cand.nextSibling : cand.previousSibling;
+  return isNoteRefNode(cand) ? cand : null;
+}
+
+function selectionInside(target){
+  const sel = window.getSelection();
+  return !!(target && sel && sel.rangeCount && target.contains(sel.anchorNode));
+}
+function selectedBlockElements(target){
+  const sel = window.getSelection();
+  if (!target || !sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return [];
+  const range = sel.getRangeAt(0);
+  const blocks = [];
+  const selector = 'p,div,li,blockquote,h1,h2,h3,h4,h5,h6';
+  target.querySelectorAll(selector).forEach(el => {
+    if (el !== target && range.intersectsNode(el)) blocks.push(el);
+  });
+  if (!blocks.length) {
+    let n = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement);
+    while (n && n !== target) {
+      if (n.matches && n.matches(selector)) { blocks.push(n); break; }
+      n = n.parentElement;
+    }
+  }
+  return blocks;
+}
+function applyEditorIndent(target, outdent){
+  target = target || $('commentEditor');
+  if (!target) return;
+  runWithEditableSelection(target, () => {
+    const c = normalizeStyleControls(appSettings.styleControls);
+    const amount = c.commentTabSize || 32;
+    const sel = window.getSelection();
+    const range = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+    const blocks = selectedBlockElements(target);
+    if (!blocks.length) {
+      if (outdent) {
+        const tabs = Array.from(target.querySelectorAll('.tab-space'));
+        const beforeCaret = tabs.filter(t => {
+          if (!range) return true;
+          const r = document.createRange();
+          r.selectNode(t);
+          return range.compareBoundaryPoints(Range.START_TO_END, r) >= 0;
+        });
+        const tab = beforeCaret.pop() || tabs.pop();
+        if (tab) tab.remove();
+        return;
+      }
+      if (range && !range.collapsed) {
+        const wrap = document.createElement('div');
+        wrap.style.marginLeft = amount + 'px';
+        wrap.appendChild(range.extractContents());
+        range.insertNode(wrap);
+        setCaretAfterNode(wrap);
+        return;
+      }
+      insertHtmlAtEditable(target, '<span class="tab-space" style="display:inline-block;width:' + amount + 'px">&nbsp;</span>');
+      return;
+    }
+    blocks.forEach(el => {
+      const cur = parseInt(el.style.marginLeft || '0', 10) || 0;
+      const next = outdent ? Math.max(0, cur - amount) : Math.min(360, cur + amount);
+      if (next) el.style.marginLeft = next + 'px';
+      else el.style.removeProperty('margin-left');
+    });
+  });
+}
+function handleEditableTab(ev, target){
+  if (ev.key !== 'Tab') return false;
+  ev.preventDefault();
+  applyEditorIndent(target || ev.currentTarget, !!ev.shiftKey);
+  return true;
+}
+function setCaretAfterNode(node){
+  const sel = window.getSelection();
+  const r = document.createRange();
+  r.setStartAfter(node);
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+function setCaretInsideNode(node){
+  const sel = window.getSelection();
+  const r = document.createRange();
+  r.selectNodeContents(node);
+  r.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+function makeStyledBlockquote(){
+  const ed = $('commentEditor');
+  restoreEditableSelection(ed);
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) {
+    const r = document.createRange();
+    r.selectNodeContents(ed);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  const range = sel.getRangeAt(0);
+  const b = document.createElement('blockquote');
+  if (range.collapsed) {
+    b.innerHTML = '<br>';
+    const after = document.createElement('p');
+    after.innerHTML = '<br>';
+    range.insertNode(after);
+    range.insertNode(b);
+    setCaretInsideNode(b);
+  } else {
+    b.appendChild(range.extractContents());
+    range.insertNode(b);
+    setCaretAfterNode(b);
+  }
+  changed();
+}
+function applyInlineFontSize(target, delta){
+  target = target || $('commentEditor');
+  restoreEditableSelection(target);
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return false;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return false;
+  let baseNode = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+  if (!target.contains(baseNode)) baseNode = target;
+  const base = parseInt(window.getComputedStyle(baseNode).fontSize,10) || normalizeStyleControls(appSettings.styleControls).commentFontSize;
+  const next = clamp(base + delta, 8, 48);
+  const span = document.createElement('span');
+  span.style.fontSize = next + 'px';
+  span.appendChild(range.extractContents());
+  range.insertNode(span);
+  setCaretAfterNode(span);
+  changed();
+  return true;
+}
+function adjustCommentaryTextSize(delta){
+  const ed = $('commentEditor');
+  if (applyInlineFontSize(ed, delta)) return;
+  const c = normalizeStyleControls(appSettings.styleControls);
+  c.commentFontSize = clamp((parseInt(c.commentFontSize,10) || 16) + delta, 11, 34);
+  appSettings.styleControls = c;
+  applyVisualSettings();
+  pushStyleControls();
+  saveBetaSettings();
+  changed();
+  setTimeout(() => restoreEditableSelection(ed), 0);
+}
+function scaleInlineBlockquoteBoxes(ratio){
+  document.querySelectorAll('#commentEditor blockquote,.sectionContent blockquote').forEach(b => {
+    if (b.style.minHeight) {
+      const oldH = parseFloat(b.style.minHeight) || b.getBoundingClientRect().height;
+      const nextH = clamp(Math.round(oldH * ratio), 32, 900);
+      b.style.minHeight = nextH + 'px';
+    }
+  });
+}
+function adjustBlockquoteTextSize(delta){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  const old = parseInt(c.blockquoteFontSize,10) || 16;
+  const next = clamp(old + delta, 10, 34);
+  c.blockquoteFontSize = next;
+  appSettings.styleControls = c;
+  applyVisualSettings();
+  pushStyleControls();
+  scaleInlineBlockquoteBoxes(next / old);
+  saveBetaSettings();
+  changed();
+}
+function openStyleSettings(){
+  if ($('settingsPanel')) $('settingsPanel').classList.remove('hidden');
+  activateSettingsTab('style');
+}
+
+function handleCommentKeydown(ev){
+  if (handleEditableTab(ev, $('commentEditor'))) return;
+  if (ev.key !== 'Backspace' && ev.key !== 'Delete') return;
+  const ed = $('commentEditor');
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) return;
+  const marker = markerNextToCaret(sel, ev.key === 'Delete');
+  if (!marker) return;
+  ev.preventDefault();
+  const r = document.createRange();
+  const parent = marker.parentNode;
+  const offset = Array.prototype.indexOf.call(parent.childNodes, marker);
+  removeNoteMarkerNode(marker);
+  r.setStart(parent, Math.max(0, Math.min(offset, parent.childNodes.length)));
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+  changed();
+}
+function deleteNote(type,idx){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  const note = e[type][idx];
+  if (!note) return;
+  const ed = $('commentEditor');
+  ed.querySelectorAll('sup.note-ref[data-type="' + type + '"]').forEach(s => {
+    if ((note.id && s.dataset.noteId === note.id) || parseInt(s.dataset.index || '0',10) === idx + 1) {
+      removeNoteMarkerNode(s);
+    }
+  });
+  e[type].splice(idx,1);
+  e.commentHtml = cleanHtml(ed.innerHTML);
+  syncNotesWithComment(e,true);
+  renderNotes();
+  changed();
+}
+function addNote(type,insert){
+  if (current < 0) return;
+  const e = entries[current];
+  const note = {
+    id:nid(),
+    num:e[type].length + 1,
+    text:'',
+    linked:!!insert
+  };
+  e[type].push(note);
+  renderNotes();
+  if (insert) insertExistingNoteMarker(type, e[type].length - 1);
+  changed();
+}
+function insertExistingNoteMarker(type,idx){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  const note = e[type][idx];
+  if (!note) return;
+  note.linked = true;
+  const label = noteLabel(type, idx + 1);
+  const html =
+    '<sup class="note-ref" contenteditable="false" draggable="false" data-type="' + type +
+    '" data-index="' + (idx + 1) + '" data-note-id="' +
+    esc(note.id) + '">' + label + '</sup>' + NOTE_SPACE;
+  insertHtmlAtCursor(html);
+  makeNoteRefsSafe($('commentEditor'));
+  syncNotesWithComment(e,true);
+  renderNotes();
+  changed();
+}
+function insertHtmlAtEditable(target, html){
+  target = target || $('commentEditor');
+  restoreEditableSelection(target);
+  let sel = window.getSelection();
+  if (!sel.rangeCount || !target.contains(sel.anchorNode)) {
+    const r = document.createRange();
+    r.selectNodeContents(target);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const frag = tpl.content;
+  const last = frag.lastChild;
+  range.insertNode(frag);
+  if (last) {
+    const after = document.createRange();
+    after.setStartAfter(last);
+    after.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(after);
+  }
+}
+function insertHtmlAtCursor(html){
+  insertHtmlAtEditable($('commentEditor'), html);
+}
+function noteArraysEqual(a,b){
+  if (a.length !== b.length) return false;
+  for (let i=0;i<a.length;i++) {
+    if (a[i].id !== b[i].id || a[i].num !== b[i].num || a[i].text !== b[i].text || !!a[i].linked !== !!b[i].linked) return false;
+  }
+  return true;
+}
+function syncNotesWithComment(e, mutateEditor){
+  if (!e) return false;
+  const root = mutateEditor ? $('commentEditor') : document.createElement('div');
+  if (!mutateEditor) root.innerHTML = cleanHtml(e.commentHtml || '');
+  let changed = false;
+  ['footnotes','endnotes'].forEach(type => {
+    const old = Array.isArray(e[type]) ? e[type] : [];
+    const oldById = new Map(old.map(n => [n.id,n]));
+    const usedIds = new Set();
+    const next = [];
+    const refs = Array.from(root.querySelectorAll('sup.note-ref[data-type="' + type + '"]'));
+    refs.forEach((sup) => {
+      let note = null;
+      const noteId = sup.dataset.noteId;
+      if (noteId && oldById.has(noteId) && !usedIds.has(noteId)) {
+        note = oldById.get(noteId);
+      } else {
+        const index = parseInt(sup.dataset.index || '0',10) - 1;
+        if (old[index] && !usedIds.has(old[index].id)) note = old[index];
+      }
+      if (!note) note = {id:nid(), num:next.length + 1, text:'', linked:true};
+      if (usedIds.has(note.id)) {
+        note = {id:nid(), num:next.length + 1, text:note.text || '', linked:true};
+      }
+      usedIds.add(note.id);
+      note.linked = true;
+      note.num = next.length + 1;
+      sup.dataset.type = type;
+      sup.dataset.noteId = note.id;
+      sup.dataset.index = String(note.num);
+      sup.setAttribute('contenteditable','false');
+      sup.setAttribute('draggable','false');
+      sup.textContent = noteLabel(type,note.num);
+      if (mutateEditor && (!sup.nextSibling || !isNoteSpacerNode(sup.nextSibling))) {
+        sup.parentNode.insertBefore(document.createTextNode(NOTE_SPACE), sup.nextSibling);
+      }
+      next.push(note);
+    });
+    old.forEach(n => {
+      if (!n.linked && !usedIds.has(n.id)) {
+        n.num = next.length + 1;
+        next.push(n);
+      }
+    });
+    if (!noteArraysEqual(old,next)) changed = true;
+    e[type] = next;
+  });
+  e.commentHtml = cleanHtml(root.innerHTML);
+  return changed;
+}
+function renumberNotes(type){
+  if (current < 0) return;
+  pullNotes();
+  syncNotesWithComment(entries[current], true);
+  renderNotes();
+  updateRead();
+  scheduleSave();
+}
+function normalizeMarkers(html,e,withLinks){
+  const root = document.createElement('div');
+  root.innerHTML = cleanHtml(html || '');
+  root.querySelectorAll('sup.note-ref').forEach(s => {
+    const type = s.dataset.type || 'footnotes';
+    const list = Array.isArray(e[type]) ? e[type] : [];
+    let idx = 0;
+    const noteId = s.dataset.noteId;
+    if (noteId) idx = list.findIndex(n => n.id === noteId) + 1;
+    if (!idx) idx = parseInt(s.dataset.index || '1', 10);
+    if (!idx || idx < 1) idx = 1;
+    const label = noteLabel(type,idx);
+    if (withLinks) {
+      const base = (type === 'endnotes' ? 'en' : 'fn') + '-' + e.id + '-' + idx;
+      const ref = (type === 'endnotes' ? 'enref' : 'fnref') + '-' + e.id + '-' + idx;
+      s.innerHTML = '<a id="' + ref + '" href="#' + base + '">' + label + '</a>';
+    } else {
+      s.textContent = label;
+    }
+  });
+  return root.innerHTML;
+}
+function notesHtml(e, includeEndnotes){
+  if (includeEndnotes === undefined) includeEndnotes = true;
+  let out = '';
+  if (e.footnotes.some(n => n.text)) {
+    out += '<section class="readSection"><h3>Footnotes</h3><ol class="notesList">';
+    e.footnotes.forEach((n,i) => {
+      if (n.text) {
+        out += '<li id="fn-' + e.id + '-' + (i + 1) + '">' +
+          linkifyPlain(n.text) + ' <a href="#fnref-' + e.id + '-' +
+          (i + 1) + '">↩</a></li>';
+      }
+    });
+    out += '</ol></section>';
+  }
+  if (includeEndnotes && e.endnotes.some(n => n.text)) {
+    out += '<section class="readSection"><h3>Citations</h3>';
+    out += '<ol class="notesList">';
+    e.endnotes.forEach((n,i) => {
+      if (n.text) {
+        out += '<li id="en-' + e.id + '-' + (i + 1) + '">' +
+          linkifyPlain(n.text) + ' <a href="#enref-' + e.id + '-' +
+          (i + 1) + '">↩</a></li>';
+      }
+    });
+    out += '</ol></section>';
+  }
+  return out;
+}
+function safeDomId(s){
+  return String(s || '')
+    .replace(/[^A-Za-z0-9_-]+/g,'-')
+    .replace(/^-+|-+$/g,'') || 'item';
+}
+function slugify(s){
+  return String(s || 'Unfiled')
+    .toLowerCase()
+    .replace(/&/g,'and')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'') || 'unfiled';
+}
+function entryAnchorId(eOrId){
+  const id = typeof eOrId === 'string' ? eOrId : eOrId.id;
+  return 'entry-' + safeDomId(id);
+}
+function folderAnchorId(folder){
+  return 'folder-' + slugify(folder || 'Unfiled');
+}
+function sectionAnchorId(entry, section){
+  const eid = typeof entry === 'string' ? entry : (entry && entry.id);
+  const sid = typeof section === 'string' ? section : (section && section.id);
+  return 'section-' + safeDomId(eid || 'entry') + '-' + safeDomId(sid || 'section');
+}
+function sectionTextOf(e,s){
+  return [e.id,titleOf(e),e.title,e.reference,e.folder,e.collection,s.id,s.title,htmlToPlain(s.html)].filter(Boolean).join(' ').toLowerCase();
+}
+function findSectionTarget(raw, allowPrompt){
+  if (allowPrompt === undefined) allowPrompt = true;
+  let q0 = String(raw || '').trim();
+  if (!q0) return null;
+  q0 = q0.replace(/^section\s*:\s*/i,'').trim();
+  let entryPart = '';
+  let sectionPart = q0;
+  if (q0.includes('>')) {
+    const parts = q0.split('>'); entryPart = parts.shift().trim(); sectionPart = parts.join('>').trim();
+  } else if (q0.includes('#')) {
+    const parts = q0.split('#'); entryPart = parts.shift().trim(); sectionPart = parts.join('#').trim();
+  }
+  const candidates = [];
+  const entryQ = entryPart.toLowerCase();
+  const sectionQ = sectionPart.toLowerCase();
+  entries.filter(e => !e.deleted).forEach(e => {
+    if (entryQ && !cfTextOf(e).includes(entryQ)) return;
+    (e.sections || []).forEach(sec => {
+      const title = String(sec.title || '').toLowerCase();
+      const whole = sectionTextOf(e,sec);
+      if (!sectionQ || title === sectionQ || title.includes(sectionQ) || whole.includes(sectionQ)) candidates.push({kind:'section', entry:e, section:sec});
+    });
+  });
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length > 1 && allowPrompt) {
+    const lines = candidates.slice(0,12).map((x,i) => (i + 1) + '. ' + titleOf(x.entry) + ' > ' + (x.section.title || 'Section')).join('\n');
+    const chosen = prompt('Choose section target by number:\n\n' + lines);
+    const n = parseInt(chosen || '',10);
+    if (n >= 1 && n <= Math.min(candidates.length,12)) return candidates[n - 1];
+  }
+  return null;
+}
+function cfTextOf(e){
+  return [e.id,titleOf(e),e.title,e.reference,e.folder,e.collection,e.page].filter(Boolean).join(' ').toLowerCase();
+}
+function findCfTarget(raw, allowPrompt){
+  if (allowPrompt === undefined) allowPrompt = true;
+  const q0 = String(raw || '').trim();
+  if (!q0) return null;
+  const sectionMatch = q0.match(/^section\s*:\s*(.+)$/i);
+  if (sectionMatch) return findSectionTarget(sectionMatch[1], allowPrompt);
+  if (q0.includes('>') || q0.includes('#')) {
+    const secTarget = findSectionTarget(q0, false);
+    if (secTarget) return secTarget;
+  }
+  const folderMatch = q0.match(/^folder\s*:\s*(.+)$/i);
+  if (folderMatch) return {kind:'folder', folder:folderMatch[1].trim() || 'Unfiled'};
+  const q = q0.toLowerCase();
+  const exact = entries.find(e => [e.id,titleOf(e),e.title,e.reference].filter(Boolean).some(v => String(v).toLowerCase() === q));
+  if (exact) return {kind:'entry', entry:exact};
+  const matches = entries.filter(e => !e.deleted && cfTextOf(e).includes(q)).slice(0,9);
+  if (matches.length === 1) return {kind:'entry', entry:matches[0]};
+  if (matches.length > 1) {
+    if (!allowPrompt) return null;
+    const lines = matches.map((e,i) => (i + 1) + '. ' + titleOf(e) + (e.reference ? ' — ' + e.reference : '') + (e.folder ? ' [' + e.folder + ']' : '')).join('\n');
+    const chosen = prompt('Choose cf. target by number:\n\n' + lines);
+    const n = parseInt(chosen || '',10);
+    if (n >= 1 && n <= matches.length) return {kind:'entry', entry:matches[n - 1]};
+  }
+  const folder = folders().find(f => f.toLowerCase() === q || f.toLowerCase().includes(q));
+  if (folder) return {kind:'folder', folder:folder};
+  return null;
+}
+function cfAnchorFromTarget(target,label){
+  if (!target) return '';
+  if (target.kind === 'entry') {
+    const text = label || ('cf. ' + titleOf(target.entry));
+    return '<a class="cf-link" data-cf-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'section') {
+    const text = label || ('cf. ' + titleOf(target.entry) + ' > ' + (target.section.title || 'Section'));
+    return '<a class="cf-link" data-cf-id="' + esc(target.entry.id) + '" data-cf-section-id="' + esc(target.section.id) + '" href="#' + sectionAnchorId(target.entry,target.section) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'folder') {
+    const text = label || ('cf. ' + target.folder);
+    return '<a class="cf-link" data-cf-folder="' + esc(target.folder) + '" href="#' + folderAnchorId(target.folder) + '">' + esc(text) + '</a>';
+  }
+  return '';
+}
+function cfAnchorFromLabel(label){
+  const target = findCfTarget(label, false);
+  if (!target) return '<span class="cf-missing">[[' + esc(label) + ']]</span>';
+  return cfAnchorFromTarget(target,'cf. ' + label);
+}
+function updateExistingCfLinks(root){
+  root.querySelectorAll('a.cf-link').forEach(a => {
+    const id = a.dataset.cfId;
+    const sectionId = a.dataset.cfSectionId;
+    const folder = a.dataset.cfFolder;
+    if (id) {
+      const e = entries.find(x => x.id === id);
+      if (e && sectionId) {
+        const sec = (e.sections || []).find(s => s.id === sectionId);
+        if (sec) {
+          a.setAttribute('href','#' + sectionAnchorId(e,sec));
+          if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + titleOf(e) + ' > ' + (sec.title || 'Section');
+        }
+      } else if (e) {
+        a.setAttribute('href','#' + entryAnchorId(e));
+        if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + titleOf(e);
+      }
+    } else if (folder) {
+      a.setAttribute('href','#' + folderAnchorId(folder));
+      if (!a.dataset.cfCustomLabel) a.textContent = 'cf. ' + folder;
+    }
+  });
+}
+
+function updateExistingInternalLinks(root){
+  root.querySelectorAll('a.internal-link').forEach(a => {
+    const id = a.dataset.linkEntryId;
+    const sectionId = a.dataset.linkSectionId;
+    const folder = a.dataset.linkFolder;
+    if (id) {
+      const e = entries.find(x => x.id === id);
+      if (e && sectionId) {
+        const sec = (e.sections || []).find(s => s.id === sectionId);
+        if (sec) a.setAttribute('href','#' + sectionAnchorId(e,sec));
+      } else if (e) a.setAttribute('href','#' + entryAnchorId(e));
+    } else if (folder) {
+      a.setAttribute('href','#' + folderAnchorId(folder));
+    }
+  });
+}
+function internalAnchorFromTarget(target,label){
+  if (!target) return '';
+  if (target.kind === 'entry') {
+    const text = label || titleOf(target.entry);
+    return '<a class="internal-link" data-link-entry-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'section') {
+    const text = label || (titleOf(target.entry) + ' > ' + (target.section.title || 'Section'));
+    return '<a class="internal-link" data-link-entry-id="' + esc(target.entry.id) + '" data-link-section-id="' + esc(target.section.id) + '" href="#' + sectionAnchorId(target.entry,target.section) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'folder') {
+    const text = label || target.folder;
+    return '<a class="internal-link" data-link-folder="' + esc(target.folder) + '" href="#' + folderAnchorId(target.folder) + '">' + esc(text) + '</a>';
+  }
+  return '';
+}
+function saveEditorSelection(){
+  return saveEditableSelection($('commentEditor'));
+}
+function restoreEditorSelection(range){
+  return restoreEditableSelection($('commentEditor'), range);
+}
+function selectedEditorText(range){
+  if (!range || range.collapsed) return '';
+  return String(range.toString() || '').trim();
+}
+
+const savedEditableRanges = Object.create(null);
+function editableIdOf(target){
+  return target && target.id ? target.id : 'commentEditor';
+}
+function editableFromNode(node){
+  let el = node && (node.nodeType === 1 ? node : node.parentElement);
+  while (el) {
+    if (el.isContentEditable) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+function saveEditableSelection(target){
+  const sel = window.getSelection();
+  target = target || (sel && sel.rangeCount ? editableFromNode(sel.anchorNode) : null) || $('commentEditor');
+  if (!target || !sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return null;
+  const r = sel.getRangeAt(0).cloneRange();
+  savedEditableRanges[editableIdOf(target)] = r;
+  return r;
+}
+function restoreEditableSelection(target, range){
+  target = target || $('commentEditor');
+  if (!target) return null;
+  const id = editableIdOf(target);
+  range = range || savedEditableRanges[id] || null;
+  target.focus({preventScroll:true});
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  if (range && target.contains(range.commonAncestorContainer)) {
+    sel.addRange(range);
+    return range;
+  }
+  const r = document.createRange();
+  r.selectNodeContents(target);
+  r.collapse(false);
+  sel.addRange(r);
+  savedEditableRanges[id] = r.cloneRange();
+  return r;
+}
+function runWithEditableSelection(target, fn){
+  target = target || $('commentEditor');
+  const range = restoreEditableSelection(target);
+  const result = fn(range);
+  saveEditableSelection(target);
+  changed();
+  setTimeout(() => restoreEditableSelection(target), 0);
+  return result;
+}
+function rememberEditableSelectionFromEvent(ev){
+  const target = ev && ev.currentTarget;
+  if (target && target.isContentEditable) saveEditableSelection(target);
+}
+function bindSelectionMemory(){
+  ['commentEditor','quoteInput'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    ['keyup','mouseup','input','focus','blur'].forEach(type => el.addEventListener(type, rememberEditableSelectionFromEvent));
+  });
+  document.querySelectorAll('.sectionContent,.noteText').forEach(el => {
+    ['keyup','mouseup','input','focus','blur'].forEach(type => el.addEventListener(type, rememberEditableSelectionFromEvent));
+  });
+  document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const ed = editableFromNode(sel.anchorNode);
+    if (ed) saveEditableSelection(ed);
+  });
+}
+function unwrapElement(el){
+  const frag = document.createDocumentFragment();
+  while (el.firstChild) frag.appendChild(el.firstChild);
+  el.replaceWith(frag);
+}
+function stripInlineFormattingInTarget(target){
+  if (!target) return;
+  target.querySelectorAll('[style]').forEach(el => {
+    if (el.classList && (el.classList.contains('tab-space') || el.classList.contains('note-ref'))) return;
+    if (el.matches && el.matches('blockquote')) return;
+    el.removeAttribute('style');
+  });
+  target.querySelectorAll('b,strong,i,em,u,s,strike,font,span').forEach(el => {
+    if (el.classList && (el.classList.contains('tab-space') || el.classList.contains('note-ref'))) return;
+    unwrapElement(el);
+  });
+}
+function applyRichCommand(target, cmd, value){
+  target = target || $('commentEditor');
+  runWithEditableSelection(target, () => {
+    if (cmd === 'removeFormat') {
+      const sel = window.getSelection();
+      const hasSelection = sel && sel.rangeCount && target.contains(sel.anchorNode) && !sel.getRangeAt(0).collapsed;
+      if (hasSelection) {
+        document.execCommand('removeFormat', false, null);
+      } else {
+        stripInlineFormattingInTarget(target);
+      }
+      return;
+    }
+    document.execCommand(cmd, false, value || null);
+  });
+}
+function applyCommentaryColor(kind, color){
+  if (!color) return;
+  const ed = $('commentEditor');
+  runWithEditableSelection(ed, () => {
+    if (kind === 'highlight') {
+      if (!document.execCommand('hiliteColor', false, color)) document.execCommand('backColor', false, color);
+    } else {
+      document.execCommand('foreColor', false, color);
+    }
+  });
+}
+function normalizeExternalUrl(raw){
+  let u = String(raw || '').trim();
+  if (!u) return '';
+  if (/^(javascript|data|vbscript):/i.test(u)) return '';
+  if (/^[\w.-]+\.[A-Za-z]{2,}(?:[/:?#].*)?$/i.test(u) && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+  return u;
+}
+function isExternalUrl(raw){
+  const u = normalizeExternalUrl(raw);
+  return /^https?:\/\//i.test(u) || /^mailto:/i.test(u);
+}
+function decorateAnchorsByHref(href, decorate){
+  const ed = $('commentEditor');
+  Array.from(ed.querySelectorAll('a')).forEach(a => {
+    if (a.getAttribute('href') === href) decorate(a);
+  });
+}
+function insertSmartLink(){
+  if (current < 0) return;
+  const savedRange = saveEditorSelection();
+  const selectedText = selectedEditorText(savedRange);
+  const raw = prompt('Link target:\n\nPaste a website URL, type an entry title/reference, type folder:Folder Name, or type section:Entry Title > Section Title for an internal hyperlink.\n\nSelected text becomes the hyperlink.');
+  if (!raw) return;
+  restoreEditorSelection(savedRange);
+  const trimmed = raw.trim().replace(/^\[\[|\]\]$/g,'');
+  if (isExternalUrl(trimmed)) {
+    const href = normalizeExternalUrl(trimmed);
+    if (selectedText) {
+      document.execCommand('createLink', false, href);
+      decorateAnchorsByHref(href, a => {
+        a.setAttribute('target','_blank');
+        a.setAttribute('rel','noopener noreferrer');
+      });
+    } else {
+      insertHtmlAtCursor('<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + esc(href) + '</a>');
+    }
+    changed();
+    return;
+  }
+  const target = findCfTarget(trimmed, true);
+  if (!target) {
+    alert('No internal entry or folder matched that text. Use cf. for an unresolved reference, or paste a website URL.');
+    return;
+  }
+  const href = target.kind === 'entry'
+    ? '#' + entryAnchorId(target.entry)
+    : target.kind === 'section'
+      ? '#' + sectionAnchorId(target.entry,target.section)
+      : '#' + folderAnchorId(target.folder);
+  const label = selectedText || (target.kind === 'entry'
+    ? titleOf(target.entry)
+    : target.kind === 'section'
+      ? titleOf(target.entry) + ' > ' + (target.section.title || 'Section')
+      : target.folder);
+  if (selectedText) {
+    document.execCommand('createLink', false, href);
+    decorateAnchorsByHref(href, a => {
+      a.classList.add('internal-link');
+      if (target.kind === 'entry') a.dataset.linkEntryId = target.entry.id;
+      if (target.kind === 'section') {
+        a.dataset.linkEntryId = target.entry.id;
+        a.dataset.linkSectionId = target.section.id;
+      }
+      if (target.kind === 'folder') a.dataset.linkFolder = target.folder;
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+    });
+  } else {
+    insertHtmlAtCursor(internalAnchorFromTarget(target, label));
+  }
+  changed();
+}
+
+function insertCfReference(){
+  if (current < 0) return;
+  pull();
+  const q = prompt('Type an entry title/reference, folder:Folder Name, or section:Entry Title > Section Title. You can also type [[Title]], [[John 1:1]], [[folder:Chapter 1]], or [[section:Entry > Section]] directly in the editor later.');
+  if (!q) return;
+  const target = findCfTarget(q.replace(/^\[\[|\]\]$/g,''), true);
+  if (!target) {
+    insertHtmlAtCursor('cf. [[' + esc(q) + ']]');
+  } else {
+    insertHtmlAtCursor(cfAnchorFromTarget(target));
+  }
+  changed();
+}
+const books =
+  'Genesis|Gen|Exodus|Exod|Leviticus|Lev|Numbers|Num|Deuteronomy|Deut|' +
+  'Joshua|Judges|Ruth|1 Samuel|2 Samuel|1 Kings|2 Kings|' +
+  '1 Chronicles|2 Chronicles|Ezra|Nehemiah|Esther|Job|Psalms|Psalm|Ps|' +
+  'Proverbs|Ecclesiastes|Song of Solomon|Isaiah|Jeremiah|Lamentations|' +
+  'Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|' +
+  'Zephaniah|Haggai|Zechariah|Malachi|Matthew|Matt|Mark|Luke|John|' +
+  'Acts|Romans|Rom|1 Corinthians|2 Corinthians|Galatians|Ephesians|' +
+  'Philippians|Colossians|1 Thessalonians|2 Thessalonians|1 Timothy|' +
+  '2 Timothy|Titus|Philemon|Hebrews|James|1 Peter|2 Peter|1 John|' +
+  '2 John|3 John|Jude|Revelation|Rev';
+const refRegex = new RegExp(
+  '\\b(?:' + books + ')\\s+' +
+  '\\d{1,3}' +
+  '(?:' +
+    ':\\d{1,3}(?:\\s*[-–]\\s*(?:\\d{1,3}:)?\\d{1,3})?' +
+    '|\\s*[-–]\\s*\\d{1,3}' +
+  ')?' +
+  '\\b',
+  'gi'
+);
+const urlRegex = /(https?:\/\/[^\s<>"']+)/gi;
+function normalizeBibleReference(r){
+  return String(r || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*[-–]\s*/g, '-')
+    .trim();
+}
+function bibleUrl(r){
+  return 'https://www.biblegateway.com/passage/?search=' +
+    encodeURIComponent(normalizeBibleReference(r)) +
+    '&version=NKJV,YLT';
+}
+function linkifyPlain(s){
+  let out = esc(s || '');
+  const cfParts = [];
+  out = out.replace(/\[\[([^\]\n]{1,160})\]\]/g, (m,label) => {
+    const token = '%%CATENA_CF_' + cfParts.length + '%%';
+    cfParts.push(cfAnchorFromLabel(label));
+    return token;
+  });
+  out = out.replace(urlRegex, m =>
+    '<a href="' + m + '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
+  );
+  out = out.replace(refRegex, m =>
+    '<a href="' + bibleUrl(m) +
+    '" target="_blank" rel="noopener noreferrer">' + m + '</a>'
+  );
+  cfParts.forEach((html,i) => {
+    out = out.replace('%%CATENA_CF_' + i + '%%', html);
+  });
+  return out;
+}
+function linkifyHtml(html){
+  const root = document.createElement('div');
+  root.innerHTML = cleanHtml(html || '');
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(n){
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (n.parentElement && n.parentElement.closest('a,sup')) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  updateExistingCfLinks(root);
+  updateExistingInternalLinks(root);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => {
+    const span = document.createElement('span');
+    span.innerHTML = linkifyPlain(n.nodeValue);
+    n.parentNode.replaceChild(span, n);
+  });
+  return root.innerHTML;
+}
+function scrollToSection(sectionId){
+  if (!sectionId) return;
+  const node = document.querySelector('[data-section-id="' + CSS.escape(sectionId) + '"]');
+  if (!node) return;
+  node.scrollIntoView({behavior:'smooth', block:'center'});
+  node.classList.add('linkFlash');
+  setTimeout(() => node.classList.remove('linkFlash'), 1400);
+}
+function openEntryById(entryId, sectionId){
+  const idx = entries.findIndex(e => e.id === entryId);
+  if (idx < 0) return;
+  openEntry(idx);
+  if (sectionId) { setMode(true); setTimeout(() => scrollToSection(sectionId), 90); }
+}
+function updateRead(){
+  if (current < 0 || !entries[current]) return;
+  const e = entries[current];
+  $('readTitle').textContent = titleOf(e);
+  $('readMeta').textContent = [
+    e.reference,
+    modeLabel(e.workMode || 'universal'),
+    e.collection,
+    e.folder,
+    e.status,
+    e.tags ? 'Tags: ' + e.tags : ''
+  ].filter(Boolean).join(' | ');
+  $('readQuote').innerHTML = linkifyHtml(quoteHtmlOf(e));
+  $('readComment').innerHTML =
+    linkifyHtml(normalizeMarkers(e.commentHtml, e, true));
+  $('readSections').innerHTML = e.sections
+    .filter(s => stripHtml(s.html).trim())
+    .map(s =>
+      '<section class="readSection" id="' + sectionAnchorId(e,s) + '" data-section-id="' + esc(s.id) + '"><h3>' + esc(s.title) + '<span class="sectionAnchorBadge"># section</span></h3>' +
+      linkifyHtml(s.html) + '</section>'
+    ).join('');
+  $('readNotes').innerHTML = notesHtml(e);
+}
+function setMode(read){
+  $('editView').classList.toggle('hidden', read);
+  $('readView').classList.toggle('hidden', !read);
+  updateRead();
+}
+function applyToTextNodes(root,fn){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(x => x.nodeValue = fn(x.nodeValue));
+}
+function cleanup(kind){
+  const ed = $('commentEditor');
+  if (kind === 'formatting') {
+    ed.innerHTML = esc(stripHtml(ed.innerHTML)).replace(/\n/g,'<br>');
+  }
+  if (kind === 'spaces') {
+    applyToTextNodes(ed, s => s.replace(/[ \t]{2,}/g,' '));
+    applyToTextNodes($('quoteInput'), s => s.replace(/[ \t]{2,}/g,' '));
+  }
+  if (kind === 'quotes') {
+    applyToTextNodes(ed, s => s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'"));
+    applyToTextNodes($('quoteInput'), s => s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'"));
+  }
+  if (kind === 'headings') {
+    ed.querySelectorAll('div').forEach(d => {
+      if (/^#{1,6}\s+/.test(d.innerText.trim())) {
+        d.innerHTML = '<b>' + esc(d.innerText.replace(/^#{1,6}\s+/,'')) + '</b>';
+      }
+    });
+  }
+  changed();
+}
+function exportMetaForEntry(e){
+  const parts = [];
+  if (e.reference) parts.push(e.reference);
+  if (e.folder) parts.push(e.folder);
+  if (appSettings.exportShowStatus !== false && e.status) parts.push(e.status);
+  return parts;
+}
+function endnoteGroupKey(e){
+  if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') {
+    const p = parseReference(e.reference);
+    if (p) return p.book + ' ' + p.chapter;
+  }
+  return e.folder || 'Unfiled';
+}
+function endnotesAggregateHtml(list,label){
+  let items = '';
+  (list || []).forEach(e => {
+    (e.endnotes || []).forEach((n,i) => {
+      if (!n.text) return;
+      const context = [titleOf(e), e.reference].filter(Boolean).join(' — ');
+      items += '<li id="en-' + e.id + '-' + (i + 1) + '">' +
+        (context ? '<span class="noteContext">' + esc(context) + ':</span> ' : '') +
+        linkifyPlain(n.text) + ' <a href="#enref-' + e.id + '-' +
+        (i + 1) + '">↩</a></li>';
+    });
+  });
+  if (!items) return '';
+  return '<section class="endnotesBlock"><h2>' + esc(label || 'Endnotes') +
+    '</h2><ol class="notesList">' + items + '</ol></section>';
+}
+function entryHtml(e){
+  const sections = e.sections
+    .filter(s => stripHtml(s.html).trim())
+    .map(s => '<section class="entrySection" id="' + sectionAnchorId(e,s) + '" data-section-id="' + esc(s.id) + '"><h3>' + esc(s.title) + '</h3>' + linkifyHtml(s.html) + '</section>')
+    .join('');
+  let head = '';
+  if (appSettings.exportShowEntryTitle !== false) {
+    head += '<h2>' + esc(titleOf(e)) + '</h2>';
+  }
+  if (appSettings.exportShowMeta !== false) {
+    const meta = exportMetaForEntry(e).filter(Boolean).join(' | ');
+    if (meta) head += '<div class="meta">' + esc(meta) + '</div>';
+  }
+  const includeEntryEndnotes = (appSettings.endnotePlacement || 'entry') === 'entry';
+  return '<article class="entry" id="' + entryAnchorId(e) + '" data-entry-id="' + esc(e.id) + '">' +
+    head +
+    '<blockquote class="sourceQuote">' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
+    '<div class="entryBody">' + linkifyHtml(normalizeMarkers(e.commentHtml, e, true)) + '</div>' +
+    sections +
+    notesHtml(e, includeEntryEndnotes) +
+    '</article>';
+}
+function exportCss(style){
+  const base =
+    '@page{margin:.75in}' +
+    '*{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word}' +
+    'a{text-decoration:none}sup{font-size:.75em}.notesList{font-family:Arial,sans-serif;font-size:13px}' +
+    '.entry{break-inside:avoid;page-break-inside:avoid}' +
+    '.titlePage{text-align:center;min-height:72vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always;border-bottom:0}' +
+    '.titlePage .bookTitle{font-size:40px;margin:0 0 12px}' +
+    '.titlePage .subtitle{font-size:21px;margin:0 0 28px;color:#555}' +
+    '.titlePage .byline,.titlePage .edition{font-family:Arial,sans-serif;color:#555;font-size:14px;margin:6px 0}' +
+    '.frontMatter{page-break-after:always;margin-bottom:34px}' +
+    '.frontMatter h2{margin-top:32px}' +
+    '.frontMatter .dedication{font-style:italic;text-align:center;margin:42px auto;max-width:620px}' +
+    '.endnotesBlock{page-break-before:always;margin-top:36px}.endnotesBlock h2{text-align:left}.noteContext{font-weight:bold}' +
+    '.folderHeading{page-break-before:always;margin-top:42px}.cf-link{text-decoration:underline;font-weight:bold}.cf-missing{color:#900;font-weight:bold}';
+  if (style === 'church') {
+    return base +
+      'body{font-family:Georgia,serif;max-width:850px;margin:50px auto;padding:0 24px;color:#181818;line-height:1.72;background:#fffdf8}' +
+      'h1{text-align:center;font-size:38px;letter-spacing:.03em}' +
+      'h2{font-variant:small-caps;border-bottom:1px solid #d8c7a2;padding-bottom:6px}' +
+      '.entry{margin-bottom:38px;padding-bottom:24px;border-bottom:1px solid #ddd}' +
+      '.meta{font-family:Arial,sans-serif;color:#666;font-size:13px}' +
+      'blockquote{border-left:4px solid #8a6412;padding:10px 0 10px 14px;color:#333;background:#fff8e8}' +
+      'a{color:#6a4a0b}';
+  }
+  if (style === 'academic') {
+    return base +
+      'body{font-family:"Times New Roman",serif;max-width:820px;margin:45px auto;padding:0 24px;color:#111;line-height:1.65}' +
+      'h1{text-align:center;font-size:30px}h2{font-size:22px;margin-top:34px}h3{font-size:17px}' +
+      '.entry{margin-bottom:30px}.meta{font-family:Arial,sans-serif;color:#555;font-size:12px}' +
+      'blockquote{margin:14px 28px;color:#333}.notesList{font-size:13px}a{color:#111}';
+  }
+  if (style === 'study') {
+    return base +
+      'body{font-family:Georgia,serif;max-width:900px;margin:35px auto;padding:0 22px;color:#182033;line-height:1.62}' +
+      'h1{text-align:center;font-size:34px}h2{background:#f0e4ca;padding:10px;border-radius:8px}' +
+      'h3{border-left:4px solid #8a6412;padding-left:8px}.entry{margin-bottom:28px}' +
+      '.meta{font-family:Arial,sans-serif;color:#58606f;font-size:13px}' +
+      'blockquote{background:#fbf5e9;border-left:5px solid #8a6412;padding:12px 15px}.notesList{font-family:Arial,sans-serif;font-size:13px}';
+  }
+  if (style === 'patristic_ornate') {
+    return base +
+      '@page{margin:.85in}' +
+      'body{font-family:Georgia,serif;max-width:880px;margin:52px auto;padding:0 30px;background:#fffaf0;color:#20160b;line-height:1.78}' +
+      'h1{text-align:center;font-size:40px;letter-spacing:.06em;text-transform:uppercase;border-bottom:3px double #9b6f16;padding-bottom:16px}' +
+      'h2{font-variant:small-caps;color:#5d3f09;border-bottom:1px solid #d7bd7b;padding-bottom:7px}' +
+      'h3{color:#6b4a12}.entry{margin-bottom:42px;padding:22px;border:1px solid #ead9ad;background:#fffdf7}' +
+      '.meta{font-family:Arial,sans-serif;color:#7b6b4d;font-size:12px;letter-spacing:.04em;text-transform:uppercase}' +
+      'blockquote{font-size:1.06em;background:#fff3d4;border-left:7px solid #9b6f16;margin:18px 0;padding:15px 18px}a{color:#68470c}';
+  }
+  if (style === 'oriental_liturgical') {
+    return base +
+      '@page{margin:.82in}' +
+      'body{font-family:Georgia,serif;max-width:860px;margin:48px auto;padding:0 26px;background:#fffdf9;color:#17110c;line-height:1.74}' +
+      'h1{text-align:center;font-size:36px;color:#5b1d1d;border-top:4px double #8a6412;border-bottom:4px double #8a6412;padding:14px 0}' +
+      'h2{color:#5b1d1d;font-variant:small-caps;margin-top:34px}h3{color:#7a4c12}' +
+      '.entry{margin-bottom:36px;padding-bottom:26px;border-bottom:1px solid #e2cfaa}' +
+      '.meta{font-family:Arial,sans-serif;color:#6b6258;font-size:12px}' +
+      'blockquote{background:#fff6e2;border-left:6px solid #7f1d1d;padding:13px 16px;color:#2b2016}a{color:#7f1d1d}';
+  }
+  if (style === 'seminary') {
+    return base +
+      '@page{margin:1in}' +
+      'body{font-family:"Times New Roman",serif;max-width:760px;margin:50px auto;color:#111;line-height:2;font-size:12pt}' +
+      'h1{text-align:center;font-size:24pt;margin-bottom:36px}h2{font-size:16pt;margin-top:28px}h3{font-size:13pt}' +
+      '.entry{margin-bottom:32px}.meta{font-family:Arial,sans-serif;font-size:10pt;color:#555}' +
+      'blockquote{margin:18px 36px;font-size:11pt}.notesList{font-size:10pt}a{color:#111}';
+  }
+  if (style === 'journal') {
+    return base +
+      '@page{margin:.9in}' +
+      'body{font-family:"Times New Roman",serif;max-width:780px;margin:45px auto;color:#111;line-height:1.58}' +
+      'h1{text-align:left;font-size:32px;border-bottom:2px solid #111;padding-bottom:10px}h2{font-size:21px;margin-top:30px}' +
+      'h3{font-size:16px;font-style:italic}.entry{margin-bottom:28px}' +
+      '.meta{font-family:Arial,sans-serif;font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.05em}' +
+      'blockquote{border-left:3px solid #333;padding-left:14px;margin:16px 0;color:#222}a{color:#111;text-decoration:underline}';
+  }
+  if (style === 'devotional') {
+    return base +
+      '@page{margin:.75in}' +
+      'body{font-family:Georgia,serif;max-width:760px;margin:42px auto;padding:0 24px;background:#fffefb;color:#202020;line-height:1.82;font-size:18px}' +
+      'h1{text-align:center;font-size:34px}h2{font-size:25px;color:#574017;margin-top:32px}' +
+      'h3{font-size:19px;color:#6b5120}.entry{margin-bottom:38px}' +
+      '.meta{font-family:Arial,sans-serif;color:#777;font-size:13px}' +
+      'blockquote{background:#f7f0e3;border-left:5px solid #b2842a;padding:16px 18px;font-size:1.05em}a{color:#6b5120}';
+  }
+  if (style === 'two_column') {
+    return base +
+      '@page{margin:.55in}' +
+      'body{font-family:Georgia,serif;margin:32px auto;padding:0 18px;color:#151515;line-height:1.48}' +
+      'h1{text-align:center;font-size:30px;column-span:all}.entry{columns:2 290px;column-gap:32px;margin-bottom:26px;border-bottom:1px solid #ddd;padding-bottom:20px}' +
+      'h2,.meta,blockquote{break-inside:avoid;column-span:all}h2{font-size:21px}.meta{font-family:Arial,sans-serif;color:#666;font-size:12px}' +
+      'blockquote{border-left:4px solid #777;padding-left:12px;background:#f7f7f7}h3{break-after:avoid;font-size:16px}a{color:#333}';
+  }
+  if (style === 'compact') {
+    return base +
+      '@page{margin:.45in}' +
+      'body{font-family:Arial,sans-serif;margin:25px auto;padding:0 18px;max-width:900px;color:#111;line-height:1.38;font-size:13px}' +
+      'h1{text-align:center;font-size:24px}h2{font-size:17px;margin:18px 0 6px}h3{font-size:14px;margin:12px 0 5px}' +
+      '.entry{margin-bottom:16px;border-bottom:1px solid #ddd;padding-bottom:10px}.meta{color:#666;font-size:11px}' +
+      'blockquote{border-left:3px solid #aaa;margin:8px 0;padding-left:9px;color:#333}.notesList{font-size:11px}';
+  }
+  if (style === 'manuscript') {
+    return base +
+      '@page{margin:1in}' +
+      'body{font-family:"Courier New",monospace;max-width:780px;margin:50px auto;color:#111;line-height:1.7;background:#fff;font-size:12pt}' +
+      'h1{text-align:center;font-size:22pt}h2{font-size:15pt;text-transform:uppercase;border-bottom:1px dashed #777;padding-bottom:5px}' +
+      'h3{font-size:12pt;text-decoration:underline}.entry{margin-bottom:34px}.meta{font-size:10pt;color:#555}' +
+      'blockquote{margin:16px 0 16px 24px;border-left:2px solid #777;padding-left:12px}.notesList{font-size:10pt}a{color:#111}';
+  }
+  if (style === 'sermon') {
+    return base +
+      '@page{margin:.7in}' +
+      'body{font-family:Georgia,serif;max-width:820px;margin:38px auto;padding:0 24px;color:#151515;line-height:1.7;font-size:17px}' +
+      'h1{text-align:center;font-size:34px}h2{font-size:27px;border-bottom:2px solid #222;padding-bottom:8px}' +
+      'h3{font-size:20px;margin-top:24px}.entry{margin-bottom:36px}.meta{font-family:Arial,sans-serif;color:#555;font-size:13px}' +
+      'blockquote{font-size:1.12em;background:#f3f3f3;border-left:6px solid #222;padding:14px 16px}a{color:#111;text-decoration:underline}';
+  }
+
+  if (style === 'codex') {
+    return base +
+      '@page{margin:.82in}' +
+      'body{font-family:Georgia,serif;max-width:820px;margin:48px auto;padding:0 28px;background:#fff7e6;color:#24180c;line-height:1.76}' +
+      'h1{text-align:center;font-size:38px;letter-spacing:.08em;text-transform:uppercase;border:5px double #9b6f16;padding:18px;margin-bottom:34px}' +
+      'h2{font-variant:small-caps;color:#593b09;border-bottom:2px solid #d6b365;padding-bottom:7px}' +
+      '.entry{margin-bottom:38px;padding:22px;background:#fffaf0;border:1px solid #e7c98f}' +
+      '.meta{font-family:Arial,sans-serif;color:#826b46;font-size:12px;letter-spacing:.04em}' +
+      'blockquote{background:#fff1c9;border-left:8px solid #9b6f16;padding:14px 18px}a{color:#61400a}';
+  }
+  if (style === 'monastery') {
+    return base +
+      '@page{margin:.9in}' +
+      'body{font-family:Georgia,serif;max-width:760px;margin:54px auto;padding:0 24px;background:#fffdf6;color:#17130e;line-height:1.9;font-size:17px}' +
+      'h1{text-align:center;font-size:35px;font-variant:small-caps}h2{text-align:center;font-size:25px;margin-top:44px;color:#4c3210}' +
+      'h3{font-size:18px;color:#67451a}.entry{margin-bottom:46px}' +
+      '.meta{text-align:center;font-family:Arial,sans-serif;color:#756a5a;font-size:12px}' +
+      'blockquote{background:#f9f0dd;border-left:0;border-top:1px solid #cfa85e;border-bottom:1px solid #cfa85e;margin:20px 0;padding:16px;text-align:center}a{color:#6b4511}';
+  }
+  if (style === 'wide_margin') {
+    return base +
+      '@page{margin:1.15in 1.35in}' +
+      'body{font-family:Georgia,serif;max-width:720px;margin:48px auto;color:#111;line-height:1.7;font-size:16px}' +
+      'h1{text-align:left;font-size:32px}h2{font-size:23px;border-bottom:1px solid #bbb;padding-bottom:8px}' +
+      'h3{font-size:17px}.entry{margin-bottom:34px}.meta{font-family:Arial,sans-serif;color:#666;font-size:12px}' +
+      'blockquote{margin:16px 42px;border-left:3px solid #777;padding-left:14px;color:#333}.notesList{font-size:12px}a{color:#111;text-decoration:underline}';
+  }
+  if (style === 'thesis') {
+    return base +
+      '@page{margin:1in}' +
+      'body{font-family:"Times New Roman",serif;max-width:760px;margin:50px auto;color:#000;line-height:2;font-size:12pt}' +
+      'h1{text-align:center;font-size:24pt;text-transform:uppercase}h2{font-size:16pt;margin-top:36px}h3{font-size:13pt;font-style:italic}' +
+      '.entry{margin-bottom:34px}.meta{font-family:Arial,sans-serif;color:#444;font-size:10pt}' +
+      'blockquote{margin:18px 48px;font-size:11pt}.notesList{font-size:10pt}a{color:#000}';
+  }
+  if (style === 'plain_book') {
+    return base +
+      '@page{margin:.8in}' +
+      'body{font-family:Georgia,serif;max-width:760px;margin:44px auto;padding:0 22px;color:#171717;line-height:1.72;font-size:16px}' +
+      'h1{text-align:center;font-size:32px}h2{font-size:24px;margin-top:34px}h3{font-size:18px}' +
+      '.entry{margin-bottom:32px}.meta{font-family:Arial,sans-serif;color:#666;font-size:12px}' +
+      'blockquote{border-left:3px solid #999;padding-left:14px;margin:16px 0;color:#333;background:#fafafa}a{color:#111;text-decoration:underline}';
+  }
+  return base +
+    'body{font-family:Arial,sans-serif;max-width:820px;margin:35px auto;padding:0 22px;color:#111;line-height:1.55}' +
+    'h1{text-align:center}h2{font-size:22px}.entry{margin-bottom:24px;border-bottom:1px solid #ddd}' +
+    'blockquote{border-left:3px solid #999;padding-left:12px;color:#333}.meta{color:#666;font-size:12px}';
+}
+
+function paragraphHtml(text){
+  return String(text || '')
+    .split(/\n{2,}/)
+    .map(p => p.trim())
+    .filter(Boolean)
+    .map(p => '<p>' + linkifyPlain(p).replace(/\n/g,'<br>') + '</p>')
+    .join('');
+}
+function frontMatterHtml(title){
+  const fm = normalizeFrontMatter(appSettings.frontMatter);
+  const shownTitle = title || defaultBookTitle();
+  let html = '<section class="titlePage">' +
+    '<h1 class="bookTitle">' + esc(shownTitle) + '</h1>';
+  if (fm.subtitle) html += '<div class="subtitle">' + esc(fm.subtitle) + '</div>';
+  if (fm.author) html += '<div class="byline">by ' + esc(fm.author) + '</div>';
+  if (fm.edition) html += '<div class="edition">' + esc(fm.edition) + '</div>';
+  if (fm.date) html += '<div class="edition">' + esc(fm.date) + '</div>';
+  html += '</section>';
+  if (fm.dedication || fm.preface || fm.introduction) {
+    html += '<section class="frontMatter">';
+    if (fm.dedication) html += '<div class="dedication">' + paragraphHtml(fm.dedication) + '</div>';
+    if (fm.preface) html += '<h2>Preface</h2>' + paragraphHtml(fm.preface);
+    if (fm.introduction) html += '<h2>Introduction</h2>' + paragraphHtml(fm.introduction);
+    html += '</section>';
+  }
+  return html;
+}
+function bookHtml(list,title){
+  list = list || exportList();
+  title = title || defaultBookTitle();
+
+  const style = appSettings.exportStyle || 'church';
+  const css = exportCss(style) + exportQuoteCssOverrides();
+  const endnotePlacement = appSettings.endnotePlacement || 'entry';
+
+  let body = '';
+  let lastBook = '';
+  let lastFolder = null;
+  let currentEndnoteGroup = null;
+  let endnoteGroupEntries = [];
+  function flushEndnoteGroup(){
+    if (endnotePlacement !== 'chapter' || !endnoteGroupEntries.length) return;
+    body += endnotesAggregateHtml(endnoteGroupEntries, 'Endnotes — ' + (currentEndnoteGroup || 'Unfiled'));
+    endnoteGroupEntries = [];
+  }
+
+  list.forEach(e => {
+    const groupKey = endnoteGroupKey(e);
+    if (endnotePlacement === 'chapter') {
+      if (currentEndnoteGroup !== null && groupKey !== currentEndnoteGroup) {
+        flushEndnoteGroup();
+      }
+      currentEndnoteGroup = groupKey;
+    }
+    if (appSettings.mode === 'scripture' || appSettings.mode === 'verse') {
+      const p = parseReference(e.reference);
+      if (p && p.book !== lastBook) {
+        lastBook = p.book;
+        body += '<h1 style="font-size:28px;margin-top:42px" id="book-' + slugify(p.book) + '">' + esc(p.book) + '</h1>';
+      }
+    }
+    const folderKey = e.folder || 'Unfiled';
+    if (folderKey !== lastFolder) {
+      lastFolder = folderKey;
+      body += '<h1 class="folderHeading" id="' + folderAnchorId(folderKey) + '">' + esc(folderKey) + '</h1>';
+    }
+    body += entryHtml(e);
+    if (endnotePlacement === 'chapter') endnoteGroupEntries.push(e);
+  });
+
+  flushEndnoteGroup();
+  if (endnotePlacement === 'book') {
+    body += endnotesAggregateHtml(list, 'Endnotes');
+  }
+
+  return '<!doctype html><html><head><meta charset="utf-8"><title>' +
+    esc(title) + '</title><style>' + css + '</style></head><body>' +
+    frontMatterHtml(title) + body + '</body></html>';
+}
+function previewPdf(){
+  pull();
+  updateRead();
+  manualSave();
+  const w = window.open('','_blank');
+  w.document.write(bookHtml());
+  w.document.close();
+  setStatus('PDF preview opened. It will not force the print prompt.', true);
+}
+function downloadPdf(){
+  pull();
+  updateRead();
+  manualSave();
+  const old = $('printFrame');
+  if (old) old.remove();
+  const f = document.createElement('iframe');
+  f.id = 'printFrame';
+  f.style.position = 'fixed';
+  f.style.width = '0';
+  f.style.height = '0';
+  f.style.opacity = '0';
+  f.style.border = '0';
+  f.onload = () => setTimeout(() => {
+    f.contentWindow.focus();
+    f.contentWindow.print();
+    setStatus('Print dialog opened. Choose Save as PDF.', true);
+  }, 300);
+  f.srcdoc = bookHtml();
+  document.body.appendChild(f);
+}
+
+function pickFolderForExport(){
+  pull();
+  const available = folders();
+  if (!available.length) {
+    alert('No folders found. Add a folder name to at least one active entry first.');
+    return null;
+  }
+  const suggested = activeFolder ||
+    (entries[current] ? (entries[current].folder || 'Unfiled') : available[0]);
+  const choice = prompt(
+    'Export which folder?\n\nAvailable folders:\n- ' + available.join('\n- '),
+    suggested
+  );
+  if (!choice) return null;
+  const wanted = choice.trim().toLowerCase();
+  const list = exportList().filter(e =>
+    String(e.folder || 'Unfiled').toLowerCase() === wanted
+  );
+  if (!list.length) {
+    alert('No active entries found in that folder. Check spelling and try again.');
+    return null;
+  }
+  return {
+    folder:list[0].folder || 'Unfiled',
+    list:list
+  };
+}
+function previewFolderPdf(){
+  const pack = pickFolderForExport();
+  if (!pack) return;
+  updateRead();
+  manualSave();
+  const w = window.open('','_blank');
+  w.document.write(bookHtml(pack.list, folderExportTitle(pack.folder)));
+  w.document.close();
+  setStatus('Folder PDF preview opened for ' + pack.folder + '.', true);
+}
+function downloadFolderPdf(){
+  const pack = pickFolderForExport();
+  if (!pack) return;
+  updateRead();
+  manualSave();
+  const old = $('printFrame');
+  if (old) old.remove();
+  const f = document.createElement('iframe');
+  f.id = 'printFrame';
+  f.style.position = 'fixed';
+  f.style.width = '0';
+  f.style.height = '0';
+  f.style.opacity = '0';
+  f.style.border = '0';
+  f.onload = () => setTimeout(() => {
+    f.contentWindow.focus();
+    f.contentWindow.print();
+    setStatus('Print dialog opened for folder: ' + pack.folder + '.', true);
+  }, 300);
+  f.srcdoc = bookHtml(pack.list, folderExportTitle(pack.folder));
+  document.body.appendChild(f);
+}
+function exportFolderHtml(){
+  const pack = pickFolderForExport();
+  if (!pack) return;
+  download(
+    'catena_folder_' + fileSlug(pack.folder) + '.html',
+    bookHtml(pack.list, folderExportTitle(pack.folder)),
+    'text/html'
+  );
+}
+function download(name,content,type){
+  const b = new Blob([content], {type:type || 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exportJson(){
+  pull();
+  download('catena_project_beta.json',
+    JSON.stringify(entries,null,2),
+    'application/json');
+}
+function importJson(file){
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const raw = JSON.parse(r.result);
+      const importedEntries = Array.isArray(raw) ? raw : Array.isArray(raw.entries) ? raw.entries : null;
+      if (!importedEntries) throw new Error('Expected a Catena entry array or v12 backup object.');
+      entries = importedEntries.map(norm);
+      if (raw && raw.settings) {
+        appSettings = Object.assign(appSettings, raw.settings);
+        pushBetaSettings();
+        applyVisualSettings();
+      }
+      selected.clear();
+      current = -1;
+      if (entries.length) openEntry(0);
+      manualSave();
+    } catch(e) {
+      alert('Import failed: ' + e.message);
+    }
+  };
+  r.readAsText(file);
+}
+function exportMd(){
+  pull();
+  const md = exportList().map(e => {
+    const secs = e.sections.filter(s => stripHtml(s.html).trim())
+      .map(s => '### ' + s.title + '\n\n' + stripHtml(s.html)).join('\n\n');
+    const fn = e.footnotes.length
+      ? '### Footnotes\n' +
+        e.footnotes.map((n,i) => (i+1) + '. ' + n.text).join('\n')
+      : '';
+    const en = e.endnotes.length
+      ? '### Citations\n' +
+        e.endnotes.map((n,i) => (i+1) + '. ' + n.text).join('\n')
+      : '';
+    return '## ' + titleOf(e) + '\n\n' +
+      (e.reference ? '**Reference:** ' + e.reference + '\n\n' : '') +
+      '> ' + (e.quote || '').replace(/\n/g,'\n> ') + '\n\n' +
+      stripHtml(e.commentHtml) + '\n\n' + secs + '\n\n' + fn + '\n\n' + en;
+  }).join('\n\n---\n\n');
+  download('catena_commentary_beta.md', md, 'text/markdown');
+}
+function exportToml(){
+  pull();
+  const q = String.fromCharCode(39,39,39);
+  const safe = s => String(s || '').split(q).join('[TRIPLE_QUOTE]');
+  const toml = exportList().map(e => {
+    return '[[commentary]]\n' +
+      'title=' + q + safe(titleOf(e)) + q + '\n' +
+      'reference=' + q + safe(e.reference) + q + '\n' +
+      'folder=' + q + safe(e.folder) + q + '\n' +
+      'quote=' + q + safe(e.quote) + q + '\n' +
+      'commentary=' + q + safe(stripHtml(e.commentHtml)) + q + '\n' +
+      'footnotes=' + q +
+      safe(e.footnotes.map((n,i) => (i+1) + '. ' + n.text).join('\\n')) +
+      q + '\n' +
+      'citations=' + q +
+      safe(e.endnotes.map((n,i) => (i+1) + '. ' + n.text).join('\\n')) +
+      q + '\n';
+  }).join('\n');
+  download('catena_commentary_beta.toml', toml, 'text/plain');
+}
+
+
+const SNAPSHOT_KEY = 'CatenaSnapshotsV12';
+let lastSnapshotAt = 0;
+function safeText(s){
+  return String(s || '').replace(/\s+/g,' ').trim();
+}
+function wordCountText(s){
+  const m = safeText(s).match(/[\w'’\-]+/g);
+  return m ? m.length : 0;
+}
+function allEntryPlainText(e){
+  return [
+    e.title,e.reference,e.collection,e.folder,e.status,e.tags,e.page,e.quote,
+    stripHtml(e.commentHtml),
+    (e.sections || []).map(s => s.title + ' ' + stripHtml(s.html)).join(' '),
+    (e.footnotes || []).map(n => n.text).join(' '),
+    (e.endnotes || []).map(n => n.text).join(' ')
+  ].join(' ');
+}
+function projectStats(){
+  const active = entries.filter(e => !e.deleted);
+  const words = active.reduce((n,e) => n + wordCountText(allEntryPlainText(e)), 0);
+  const notes = active.reduce((n,e) => n + (e.footnotes || []).length + (e.endnotes || []).length, 0);
+  const links = active.reduce((n,e) => n + ((e.commentHtml || '').match(/<a\b/gi) || []).length + ((e.sections || []).map(s => s.html || '').join(' ').match(/<a\b/gi) || []).length, 0);
+  const folderCount = new Set(active.map(e => e.folder || 'Unfiled')).size;
+  const updated = active.map(e => e.updatedAt || '').sort().pop() || '';
+  return {active, words, notes, links, folderCount, updated};
+}
+function updateDashboard(){
+  const s = projectStats();
+  if ($('statEntries')) $('statEntries').textContent = String(s.active.length);
+  if ($('statWords')) $('statWords').textContent = String(s.words.toLocaleString());
+  if ($('statNotes')) $('statNotes').textContent = String(s.notes);
+  if ($('statLinks')) $('statLinks').textContent = String(s.links);
+  if ($('statFolders')) $('statFolders').textContent = String(s.folderCount);
+  if ($('statUpdated')) $('statUpdated').textContent = s.updated ? new Date(s.updated).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) : '—';
+}
+function noteMarkerIdsFromHtml(html,type){
+  const ids = new Set();
+  String(html || '').replace(/data-note-type=["']([^"']+)["'][^>]*data-note-id=["']([^"']+)["']/g, (m,t,id) => {
+    if (t === type) ids.add(id);
+    return m;
+  });
+  String(html || '').replace(/data-note-id=["']([^"']+)["'][^>]*data-note-type=["']([^"']+)["']/g, (m,id,t) => {
+    if (t === type) ids.add(id);
+    return m;
+  });
+  return ids;
+}
+function internalLinkIdsFromHtml(html){
+  const ids = [];
+  String(html || '').replace(/data-(?:cf-id|link-entry-id)=["']([^"']+)["']/g, (m,id) => {
+    ids.push(id);
+    return m;
+  });
+  return ids;
+}
+function integrityCheck(){
+  pull();
+  const warnings = [];
+  const ids = new Set();
+  const dupes = new Set();
+  entries.forEach((e,i) => {
+    if (!e.id) warnings.push('Entry ' + (i+1) + ' has no ID.');
+    if (ids.has(e.id)) dupes.add(e.id);
+    ids.add(e.id);
+    if (!safeText(titleOf(e)) && !safeText(e.reference)) warnings.push('Entry ' + (i+1) + ' has no title or reference.');
+    const fh = noteMarkerIdsFromHtml(e.commentHtml,'footnotes');
+    const eh = noteMarkerIdsFromHtml(e.commentHtml,'endnotes');
+    (e.footnotes || []).forEach(n => { if (n.linked && n.id && !fh.has(n.id)) warnings.push('Missing footnote marker: ' + titleOf(e) + ' — note ' + n.num + '.'); });
+    (e.endnotes || []).forEach(n => { if (n.linked && n.id && !eh.has(n.id)) warnings.push('Missing citation marker: ' + titleOf(e) + ' — citation ' + n.num + '.'); });
+    fh.forEach(id => { if (!(e.footnotes || []).some(n => n.id === id)) warnings.push('Orphan footnote marker in ' + titleOf(e) + '.'); });
+    eh.forEach(id => { if (!(e.endnotes || []).some(n => n.id === id)) warnings.push('Orphan citation marker in ' + titleOf(e) + '.'); });
+    const html = [e.commentHtml].concat((e.sections || []).map(s => s.html || '')).join(' ');
+    internalLinkIdsFromHtml(html).forEach(id => { if (!entries.some(x => x.id === id)) warnings.push('Broken internal link in ' + titleOf(e) + ' -> ' + id + '.'); });
+  });
+  dupes.forEach(id => warnings.push('Duplicate entry ID: ' + id + '.'));
+  const report = warnings.length ? ('Issues found: ' + warnings.length + '\n\n- ' + warnings.join('\n- ')) : 'No structural issues found. Notes, citations, IDs, and internal links passed the v12 check.';
+  const health = $('projectHealth');
+  if (health) {
+    health.textContent = warnings.length ? 'Health: ' + warnings.length + ' issue(s)' : 'Health: clean';
+    health.classList.toggle('ok', !warnings.length);
+    health.classList.toggle('bad', !!warnings.length);
+  }
+  if ($('integrityReport')) $('integrityReport').textContent = report;
+  setStatus(warnings.length ? 'Integrity check found ' + warnings.length + ' issue(s).' : 'Integrity check passed.', !warnings.length);
+  return {warnings, report};
+}
+function repairSafeProject(){
+  pull();
+  makeSnapshot('before safe repair', false);
+  const seen = new Set();
+  entries.forEach((e,i) => {
+    if (!e.id || seen.has(e.id)) e.id = uid();
+    seen.add(e.id);
+    e.order = i + 1;
+    e.workMode = validMode(e.workMode || appSettings.mode);
+    e.sections = normSections(e.sections || [], e.workMode);
+    e.footnotes = normNotes(e.footnotes || []);
+    e.endnotes = normNotes(e.endnotes || []);
+    e.footnotes.forEach((n,j) => n.num = j + 1);
+    e.endnotes.forEach((n,j) => n.num = j + 1);
+    e.updatedAt = e.updatedAt || now();
+    e.createdAt = e.createdAt || e.updatedAt;
+  });
+  sortByOrder();
+  if (current >= entries.length) current = entries.length - 1;
+  if (current >= 0) push();
+  renderAll();
+  manualSave();
+  integrityCheck();
+}
+function snapshots(){
+  try {
+    const s = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]');
+    return Array.isArray(s) ? s : [];
+  } catch(e) { return []; }
+}
+function makeSnapshot(label, throttled){
+  const t = Date.now();
+  if (throttled && t - lastSnapshotAt < 10 * 60 * 1000) return false;
+  try {
+    const list = snapshots();
+    list.unshift({
+      id:'snap-' + t,
+      label:label || 'snapshot',
+      createdAt:new Date(t).toISOString(),
+      count:entries.length,
+      entries:JSON.parse(JSON.stringify(entries)),
+      settings:JSON.parse(JSON.stringify(appSettings))
+    });
+    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(list.slice(0,14)));
+    lastSnapshotAt = t;
+    setStatus('Snapshot created.', true);
+    return true;
+  } catch(e) {
+    setStatus('Snapshot skipped: browser storage is full.', false);
+    return false;
+  }
+}
+async function restoreSnapshot(){
+  const list = snapshots();
+  if (!list.length) { alert('No snapshots available yet.'); return; }
+  const menu = list.map((s,i) => (i+1) + '. ' + new Date(s.createdAt).toLocaleString() + ' — ' + s.label + ' — ' + s.count + ' entries').join('\n');
+  const raw = prompt('Restore which snapshot?\n\n' + menu, '1');
+  if (!raw) return;
+  const idx = parseInt(raw,10) - 1;
+  if (!list[idx]) { alert('That snapshot number does not exist.'); return; }
+  if (!confirm('Restore this snapshot? Current entries will be replaced, but a safety snapshot will be created first.')) return;
+  makeSnapshot('before restore', false);
+  entries = (list[idx].entries || []).map(norm);
+  if (list[idx].settings) appSettings = Object.assign(appSettings, list[idx].settings);
+  sortByOrder();
+  current = entries.length ? 0 : -1;
+  await idbSet(KEY, entries);
+  pushBetaSettings();
+  applyVisualSettings();
+  if (current >= 0) push();
+  renderAll();
+  setStatus('Snapshot restored.', true);
+}
+function csvCell(s){
+  return '"' + String(s || '').replace(/"/g,'""') + '"';
+}
+function exportCsv(){
+  pull();
+  const rows = [['Order','Title','Reference','Collection','Folder','Status','Mode','Tags','Words','Footnotes','Citations','Updated']];
+  exportList().forEach(e => rows.push([
+    e.order,titleOf(e),e.reference,e.collection,e.folder || 'Unfiled',e.status,modeLabel(e.workMode),e.tags,wordCountText(allEntryPlainText(e)),(e.footnotes||[]).length,(e.endnotes||[]).length,e.updatedAt
+  ]));
+  download('catena_v12_index.csv', rows.map(r => r.map(csvCell).join(',')).join('\n'), 'text/csv');
+}
+function entryPlainExport(e){
+  const secs = (e.sections || []).filter(s => safeText(stripHtml(s.html))).map(s => '\n\n' + s.title.toUpperCase() + '\n' + stripHtml(s.html)).join('');
+  const fn = (e.footnotes || []).length ? '\n\nFootnotes\n' + e.footnotes.map((n,i) => (i+1) + '. ' + stripHtml(n.text)).join('\n') : '';
+  const en = (e.endnotes || []).length ? '\n\nCitations\n' + e.endnotes.map((n,i) => (i+1) + '. ' + stripHtml(n.text)).join('\n') : '';
+  return titleOf(e).toUpperCase() + '\n' + (e.reference ? 'Reference: ' + e.reference + '\n' : '') + (e.folder ? 'Folder: ' + e.folder + '\n' : '') + '\n' + (e.quote ? 'SOURCE\n' + e.quote + '\n\n' : '') + 'COMMENTARY\n' + stripHtml(e.commentHtml) + secs + fn + en;
+}
+function exportTxt(){
+  pull();
+  const text = defaultBookTitle().toUpperCase() + '\n\n' + exportList().map(entryPlainExport).join('\n\n' + '='.repeat(72) + '\n\n');
+  download('catena_v12_plain_text.txt', text, 'text/plain');
+}
+function latexEscape(s){
+  return String(s || '').replace(/\\/g,'\\textbackslash{}').replace(/([#$%&_{}])/g,'\\$1').replace(/\^/g,'\\textasciicircum{}').replace(/~/g,'\\textasciitilde{}');
+}
+function exportLatex(){
+  pull();
+  const body = exportList().map(e => {
+    const secs = (e.sections || []).filter(s => safeText(stripHtml(s.html))).map(s => '\\subsection*{' + latexEscape(s.title) + '}\n' + latexEscape(stripHtml(s.html))).join('\n\n');
+    return '\\section*{' + latexEscape(titleOf(e)) + '}\n' + (e.reference ? '\\textit{' + latexEscape(e.reference) + '}\n\n' : '') + (e.quote ? '\\begin{quote}\n' + latexEscape(e.quote) + '\n\\end{quote}\n' : '') + latexEscape(stripHtml(e.commentHtml)) + '\n\n' + secs;
+  }).join('\n\n');
+  const tex = '\\documentclass[12pt]{article}\n\\usepackage[margin=1in]{geometry}\n\\usepackage{hyperref}\n\\begin{document}\n\\title{' + latexEscape(defaultBookTitle()) + '}\n\\maketitle\n' + body + '\n\\end{document}\n';
+  download('catena_v12_latex_draft.tex', tex, 'application/x-tex');
+}
+function exportOutline(){
+  pull();
+  const text = exportList().map(e => {
+    const secs = (e.sections || []).map(s => '    - ' + s.title + (safeText(stripHtml(s.html)) ? ' — ' + safeText(stripHtml(s.html)).slice(0,160) : '')).join('\n');
+    return '- ' + titleOf(e) + (e.reference ? ' (' + e.reference + ')' : '') + '\n' + secs;
+  }).join('\n');
+  download('catena_v12_outline.txt', text, 'text/plain');
+}
+function projectReportText(){
+  const s = projectStats();
+  const byMode = {};
+  const byStatus = {};
+  s.active.forEach(e => {
+    byMode[modeLabel(e.workMode)] = (byMode[modeLabel(e.workMode)] || 0) + 1;
+    byStatus[e.status] = (byStatus[e.status] || 0) + 1;
+  });
+  const integrity = integrityCheck();
+  return 'CATENA V12 PROJECT REPORT\n\n' +
+    'Entries: ' + s.active.length + '\nWords: ' + s.words + '\nNotes/Citations: ' + s.notes + '\nLinks: ' + s.links + '\nFolders: ' + s.folderCount + '\nUpdated: ' + (s.updated || '—') + '\n\n' +
+    'By mode:\n' + Object.keys(byMode).sort().map(k => '- ' + k + ': ' + byMode[k]).join('\n') + '\n\n' +
+    'By status:\n' + Object.keys(byStatus).sort().map(k => '- ' + k + ': ' + byStatus[k]).join('\n') + '\n\n' +
+    'Integrity:\n' + integrity.report + '\n';
+}
+function exportReport(){
+  pull();
+  download('catena_v12_project_report.txt', projectReportText(), 'text/plain');
+}
+function exportBackupJson(){
+  pull();
+  const pack = {app:'Catena Studio', version:'v12-mega-alpha', exportedAt:now(), settings:appSettings, entries:entries, snapshots:snapshots().map(s => ({id:s.id,label:s.label,createdAt:s.createdAt,count:s.count}))};
+  download('catena_v12_full_backup.json', JSON.stringify(pack,null,2), 'application/json');
+}
+function openCommandPalette(){
+  const o = $('commandOverlay');
+  if (!o) return;
+  o.classList.remove('hidden');
+  if ($('commandInput')) {
+    $('commandInput').value = '';
+    renderCommandList('');
+    setTimeout(() => $('commandInput').focus(), 20);
+  }
+}
+function closeCommandPalette(){
+  if ($('commandOverlay')) $('commandOverlay').classList.add('hidden');
+}
+function commandActions(){
+  const base = [
+    {name:'New entry', detail:'Create a blank entry', run:add},
+    {name:'Manual save', detail:'Save the project now', run:manualSave},
+    {name:'Preview PDF', detail:'Open print/PDF preview', run:previewPdf},
+    {name:'Export plain text', detail:'Download a clean text manuscript', run:exportTxt},
+    {name:'Export outline', detail:'Download an outline of entries and sections', run:exportOutline},
+    {name:'Export project report', detail:'Diagnostics and counts', run:exportReport},
+    {name:'Integrity check', detail:'Check notes, citations, IDs, and internal links', run:integrityCheck},
+    {name:'Create snapshot', detail:'Save a local restore point', run:() => makeSnapshot('manual command snapshot', false)},
+    {name:'Restore snapshot', detail:'Restore from a local restore point', run:restoreSnapshot},
+    {name:'Toggle focus mode', detail:'Hide library and entry list', run:toggleFocusMode},
+    {name:'Open settings', detail:'Open formal settings tabs', run:() => { $('settingsPanel').classList.remove('hidden'); activateSettingsTab('general'); }}
+  ];
+  entries.filter(e => !e.deleted).forEach((e,i) => base.push({name:'Open: ' + titleOf(e), detail:[e.reference,e.folder,modeLabel(e.workMode)].filter(Boolean).join(' · '), run:() => openEntry(i)}));
+  return base;
+}
+function renderCommandList(q){
+  const list = $('commandList');
+  if (!list) return;
+  const needle = String(q || '').toLowerCase();
+  const actions = commandActions().filter(a => (a.name + ' ' + a.detail).toLowerCase().includes(needle)).slice(0,80);
+  list.innerHTML = actions.map((a,i) => '<button class="commandItem' + (i === 0 ? ' active' : '') + '" data-command-index="' + i + '"><span><strong>' + esc(a.name) + '</strong><span>' + esc(a.detail || '') + '</span></span>' + (i === 0 ? '<span class="commandKbd">Enter</span>' : '') + '</button>').join('') || '<div class="sub" style="padding:14px">No command found.</div>';
+  list.querySelectorAll('[data-command-index]').forEach(btn => btn.onclick = () => {
+    const idx = parseInt(btn.dataset.commandIndex,10);
+    closeCommandPalette();
+    if (actions[idx]) actions[idx].run();
+  });
+}
+function toggleFocusMode(){
+  document.body.classList.toggle('focusMode');
+  if ($('focusModeBtn')) $('focusModeBtn').textContent = document.body.classList.contains('focusMode') ? 'Exit Focus' : 'Focus';
+}
+
+
+function normalizeHexColor(v,fallback){
+  v = String(v || '').trim();
+  return /^#[0-9a-f]{6}$/i.test(v) ? v : fallback;
+}
+function normalizeStyleControls(v){
+  v = v && typeof v === 'object' ? v : {};
+  return {
+    sourceQuoteBg:normalizeHexColor(v.sourceQuoteBg, DEFAULT_STYLE_CONTROLS.sourceQuoteBg),
+    sourceQuoteBorder:normalizeHexColor(v.sourceQuoteBorder, DEFAULT_STYLE_CONTROLS.sourceQuoteBorder),
+    sourceQuoteInk:normalizeHexColor(v.sourceQuoteInk, DEFAULT_STYLE_CONTROLS.sourceQuoteInk),
+    sourceQuoteFontSize:clamp(parseInt(v.sourceQuoteFontSize,10) || DEFAULT_STYLE_CONTROLS.sourceQuoteFontSize,10,34),
+    commentBg:normalizeHexColor(v.commentBg, DEFAULT_STYLE_CONTROLS.commentBg),
+    commentInk:normalizeHexColor(v.commentInk, DEFAULT_STYLE_CONTROLS.commentInk),
+    commentFontSize:clamp(parseInt(v.commentFontSize,10) || DEFAULT_STYLE_CONTROLS.commentFontSize,11,34),
+    commentLineHeight:clamp(parseFloat(v.commentLineHeight) || DEFAULT_STYLE_CONTROLS.commentLineHeight,1.1,2.4),
+    commentFontFamily:['system','serif','mono'].includes(v.commentFontFamily) ? v.commentFontFamily : DEFAULT_STYLE_CONTROLS.commentFontFamily,
+    commentTabSize:clamp(parseInt(v.commentTabSize,10) || DEFAULT_STYLE_CONTROLS.commentTabSize,12,96),
+    blockquoteBg:normalizeHexColor(v.blockquoteBg, DEFAULT_STYLE_CONTROLS.blockquoteBg),
+    blockquoteBorder:normalizeHexColor(v.blockquoteBorder, DEFAULT_STYLE_CONTROLS.blockquoteBorder),
+    blockquoteInk:normalizeHexColor(v.blockquoteInk, DEFAULT_STYLE_CONTROLS.blockquoteInk),
+    blockquoteFontSize:clamp(parseInt(v.blockquoteFontSize,10) || DEFAULT_STYLE_CONTROLS.blockquoteFontSize,10,34),
+    blockquoteLineHeight:clamp(parseFloat(v.blockquoteLineHeight) || DEFAULT_STYLE_CONTROLS.blockquoteLineHeight,1.1,2.4),
+    blockquotePaddingScale:clamp(parseFloat(v.blockquotePaddingScale) || DEFAULT_STYLE_CONTROLS.blockquotePaddingScale,0.45,2.2),
+    blockquoteBorderWidth:clamp(parseInt(v.blockquoteBorderWidth,10) || DEFAULT_STYLE_CONTROLS.blockquoteBorderWidth,1,18),
+    blockquoteRadius:clamp(parseInt(v.blockquoteRadius,10) || DEFAULT_STYLE_CONTROLS.blockquoteRadius,0,32)
+  };
+}
+function applyVisualSettings(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  appSettings.styleControls = c;
+  const r = document.documentElement.style;
+  r.setProperty('--source-quote-bg', c.sourceQuoteBg);
+  r.setProperty('--source-quote-border', c.sourceQuoteBorder);
+  r.setProperty('--source-quote-ink', c.sourceQuoteInk);
+  r.setProperty('--source-quote-font-size', c.sourceQuoteFontSize + 'px');
+  r.setProperty('--comment-bg', c.commentBg);
+  r.setProperty('--comment-ink', c.commentInk);
+  r.setProperty('--comment-font-size', c.commentFontSize + 'px');
+  r.setProperty('--comment-line-height', c.commentLineHeight);
+  r.setProperty('--comment-font-family', c.commentFontFamily === 'serif' ? 'Georgia, Times New Roman, serif' : c.commentFontFamily === 'mono' ? 'ui-monospace, SFMono-Regular, Consolas, monospace' : 'Segoe UI, Arial, sans-serif');
+  r.setProperty('--comment-tab-size', c.commentTabSize + 'px');
+  r.setProperty('--blockquote-bg', c.blockquoteBg);
+  r.setProperty('--blockquote-border', c.blockquoteBorder);
+  r.setProperty('--blockquote-ink', c.blockquoteInk);
+  r.setProperty('--blockquote-font-size', c.blockquoteFontSize + 'px');
+  r.setProperty('--blockquote-line-height', c.blockquoteLineHeight);
+  r.setProperty('--blockquote-pad-y', Math.round(c.blockquoteFontSize * .55 * c.blockquotePaddingScale) + 'px');
+  r.setProperty('--blockquote-pad-x', Math.round(c.blockquoteFontSize * .78 * c.blockquotePaddingScale) + 'px');
+  r.setProperty('--blockquote-min-height', Math.round(c.blockquoteFontSize * 2.35 * c.blockquotePaddingScale) + 'px');
+  r.setProperty('--blockquote-border-width', c.blockquoteBorderWidth + 'px');
+  r.setProperty('--blockquote-radius', c.blockquoteRadius + 'px');
+  document.body.classList.toggle('compactUi', !!appSettings.compactUi);
+}
+
+function styleControlsFromInputs(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  if ($('sourceQuoteBgInput')) c.sourceQuoteBg = normalizeHexColor($('sourceQuoteBgInput').value, c.sourceQuoteBg);
+  if ($('sourceQuoteBorderInput')) c.sourceQuoteBorder = normalizeHexColor($('sourceQuoteBorderInput').value, c.sourceQuoteBorder);
+  if ($('sourceQuoteInkInput')) c.sourceQuoteInk = normalizeHexColor($('sourceQuoteInkInput').value, c.sourceQuoteInk);
+  if ($('sourceQuoteFontInput')) c.sourceQuoteFontSize = clamp(parseInt($('sourceQuoteFontInput').value,10) || c.sourceQuoteFontSize,10,34);
+  if ($('commentBgInput')) c.commentBg = normalizeHexColor($('commentBgInput').value, c.commentBg);
+  if ($('commentInkInput')) c.commentInk = normalizeHexColor($('commentInkInput').value, c.commentInk);
+  if ($('commentFontInput')) c.commentFontSize = clamp(parseInt($('commentFontInput').value,10) || c.commentFontSize,11,34);
+  if ($('commentLineHeightInput')) c.commentLineHeight = clamp(parseFloat($('commentLineHeightInput').value) || c.commentLineHeight,1.1,2.4);
+  if ($('commentFontFamilyInput')) c.commentFontFamily = ['system','serif','mono'].includes($('commentFontFamilyInput').value) ? $('commentFontFamilyInput').value : c.commentFontFamily;
+  if ($('commentTabSizeInput')) c.commentTabSize = clamp(parseInt($('commentTabSizeInput').value,10) || c.commentTabSize,12,96);
+  if ($('blockquoteBgInput')) c.blockquoteBg = normalizeHexColor($('blockquoteBgInput').value, c.blockquoteBg);
+  if ($('blockquoteBorderInput')) c.blockquoteBorder = normalizeHexColor($('blockquoteBorderInput').value, c.blockquoteBorder);
+  if ($('blockquoteInkInput')) c.blockquoteInk = normalizeHexColor($('blockquoteInkInput').value, c.blockquoteInk);
+  if ($('blockquoteFontInput')) c.blockquoteFontSize = clamp(parseInt($('blockquoteFontInput').value,10) || c.blockquoteFontSize,10,34);
+  if ($('blockquoteLineHeightInput')) c.blockquoteLineHeight = clamp(parseFloat($('blockquoteLineHeightInput').value) || c.blockquoteLineHeight,1.1,2.4);
+  if ($('blockquotePaddingInput')) c.blockquotePaddingScale = clamp(parseFloat($('blockquotePaddingInput').value) || c.blockquotePaddingScale,0.45,2.2);
+  if ($('blockquoteBorderWidthInput')) c.blockquoteBorderWidth = clamp(parseInt($('blockquoteBorderWidthInput').value,10) || c.blockquoteBorderWidth,1,18);
+  if ($('blockquoteRadiusInput')) c.blockquoteRadius = clamp(parseInt($('blockquoteRadiusInput').value,10) || c.blockquoteRadius,0,32);
+  return c;
+}
+function pushStyleControls(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  if ($('sourceQuoteBgInput')) $('sourceQuoteBgInput').value = c.sourceQuoteBg;
+  if ($('sourceQuoteBorderInput')) $('sourceQuoteBorderInput').value = c.sourceQuoteBorder;
+  if ($('sourceQuoteInkInput')) $('sourceQuoteInkInput').value = c.sourceQuoteInk;
+  if ($('sourceQuoteFontInput')) $('sourceQuoteFontInput').value = c.sourceQuoteFontSize;
+  if ($('commentBgInput')) $('commentBgInput').value = c.commentBg;
+  if ($('commentInkInput')) $('commentInkInput').value = c.commentInk;
+  if ($('commentFontInput')) $('commentFontInput').value = c.commentFontSize;
+  if ($('commentLineHeightInput')) $('commentLineHeightInput').value = c.commentLineHeight;
+  if ($('commentFontFamilyInput')) $('commentFontFamilyInput').value = c.commentFontFamily;
+  if ($('commentTabSizeInput')) $('commentTabSizeInput').value = c.commentTabSize;
+  if ($('blockquoteBgInput')) $('blockquoteBgInput').value = c.blockquoteBg;
+  if ($('blockquoteBorderInput')) $('blockquoteBorderInput').value = c.blockquoteBorder;
+  if ($('blockquoteInkInput')) $('blockquoteInkInput').value = c.blockquoteInk;
+  if ($('blockquoteFontInput')) $('blockquoteFontInput').value = c.blockquoteFontSize;
+  if ($('blockquoteLineHeightInput')) $('blockquoteLineHeightInput').value = c.blockquoteLineHeight;
+  if ($('blockquotePaddingInput')) $('blockquotePaddingInput').value = c.blockquotePaddingScale;
+  if ($('blockquoteBorderWidthInput')) $('blockquoteBorderWidthInput').value = c.blockquoteBorderWidth;
+  if ($('blockquoteRadiusInput')) $('blockquoteRadiusInput').value = c.blockquoteRadius;
+}
+function exportQuoteCssOverrides(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  const commentFont = c.commentFontFamily === 'serif' ? 'Georgia, Times New Roman, serif' : c.commentFontFamily === 'mono' ? 'Consolas, monospace' : 'Arial, sans-serif';
+  return '.sourceQuote{background:' + c.sourceQuoteBg + ' !important;border-left:5px solid ' + c.sourceQuoteBorder + ' !important;color:' + c.sourceQuoteInk + ' !important;font-size:' + c.sourceQuoteFontSize + 'px !important;padding:12px 15px}' +
+    '.entryBody{background:' + c.commentBg + ' !important;color:' + c.commentInk + ' !important;font-family:' + commentFont + ' !important;font-size:' + c.commentFontSize + 'px !important;line-height:' + c.commentLineHeight + ' !important}' +
+    '.entry blockquote:not(.sourceQuote){background:' + c.blockquoteBg + ' !important;border-left:' + c.blockquoteBorderWidth + 'px solid ' + c.blockquoteBorder + ' !important;color:' + c.blockquoteInk + ' !important;border-radius:' + c.blockquoteRadius + 'px;font-size:' + c.blockquoteFontSize + 'px !important;line-height:' + c.blockquoteLineHeight + ' !important;padding:' + Math.round(c.blockquoteFontSize*.55*c.blockquotePaddingScale) + 'px ' + Math.round(c.blockquoteFontSize*.78*c.blockquotePaddingScale) + 'px !important;min-height:' + Math.round(c.blockquoteFontSize*2.35*c.blockquotePaddingScale) + 'px}' +
+    'a.internal-link{text-decoration:underline;font-weight:bold}';
+}
+
+function loadBetaSettings(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(BETA_SETTINGS_KEY) || '{}');
+    appSettings = Object.assign(appSettings, saved);
+    appSettings.mode = validMode(appSettings.mode);
+    if (appSettings.exportShowEntryTitle === undefined) appSettings.exportShowEntryTitle = true;
+    if (appSettings.exportShowMeta === undefined) appSettings.exportShowMeta = true;
+    if (appSettings.exportShowStatus === undefined) appSettings.exportShowStatus = true;
+    if (appSettings.compactUi === undefined) appSettings.compactUi = false;
+    if (!appSettings.footnotePlacement) appSettings.footnotePlacement = 'entry';
+    if (!appSettings.endnotePlacement) appSettings.endnotePlacement = 'entry';
+    appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
+    appSettings.styleControls = normalizeStyleControls(appSettings.styleControls);
+  } catch(e) {}
+  appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
+  appSettings.styleControls = normalizeStyleControls(appSettings.styleControls);
+  applyVisualSettings();
+  const savedTheme = localStorage.getItem('CatenaThemeV55');
+  if (savedTheme === 'dark') document.body.classList.add('dark');
+}
+function pushBetaSettings(){
+  if ($('modeSetting')) $('modeSetting').value = appSettings.mode || 'universal';
+  if ($('styleSetting')) $('styleSetting').value = appSettings.exportStyle || 'church';
+  if ($('autoTitleToggle')) $('autoTitleToggle').checked = !!appSettings.autoTitle;
+  if ($('scriptureSortToggle')) $('scriptureSortToggle').checked = !!appSettings.scriptureSort;
+  if ($('exportTitleToggle')) $('exportTitleToggle').checked = appSettings.exportShowEntryTitle !== false;
+  if ($('exportMetaToggle')) $('exportMetaToggle').checked = appSettings.exportShowMeta !== false;
+  if ($('exportStatusToggle')) $('exportStatusToggle').checked = appSettings.exportShowStatus !== false;
+  if ($('footnotePlacementSetting')) $('footnotePlacementSetting').value = appSettings.footnotePlacement || 'entry';
+  if ($('endnotePlacementSetting')) $('endnotePlacementSetting').value = appSettings.endnotePlacement || 'entry';
+  if ($('darkThemeToggle')) $('darkThemeToggle').checked = document.body.classList.contains('dark');
+  if ($('compactUiToggle')) $('compactUiToggle').checked = !!appSettings.compactUi;
+  const fm = normalizeFrontMatter(appSettings.frontMatter);
+  if ($('frontTitleInput')) $('frontTitleInput').value = fm.title;
+  if ($('frontSubtitleInput')) $('frontSubtitleInput').value = fm.subtitle;
+  if ($('frontAuthorInput')) $('frontAuthorInput').value = fm.author;
+  if ($('frontEditionInput')) $('frontEditionInput').value = fm.edition;
+  if ($('frontDateInput')) $('frontDateInput').value = fm.date;
+  if ($('frontDedicationInput')) $('frontDedicationInput').value = fm.dedication;
+  if ($('frontPrefaceInput')) $('frontPrefaceInput').value = fm.preface;
+  if ($('frontIntroductionInput')) $('frontIntroductionInput').value = fm.introduction;
+  pushStyleControls();
+}
+function saveBetaSettings(){
+  localStorage.setItem(BETA_SETTINGS_KEY, JSON.stringify(appSettings));
+}
+function applyBetaSettings(){
+  appSettings.mode = validMode($('modeSetting').value);
+  appSettings.exportStyle = $('styleSetting').value;
+  appSettings.autoTitle = $('autoTitleToggle').checked;
+  appSettings.scriptureSort = $('scriptureSortToggle').checked;
+  appSettings.exportShowEntryTitle = $('exportTitleToggle') ? $('exportTitleToggle').checked : true;
+  appSettings.exportShowMeta = $('exportMetaToggle') ? $('exportMetaToggle').checked : true;
+  appSettings.exportShowStatus = $('exportStatusToggle') ? $('exportStatusToggle').checked : true;
+  appSettings.footnotePlacement = $('footnotePlacementSetting') ? $('footnotePlacementSetting').value : 'entry';
+  appSettings.endnotePlacement = $('endnotePlacementSetting') ? $('endnotePlacementSetting').value : 'entry';
+  appSettings.compactUi = $('compactUiToggle') ? $('compactUiToggle').checked : !!appSettings.compactUi;
+  appSettings.frontMatter = frontMatterFromInputs();
+  appSettings.styleControls = styleControlsFromInputs();
+  applyVisualSettings();
+  saveBetaSettings();
+  renderAll();
+  setStatus('Settings saved.', true);
+}
+function exportList(){
+  let list = entries.filter(e => !e.deleted).slice();
+  if ((appSettings.mode === 'scripture' || appSettings.mode === 'verse') && appSettings.scriptureSort) {
+    list.sort((a,b) => {
+      const pa = parseReference(a.reference);
+      const pb = parseReference(b.reference);
+      if (!pa && !pb) return (a.order || 0) - (b.order || 0);
+      if (!pa) return 1;
+      if (!pb) return -1;
+      return (pa.bookIndex - pb.bookIndex) ||
+        (pa.chapter - pb.chapter) ||
+        (pa.verse - pb.verse) ||
+        ((a.order || 0) - (b.order || 0));
+    });
+  }
+  return list;
+}
+
+function activateSettingsTab(name){
+  name = name || 'general';
+  document.querySelectorAll('.settingsTabBtn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.settingsTab === name);
+  });
+  document.querySelectorAll('.settingTabSection').forEach(sec => {
+    sec.classList.toggle('active', sec.dataset.settingsSection === name);
+  });
+}
+
+const PANE_LAYOUT_KEY = 'CatenaPaneLayoutV1';
+const DEFAULT_PANE_LAYOUT = {
+  rail:230,
+  list:380,
+  libraryCollapsed:false,
+  entriesCollapsed:false
+};
+let paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT);
+function clamp(n,min,max){
+  return Math.max(min, Math.min(max, n));
+}
+function loadPaneLayout(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(PANE_LAYOUT_KEY) || 'null');
+    if (saved && typeof saved === 'object') {
+      paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT, saved);
+    }
+  } catch(e) {
+    paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT);
+  }
+  paneLayout.rail = clamp(parseInt(paneLayout.rail,10) || DEFAULT_PANE_LAYOUT.rail, 150, 520);
+  paneLayout.list = clamp(parseInt(paneLayout.list,10) || DEFAULT_PANE_LAYOUT.list, 220, 720);
+  paneLayout.libraryCollapsed = !!paneLayout.libraryCollapsed;
+  paneLayout.entriesCollapsed = !!paneLayout.entriesCollapsed;
+}
+function savePaneLayout(){
+  localStorage.setItem(PANE_LAYOUT_KEY, JSON.stringify(paneLayout));
+}
+function applyPaneLayout(){
+  const grid = $('appGrid');
+  if (!grid) return;
+  grid.style.setProperty('--rail-width', paneLayout.rail + 'px');
+  grid.style.setProperty('--list-width', paneLayout.list + 'px');
+  grid.classList.toggle('libraryCollapsed', paneLayout.libraryCollapsed);
+  grid.classList.toggle('entriesCollapsed', paneLayout.entriesCollapsed);
+  const libText = paneLayout.libraryCollapsed ? 'Show Library' : 'Hide Library';
+  const entText = paneLayout.entriesCollapsed ? 'Show Entries' : 'Hide Entries';
+  ['toggleLibraryBtn','collapseLibraryBtn'].forEach(id => {
+    if ($(id)) $(id).textContent = id === 'collapseLibraryBtn' ? (paneLayout.libraryCollapsed ? 'Show' : 'Hide') : libText;
+  });
+  ['toggleEntriesBtn','collapseEntriesBtn'].forEach(id => {
+    if ($(id)) $(id).textContent = id === 'collapseEntriesBtn' ? (paneLayout.entriesCollapsed ? 'Show' : 'Hide') : entText;
+  });
+}
+function togglePane(which){
+  if (which === 'library') paneLayout.libraryCollapsed = !paneLayout.libraryCollapsed;
+  if (which === 'entries') paneLayout.entriesCollapsed = !paneLayout.entriesCollapsed;
+  savePaneLayout();
+  applyPaneLayout();
+}
+function bindPaneToggle(id, which){
+  const el = $(id);
+  if (!el) return;
+  el.onclick = () => togglePane(which);
+}
+function bindPaneResizer(id, key, min, max){
+  const handle = $(id);
+  if (!handle) return;
+  handle.addEventListener('pointerdown', ev => {
+    ev.preventDefault();
+    const startX = ev.clientX;
+    const startVal = paneLayout[key];
+    document.body.classList.add('resizing');
+    if (handle.setPointerCapture) handle.setPointerCapture(ev.pointerId);
+    function move(e){
+      const dx = e.clientX - startX;
+      paneLayout[key] = clamp(startVal + dx, min, Math.min(max, Math.max(min, window.innerWidth - 520)));
+      applyPaneLayout();
+    }
+    function up(){
+      document.body.classList.remove('resizing');
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      savePaneLayout();
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  });
+  handle.addEventListener('dblclick', () => {
+    paneLayout[key] = DEFAULT_PANE_LAYOUT[key];
+    savePaneLayout();
+    applyPaneLayout();
+  });
+}
+
+function blockquoteResizeTarget(ev){
+  const b = ev.target && ev.target.closest && ev.target.closest('.editor blockquote,.sectionContent blockquote');
+  if (!b) return null;
+  const rect = b.getBoundingClientRect();
+  const nearRight = ev.clientX >= rect.right - 18 && ev.clientX <= rect.right + 8;
+  const nearBottom = ev.clientY >= rect.bottom - 18 && ev.clientY <= rect.bottom + 8;
+  return nearRight && nearBottom ? b : null;
+}
+function setupBlockquoteResizing(){
+  document.addEventListener('mousemove', ev => {
+    const b = ev.target && ev.target.closest && ev.target.closest('.editor blockquote,.sectionContent blockquote');
+    if (!b) return;
+    b.style.cursor = blockquoteResizeTarget(ev) ? 'nwse-resize' : '';
+  });
+  document.addEventListener('pointerdown', ev => {
+    const b = blockquoteResizeTarget(ev);
+    if (!b) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const parent = b.parentElement;
+    const startX = ev.clientX;
+    const startY = ev.clientY;
+    const startW = b.getBoundingClientRect().width;
+    const startH = b.getBoundingClientRect().height;
+    document.body.classList.add('resizing');
+    function move(e){
+      const maxW = parent ? Math.max(180, parent.getBoundingClientRect().width - 8) : 900;
+      const nextW = clamp(Math.round(startW + e.clientX - startX),180,maxW);
+      const nextH = clamp(Math.round(startH + e.clientY - startY),42,900);
+      b.style.width = nextW + 'px';
+      b.style.minHeight = nextH + 'px';
+    }
+    function up(){
+      document.body.classList.remove('resizing');
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      b.style.cursor = '';
+      changed();
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  });
+}
+
+function setupPaneLayout(){
+  loadPaneLayout();
+  applyPaneLayout();
+  bindPaneToggle('toggleLibraryBtn', 'library');
+  bindPaneToggle('collapseLibraryBtn', 'library');
+  bindPaneToggle('toggleEntriesBtn', 'entries');
+  bindPaneToggle('collapseEntriesBtn', 'entries');
+  bindPaneResizer('railResizer', 'rail', 150, 520);
+  bindPaneResizer('listResizer', 'list', 220, 720);
+}
+
+function bind(){
+  setupPaneLayout();
+  setupBlockquoteResizing();
+  document.querySelectorAll('.navBtn[data-view]').forEach(b => {
+    b.onclick = () => {
+      activeView = b.dataset.view;
+      renderAll();
+    };
+  });
+  ['search','statusFilter','sortMode'].forEach(id => $(id).oninput = renderAll);
+  [
+    'titleInput',
+    'referenceInput',
+    'collectionInput',
+    'folderInput',
+    'statusInput',
+    'tagsInput',
+    'pageInput',
+    'workModeInput',
+    'quoteInput',
+    'commentEditor'
+  ].forEach(id => {
+    $(id).addEventListener('input', changed);
+    $(id).addEventListener('change', changed);
+  });
+  $('commentEditor').addEventListener('keydown', handleCommentKeydown);
+  $('quoteInput').addEventListener('keydown', ev => handleEditableTab(ev, $('quoteInput')));
+  $('manualSaveBtn').onclick = manualSave;
+  $('manualSaveTop').onclick = manualSave;
+  $('newBtn').onclick = newEntry;
+  $('addBtn').onclick = add;
+  $('duplicateBtn').onclick = duplicate;
+  $('favoriteBtn').onclick = fav;
+  $('deleteBtn').onclick = del;
+  $('deleteSelectedBtn').onclick = deleteSelected;
+  $('emptyTrashBtn').onclick = emptyTrash;
+  $('selectVisibleBtn').onclick = () => {
+    filtered().forEach(x => selected.add(x.e.id));
+    renderList();
+    renderCounts();
+  };
+  $('clearSelectionBtn').onclick = () => {
+    selected.clear();
+    renderList();
+    renderCounts();
+  };
+  $('addSectionBtn').onclick = addSection;
+  if ($('applyModeTemplateBtn')) $('applyModeTemplateBtn').onclick = applyModeTemplate;
+  if ($('workModeInput')) $('workModeInput').onchange = () => {
+    if (current >= 0 && entries[current]) {
+      entries[current].workMode = validMode($('workModeInput').value);
+      addMissingModeSections(entries[current].workMode);
+      renderModeHint();
+    }
+    changed();
+  };
+  $('addFootnoteBtn').onclick = () => addNote('footnotes', false);
+  $('addEndnoteBtn').onclick = () => addNote('endnotes', false);
+  $('insertFootnoteBtn').onclick = () => addNote('footnotes', true);
+  $('insertCitationBtn').onclick = () => addNote('endnotes', true);
+  $('renumberFootnotesBtn').onclick = () => renumberNotes('footnotes');
+  $('renumberEndnotesBtn').onclick = () => renumberNotes('endnotes');
+  bindSelectionMemory();
+  document.querySelectorAll('.tools button').forEach(b => {
+    b.addEventListener('mousedown', ev => {
+      ev.preventDefault();
+      const target = $(b.dataset.target || 'commentEditor');
+      if (target && target.isContentEditable) restoreEditableSelection(target);
+      else restoreEditableSelection($('commentEditor'));
+    });
+  });
+  document.querySelectorAll('.fmt').forEach(b => {
+    b.onclick = () => {
+      const target = $(b.dataset.target || 'commentEditor');
+      applyRichCommand(target, b.dataset.cmd, null);
+    };
+  });
+  ['commentTextColorInput','commentHighlightColorInput'].forEach(id => {
+    const input = $(id);
+    if (!input) return;
+    input.addEventListener('mousedown', () => saveEditableSelection($('commentEditor')));
+    input.addEventListener('focus', () => saveEditableSelection($('commentEditor')));
+  });
+  if ($('commentTextColorInput')) $('commentTextColorInput').addEventListener('input', e => applyCommentaryColor('text', e.target.value));
+  if ($('commentHighlightColorInput')) $('commentHighlightColorInput').addEventListener('input', e => applyCommentaryColor('highlight', e.target.value));
+  document.querySelectorAll('.clean').forEach(b => {
+    b.onclick = () => cleanup(b.dataset.clean);
+  });
+  $('blockquoteBtn').onclick = makeStyledBlockquote;
+  if ($('commentTextSmallerBtn')) $('commentTextSmallerBtn').onclick = () => adjustCommentaryTextSize(-1);
+  if ($('commentTextLargerBtn')) $('commentTextLargerBtn').onclick = () => adjustCommentaryTextSize(1);
+  if ($('commentIndentBtn')) $('commentIndentBtn').onclick = () => applyEditorIndent($('commentEditor'), false);
+  if ($('commentOutdentBtn')) $('commentOutdentBtn').onclick = () => applyEditorIndent($('commentEditor'), true);
+  if ($('blockquoteSmallerBtn')) $('blockquoteSmallerBtn').onclick = () => adjustBlockquoteTextSize(-1);
+  if ($('blockquoteLargerBtn')) $('blockquoteLargerBtn').onclick = () => adjustBlockquoteTextSize(1);
+  if ($('openStyleSettingsBtn')) $('openStyleSettingsBtn').onclick = openStyleSettings;
+  $('cfBtn').onclick = insertCfReference;
+  $('linkBtn').onclick = insertSmartLink;
+  $('editBtn').onclick = () => setMode(false);
+  $('readBtn').onclick = () => setMode(true);
+  $('previewPdfBtn').onclick = previewPdf;
+  $('downloadPdfBtn').onclick = downloadPdf;
+  $('folderPreviewBtn').onclick = previewFolderPdf;
+  $('folderPdfBtn').onclick = downloadFolderPdf;
+  $('folderHtmlBtn').onclick = exportFolderHtml;
+  $('exportJsonBtn').onclick = exportJson;
+  $('exportMdBtn').onclick = exportMd;
+  $('exportTomlBtn').onclick = exportToml;
+  $('exportHtmlBtn').onclick = () => {
+    download('catena_book_beta.html', bookHtml(), 'text/html');
+  };
+  ['exportTxtBtn','exportTxtRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportTxt; });
+  ['exportCsvBtn'].forEach(id => { if ($(id)) $(id).onclick = exportCsv; });
+  ['exportLatexBtn'].forEach(id => { if ($(id)) $(id).onclick = exportLatex; });
+  ['exportOutlineBtn','exportOutlineRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportOutline; });
+  ['exportReportBtn','exportReportRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportReport; });
+  ['exportBackupBtn'].forEach(id => { if ($(id)) $(id).onclick = exportBackupJson; });
+  $('openBtn').onclick = () => $('importFile').click();
+  $('importFile').onchange = e => importJson(e.target.files[0]);
+  
+  loadBetaSettings();
+  pushBetaSettings();
+  if ($('commandBtn')) $('commandBtn').onclick = openCommandPalette;
+  if ($('openCommandHintBtn')) $('openCommandHintBtn').onclick = openCommandPalette;
+  if ($('focusModeBtn')) $('focusModeBtn').onclick = toggleFocusMode;
+  if ($('quickIntegrityBtn')) $('quickIntegrityBtn').onclick = integrityCheck;
+  if ($('snapshotNowBtn')) $('snapshotNowBtn').onclick = () => makeSnapshot('manual dashboard snapshot', false);
+  if ($('settingsIntegrityBtn')) $('settingsIntegrityBtn').onclick = integrityCheck;
+  if ($('settingsRepairBtn')) $('settingsRepairBtn').onclick = repairSafeProject;
+  if ($('settingsSnapshotBtn')) $('settingsSnapshotBtn').onclick = () => makeSnapshot('manual settings snapshot', false);
+  if ($('settingsRestoreSnapshotBtn')) $('settingsRestoreSnapshotBtn').onclick = restoreSnapshot;
+  if ($('commandOverlay')) $('commandOverlay').addEventListener('mousedown', e => { if (e.target === $('commandOverlay')) closeCommandPalette(); });
+  if ($('commandInput')) {
+    $('commandInput').addEventListener('input', e => renderCommandList(e.target.value));
+    $('commandInput').addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); closeCommandPalette(); }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = $('commandList') && $('commandList').querySelector('[data-command-index]');
+        if (first) first.click();
+      }
+    });
+  }
+  $('settingsBtn').onclick = () => {
+    $('settingsPanel').classList.remove('hidden');
+    activateSettingsTab('general');
+  };
+  $('closeSettingsBtn').onclick = () => $('settingsPanel').classList.add('hidden');
+  document.querySelectorAll('.settingsTabBtn').forEach(btn => {
+    btn.onclick = () => activateSettingsTab(btn.dataset.settingsTab);
+  });
+  $('settingsSaveBtn').onclick = manualSave;
+  $('darkThemeToggle').onchange = () => {
+    document.body.classList.toggle('dark', $('darkThemeToggle').checked);
+    localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
+  };
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','compactUiToggle','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','commentBgInput','commentInkInput','commentFontInput','commentLineHeightInput','commentFontFamilyInput','commentTabSizeInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteFontInput','blockquoteLineHeightInput','blockquotePaddingInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
+    if ($(id)) $(id).addEventListener('change', applyBetaSettings);
+  });
+  [
+    'frontTitleInput',
+    'frontSubtitleInput',
+    'frontAuthorInput',
+    'frontEditionInput',
+    'frontDateInput',
+    'frontDedicationInput',
+    'frontPrefaceInput',
+    'frontIntroductionInput',
+    'sourceQuoteBgInput',
+    'sourceQuoteBorderInput',
+    'sourceQuoteInkInput',
+    'sourceQuoteFontInput',
+    'commentBgInput',
+    'commentInkInput',
+    'commentFontInput',
+    'commentLineHeightInput',
+    'commentFontFamilyInput',
+    'blockquoteBgInput',
+    'blockquoteBorderInput',
+    'blockquoteInkInput',
+    'blockquoteFontInput',
+    'blockquoteBorderWidthInput',
+    'blockquoteRadiusInput'
+  ].forEach(id => {
+    $(id).addEventListener('input', applyBetaSettings);
+  });
+
+  document.addEventListener('click', e => {
+    const link = e.target.closest && e.target.closest('a.cf-link,a.internal-link');
+    if (!link || !link.getAttribute('href') || link.getAttribute('href').charAt(0) !== '#') return;
+    const entryId = link.dataset.cfId || link.dataset.linkEntryId;
+    const sectionId = link.dataset.cfSectionId || link.dataset.linkSectionId;
+    const folder = link.dataset.cfFolder || link.dataset.linkFolder;
+    if (entryId) {
+      e.preventDefault();
+      openEntryById(entryId, sectionId);
+    } else if (folder) {
+      e.preventDefault();
+      activeFolder = folder;
+      activeView = 'active';
+      renderAll();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      manualSave();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      openCommandPalette();
+    }
+    if (e.key === 'Escape' && $('commandOverlay') && !$('commandOverlay').classList.contains('hidden')) {
+      e.preventDefault();
+      closeCommandPalette();
+    }
+  });
+}
+
+function setupPasswordGate(onUnlocked){
+  const screen = $('passwordScreen');
+  const input = $('passwordInput');
+  const btn = $('passwordBtn');
+  const msg = $('passwordMsg');
+  const PASSWORD = 'admin123';
+  let started = false;
+  function unlock(){
+    if (started) return;
+    started = true;
+    document.body.classList.remove('locked');
+    if (screen) screen.classList.add('hidden');
+    onUnlocked();
+  }
+  function check(){
+    if ((input.value || '') === PASSWORD) {
+      unlock();
+      return;
+    }
+    msg.textContent = 'Incorrect password.';
+    input.value = '';
+    input.focus();
+  }
+  btn.onclick = check;
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') check();
+  });
+  setTimeout(() => input.focus(), 60);
+}
+setupPasswordGate(() => {
+  bind();
+  load();
+});
+})();
+</script>
+</body>
+</html>
