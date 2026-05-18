@@ -33,6 +33,10 @@
   --blockquote-border:#8a6412;
   --blockquote-ink:#202632;
   --blockquote-font-size:16px;
+  --blockquote-line-height:1.55;
+  --blockquote-pad-y:9px;
+  --blockquote-pad-x:13px;
+  --blockquote-min-height:38px;
   --blockquote-border-width:4px;
   --blockquote-radius:10px;
   --rail-width:230px;
@@ -405,16 +409,16 @@ body.resizing *{
 }
 .editor blockquote,.sectionContent blockquote{
   margin:calc(var(--blockquote-font-size) * .7) 0;
-  padding:calc(var(--blockquote-font-size) * .55) calc(var(--blockquote-font-size) * .78);
+  padding:var(--blockquote-pad-y) var(--blockquote-pad-x);
   border-left:var(--blockquote-border-width) solid var(--blockquote-border);
   border-radius:var(--blockquote-radius);
   background:var(--blockquote-bg);
   color:var(--blockquote-ink);
   font-size:var(--blockquote-font-size);
-  line-height:1.55;
+  line-height:var(--blockquote-line-height);
   resize:both;
   overflow:auto;
-  min-height:calc(var(--blockquote-font-size) * 2.35);
+  min-height:var(--blockquote-min-height);
   max-width:100%;
 }
 .editor blockquote:hover,.sectionContent blockquote:hover{
@@ -424,6 +428,13 @@ a.internal-link{
   font-weight:800;
   text-decoration:underline;
   text-underline-offset:2px;
+}
+
+.tab-space{
+  display:inline-block;
+  white-space:pre;
+  height:1em;
+  vertical-align:baseline;
 }
 a.cf-link{
   font-weight:800;
@@ -893,6 +904,7 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
           <div class="styleControl"><label for="commentFontInput">Commentary font size px</label><input id="commentFontInput" type="number" min="11" max="34" step="1"></div>
           <div class="styleControl"><label for="commentLineHeightInput">Commentary line height</label><input id="commentLineHeightInput" type="number" min="1.1" max="2.4" step="0.05"></div>
           <div class="styleControl"><label for="commentFontFamilyInput">Commentary font</label><select id="commentFontFamilyInput"><option value="system">System / clean</option><option value="serif">Serif / book</option><option value="mono">Monospace</option></select></div>
+          <div class="styleControl"><label for="commentTabSizeInput">Tab / indent size px</label><input id="commentTabSizeInput" type="number" min="12" max="96" step="2"></div>
         </div>
         <h4>Main commentary blockquotes</h4>
         <div class="styleGrid">
@@ -900,11 +912,13 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
           <div class="styleControl"><label for="blockquoteBorderInput">Blockquote border</label><input id="blockquoteBorderInput" type="color"></div>
           <div class="styleControl"><label for="blockquoteInkInput">Blockquote text</label><input id="blockquoteInkInput" type="color"></div>
           <div class="styleControl"><label for="blockquoteFontInput">Blockquote font size px</label><input id="blockquoteFontInput" type="number" min="10" max="34" step="1"></div>
+          <div class="styleControl"><label for="blockquoteLineHeightInput">Blockquote line height</label><input id="blockquoteLineHeightInput" type="number" min="1.1" max="2.4" step="0.05"></div>
+          <div class="styleControl"><label for="blockquotePaddingInput">Blockquote padding scale</label><input id="blockquotePaddingInput" type="number" min="0.45" max="2.2" step="0.05"></div>
           <div class="styleControl"><label for="blockquoteBorderWidthInput">Border width px</label><input id="blockquoteBorderWidthInput" type="number" min="1" max="18" step="1"></div>
           <div class="styleControl"><label for="blockquoteRadiusInput">Corner radius px</label><input id="blockquoteRadiusInput" type="number" min="0" max="32" step="1"></div>
         </div>
       </div>
-      <div class="exportHint">Use the normal Blockquote button for a resizable styled quote inside the main commentary. Blockquote padding and minimum height now scale with the blockquote font size, so smaller quote text makes the box tighten proportionally.</div>
+      <div class="exportHint">Use the normal Blockquote button for a resizable styled quote inside the main commentary. Blockquote padding, line height, and minimum height scale with the blockquote font size, so smaller quote text makes the box tighten proportionally. Tab indents selected text or inserts a visible tab space at the cursor.</div>
     </section>
   </div>
 
@@ -1063,9 +1077,16 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <button class="small fmt" data-target="commentEditor" data-cmd="bold"><b>B</b></button>
 <button class="small fmt" data-target="commentEditor" data-cmd="italic"><i>I</i></button>
 <button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
+<button id="commentTextSmallerBtn" class="small" title="Make selected commentary text smaller; with no selection, reduce the whole commentary font">A−</button>
+<button id="commentTextLargerBtn" class="small" title="Make selected commentary text larger; with no selection, increase the whole commentary font">A+</button>
+<button id="commentOutdentBtn" class="small" title="Outdent selected text or current paragraph">Outdent</button>
+<button id="commentIndentBtn" class="small" title="Indent selected text or current paragraph. Tab also works.">Indent</button>
 <button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
 <button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
 <button id="blockquoteBtn" class="small">Blockquote</button>
+<button id="blockquoteSmallerBtn" class="small" title="Make commentary blockquotes smaller">BQ−</button>
+<button id="blockquoteLargerBtn" class="small" title="Make commentary blockquotes larger">BQ+</button>
+<button id="openStyleSettingsBtn" class="small" title="Open text and blockquote style settings">Style</button>
 <button id="cfBtn" class="small">cf.</button>
 <button id="linkBtn" class="small">Link</button>
 <button id="aiInlineBtn" class="small good">AI</button>
@@ -1202,10 +1223,13 @@ const DEFAULT_STYLE_CONTROLS = {
   commentFontSize:16,
   commentLineHeight:1.68,
   commentFontFamily:'system',
+  commentTabSize:32,
   blockquoteBg:'#fff8e8',
   blockquoteBorder:'#8a6412',
   blockquoteInk:'#202632',
   blockquoteFontSize:16,
+  blockquoteLineHeight:1.55,
+  blockquotePaddingScale:1,
   blockquoteBorderWidth:4,
   blockquoteRadius:10
 };
@@ -1890,6 +1914,7 @@ function renderSections(){
     };
     card.querySelector('.secTitle').oninput = changed;
     card.querySelector('.sectionContent').oninput = changed;
+    card.querySelector('.sectionContent').addEventListener('keydown', ev => handleEditableTab(ev, ev.currentTarget));
     box.appendChild(card);
   });
 }
@@ -2050,7 +2075,156 @@ function markerNextToCaret(sel, forward){
   if (isNoteSpacerNode(cand)) cand = forward ? cand.nextSibling : cand.previousSibling;
   return isNoteRefNode(cand) ? cand : null;
 }
+
+function selectionInside(target){
+  const sel = window.getSelection();
+  return !!(target && sel && sel.rangeCount && target.contains(sel.anchorNode));
+}
+function selectedBlockElements(target){
+  const sel = window.getSelection();
+  if (!target || !sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return [];
+  const range = sel.getRangeAt(0);
+  const blocks = [];
+  const selector = 'p,div,li,blockquote,h1,h2,h3,h4,h5,h6';
+  target.querySelectorAll(selector).forEach(el => {
+    if (el !== target && range.intersectsNode(el)) blocks.push(el);
+  });
+  if (!blocks.length) {
+    let n = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement);
+    while (n && n !== target) {
+      if (n.matches && n.matches(selector)) { blocks.push(n); break; }
+      n = n.parentElement;
+    }
+  }
+  return blocks;
+}
+function applyEditorIndent(target, outdent){
+  target = target || $('commentEditor');
+  if (!target) return;
+  target.focus();
+  const c = normalizeStyleControls(appSettings.styleControls);
+  const amount = c.commentTabSize || 32;
+  const blocks = selectedBlockElements(target);
+  if (!blocks.length && !outdent) {
+    insertHtmlAtEditable(target, '<span class="tab-space" style="display:inline-block;width:' + amount + 'px">&nbsp;</span>');
+    changed();
+    return;
+  }
+  blocks.forEach(el => {
+    const cur = parseInt(el.style.marginLeft || '0', 10) || 0;
+    const next = outdent ? Math.max(0, cur - amount) : Math.min(320, cur + amount);
+    if (next) el.style.marginLeft = next + 'px';
+    else el.style.removeProperty('margin-left');
+  });
+  changed();
+}
+function handleEditableTab(ev, target){
+  if (ev.key !== 'Tab') return false;
+  ev.preventDefault();
+  applyEditorIndent(target || ev.currentTarget, !!ev.shiftKey);
+  return true;
+}
+function setCaretAfterNode(node){
+  const sel = window.getSelection();
+  const r = document.createRange();
+  r.setStartAfter(node);
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+function setCaretInsideNode(node){
+  const sel = window.getSelection();
+  const r = document.createRange();
+  r.selectNodeContents(node);
+  r.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+function makeStyledBlockquote(){
+  const ed = $('commentEditor');
+  ed.focus();
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) {
+    const r = document.createRange();
+    r.selectNodeContents(ed);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  const range = sel.getRangeAt(0);
+  const b = document.createElement('blockquote');
+  if (range.collapsed) {
+    b.innerHTML = '<br>';
+    const after = document.createElement('p');
+    after.innerHTML = '<br>';
+    range.insertNode(after);
+    range.insertNode(b);
+    setCaretInsideNode(b);
+  } else {
+    b.appendChild(range.extractContents());
+    range.insertNode(b);
+    setCaretAfterNode(b);
+  }
+  changed();
+}
+function applyInlineFontSize(target, delta){
+  target = target || $('commentEditor');
+  target.focus();
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return false;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return false;
+  let baseNode = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+  if (!target.contains(baseNode)) baseNode = target;
+  const base = parseInt(window.getComputedStyle(baseNode).fontSize,10) || normalizeStyleControls(appSettings.styleControls).commentFontSize;
+  const next = clamp(base + delta, 8, 48);
+  const span = document.createElement('span');
+  span.style.fontSize = next + 'px';
+  span.appendChild(range.extractContents());
+  range.insertNode(span);
+  setCaretAfterNode(span);
+  changed();
+  return true;
+}
+function adjustCommentaryTextSize(delta){
+  const ed = $('commentEditor');
+  if (applyInlineFontSize(ed, delta)) return;
+  const c = normalizeStyleControls(appSettings.styleControls);
+  c.commentFontSize = clamp((parseInt(c.commentFontSize,10) || 16) + delta, 11, 34);
+  appSettings.styleControls = c;
+  applyVisualSettings();
+  pushStyleControls();
+  saveBetaSettings();
+  changed();
+}
+function scaleInlineBlockquoteBoxes(ratio){
+  document.querySelectorAll('#commentEditor blockquote,.sectionContent blockquote').forEach(b => {
+    if (b.style.minHeight) {
+      const oldH = parseFloat(b.style.minHeight) || b.getBoundingClientRect().height;
+      const nextH = clamp(Math.round(oldH * ratio), 32, 900);
+      b.style.minHeight = nextH + 'px';
+    }
+  });
+}
+function adjustBlockquoteTextSize(delta){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  const old = parseInt(c.blockquoteFontSize,10) || 16;
+  const next = clamp(old + delta, 10, 34);
+  c.blockquoteFontSize = next;
+  appSettings.styleControls = c;
+  applyVisualSettings();
+  pushStyleControls();
+  scaleInlineBlockquoteBoxes(next / old);
+  saveBetaSettings();
+  changed();
+}
+function openStyleSettings(){
+  if ($('settingsPanel')) $('settingsPanel').classList.remove('hidden');
+  activateSettingsTab('style');
+}
+
 function handleCommentKeydown(ev){
+  if (handleEditableTab(ev, $('commentEditor'))) return;
   if (ev.key !== 'Backspace' && ev.key !== 'Delete') return;
   const ed = $('commentEditor');
   const sel = window.getSelection();
@@ -2116,13 +2290,13 @@ function insertExistingNoteMarker(type,idx){
   renderNotes();
   changed();
 }
-function insertHtmlAtCursor(html){
-  const ed = $('commentEditor');
-  ed.focus();
+function insertHtmlAtEditable(target, html){
+  target = target || $('commentEditor');
+  target.focus();
   let sel = window.getSelection();
-  if (!sel.rangeCount || !ed.contains(sel.anchorNode)) {
+  if (!sel.rangeCount || !target.contains(sel.anchorNode)) {
     const r = document.createRange();
-    r.selectNodeContents(ed);
+    r.selectNodeContents(target);
     r.collapse(false);
     sel.removeAllRanges();
     sel.addRange(r);
@@ -2141,6 +2315,9 @@ function insertHtmlAtCursor(html){
     sel.removeAllRanges();
     sel.addRange(after);
   }
+}
+function insertHtmlAtCursor(html){
+  insertHtmlAtEditable($('commentEditor'), html);
 }
 function noteArraysEqual(a,b){
   if (a.length !== b.length) return false;
@@ -3123,10 +3300,13 @@ function normalizeStyleControls(v){
     commentFontSize:clamp(parseInt(v.commentFontSize,10) || DEFAULT_STYLE_CONTROLS.commentFontSize,11,34),
     commentLineHeight:clamp(parseFloat(v.commentLineHeight) || DEFAULT_STYLE_CONTROLS.commentLineHeight,1.1,2.4),
     commentFontFamily:['system','serif','mono'].includes(v.commentFontFamily) ? v.commentFontFamily : DEFAULT_STYLE_CONTROLS.commentFontFamily,
+    commentTabSize:clamp(parseInt(v.commentTabSize,10) || DEFAULT_STYLE_CONTROLS.commentTabSize,12,96),
     blockquoteBg:normalizeHexColor(v.blockquoteBg, DEFAULT_STYLE_CONTROLS.blockquoteBg),
     blockquoteBorder:normalizeHexColor(v.blockquoteBorder, DEFAULT_STYLE_CONTROLS.blockquoteBorder),
     blockquoteInk:normalizeHexColor(v.blockquoteInk, DEFAULT_STYLE_CONTROLS.blockquoteInk),
     blockquoteFontSize:clamp(parseInt(v.blockquoteFontSize,10) || DEFAULT_STYLE_CONTROLS.blockquoteFontSize,10,34),
+    blockquoteLineHeight:clamp(parseFloat(v.blockquoteLineHeight) || DEFAULT_STYLE_CONTROLS.blockquoteLineHeight,1.1,2.4),
+    blockquotePaddingScale:clamp(parseFloat(v.blockquotePaddingScale) || DEFAULT_STYLE_CONTROLS.blockquotePaddingScale,0.45,2.2),
     blockquoteBorderWidth:clamp(parseInt(v.blockquoteBorderWidth,10) || DEFAULT_STYLE_CONTROLS.blockquoteBorderWidth,1,18),
     blockquoteRadius:clamp(parseInt(v.blockquoteRadius,10) || DEFAULT_STYLE_CONTROLS.blockquoteRadius,0,32)
   };
@@ -3144,10 +3324,15 @@ function applyVisualSettings(){
   r.setProperty('--comment-font-size', c.commentFontSize + 'px');
   r.setProperty('--comment-line-height', c.commentLineHeight);
   r.setProperty('--comment-font-family', c.commentFontFamily === 'serif' ? 'Georgia, Times New Roman, serif' : c.commentFontFamily === 'mono' ? 'ui-monospace, SFMono-Regular, Consolas, monospace' : 'Segoe UI, Arial, sans-serif');
+  r.setProperty('--comment-tab-size', c.commentTabSize + 'px');
   r.setProperty('--blockquote-bg', c.blockquoteBg);
   r.setProperty('--blockquote-border', c.blockquoteBorder);
   r.setProperty('--blockquote-ink', c.blockquoteInk);
   r.setProperty('--blockquote-font-size', c.blockquoteFontSize + 'px');
+  r.setProperty('--blockquote-line-height', c.blockquoteLineHeight);
+  r.setProperty('--blockquote-pad-y', Math.round(c.blockquoteFontSize * .55 * c.blockquotePaddingScale) + 'px');
+  r.setProperty('--blockquote-pad-x', Math.round(c.blockquoteFontSize * .78 * c.blockquotePaddingScale) + 'px');
+  r.setProperty('--blockquote-min-height', Math.round(c.blockquoteFontSize * 2.35 * c.blockquotePaddingScale) + 'px');
   r.setProperty('--blockquote-border-width', c.blockquoteBorderWidth + 'px');
   r.setProperty('--blockquote-radius', c.blockquoteRadius + 'px');
 }
@@ -3162,10 +3347,13 @@ function styleControlsFromInputs(){
   if ($('commentFontInput')) c.commentFontSize = clamp(parseInt($('commentFontInput').value,10) || c.commentFontSize,11,34);
   if ($('commentLineHeightInput')) c.commentLineHeight = clamp(parseFloat($('commentLineHeightInput').value) || c.commentLineHeight,1.1,2.4);
   if ($('commentFontFamilyInput')) c.commentFontFamily = ['system','serif','mono'].includes($('commentFontFamilyInput').value) ? $('commentFontFamilyInput').value : c.commentFontFamily;
+  if ($('commentTabSizeInput')) c.commentTabSize = clamp(parseInt($('commentTabSizeInput').value,10) || c.commentTabSize,12,96);
   if ($('blockquoteBgInput')) c.blockquoteBg = normalizeHexColor($('blockquoteBgInput').value, c.blockquoteBg);
   if ($('blockquoteBorderInput')) c.blockquoteBorder = normalizeHexColor($('blockquoteBorderInput').value, c.blockquoteBorder);
   if ($('blockquoteInkInput')) c.blockquoteInk = normalizeHexColor($('blockquoteInkInput').value, c.blockquoteInk);
   if ($('blockquoteFontInput')) c.blockquoteFontSize = clamp(parseInt($('blockquoteFontInput').value,10) || c.blockquoteFontSize,10,34);
+  if ($('blockquoteLineHeightInput')) c.blockquoteLineHeight = clamp(parseFloat($('blockquoteLineHeightInput').value) || c.blockquoteLineHeight,1.1,2.4);
+  if ($('blockquotePaddingInput')) c.blockquotePaddingScale = clamp(parseFloat($('blockquotePaddingInput').value) || c.blockquotePaddingScale,0.45,2.2);
   if ($('blockquoteBorderWidthInput')) c.blockquoteBorderWidth = clamp(parseInt($('blockquoteBorderWidthInput').value,10) || c.blockquoteBorderWidth,1,18);
   if ($('blockquoteRadiusInput')) c.blockquoteRadius = clamp(parseInt($('blockquoteRadiusInput').value,10) || c.blockquoteRadius,0,32);
   return c;
@@ -3181,10 +3369,13 @@ function pushStyleControls(){
   if ($('commentFontInput')) $('commentFontInput').value = c.commentFontSize;
   if ($('commentLineHeightInput')) $('commentLineHeightInput').value = c.commentLineHeight;
   if ($('commentFontFamilyInput')) $('commentFontFamilyInput').value = c.commentFontFamily;
+  if ($('commentTabSizeInput')) $('commentTabSizeInput').value = c.commentTabSize;
   if ($('blockquoteBgInput')) $('blockquoteBgInput').value = c.blockquoteBg;
   if ($('blockquoteBorderInput')) $('blockquoteBorderInput').value = c.blockquoteBorder;
   if ($('blockquoteInkInput')) $('blockquoteInkInput').value = c.blockquoteInk;
   if ($('blockquoteFontInput')) $('blockquoteFontInput').value = c.blockquoteFontSize;
+  if ($('blockquoteLineHeightInput')) $('blockquoteLineHeightInput').value = c.blockquoteLineHeight;
+  if ($('blockquotePaddingInput')) $('blockquotePaddingInput').value = c.blockquotePaddingScale;
   if ($('blockquoteBorderWidthInput')) $('blockquoteBorderWidthInput').value = c.blockquoteBorderWidth;
   if ($('blockquoteRadiusInput')) $('blockquoteRadiusInput').value = c.blockquoteRadius;
 }
@@ -3193,7 +3384,7 @@ function exportQuoteCssOverrides(){
   const commentFont = c.commentFontFamily === 'serif' ? 'Georgia, Times New Roman, serif' : c.commentFontFamily === 'mono' ? 'Consolas, monospace' : 'Arial, sans-serif';
   return '.sourceQuote{background:' + c.sourceQuoteBg + ' !important;border-left:5px solid ' + c.sourceQuoteBorder + ' !important;color:' + c.sourceQuoteInk + ' !important;font-size:' + c.sourceQuoteFontSize + 'px !important;padding:12px 15px}' +
     '.entryBody{background:' + c.commentBg + ' !important;color:' + c.commentInk + ' !important;font-family:' + commentFont + ' !important;font-size:' + c.commentFontSize + 'px !important;line-height:' + c.commentLineHeight + ' !important}' +
-    '.entry blockquote:not(.sourceQuote){background:' + c.blockquoteBg + ' !important;border-left:' + c.blockquoteBorderWidth + 'px solid ' + c.blockquoteBorder + ' !important;color:' + c.blockquoteInk + ' !important;border-radius:' + c.blockquoteRadius + 'px;font-size:' + c.blockquoteFontSize + 'px !important;line-height:1.55 !important;padding:' + Math.round(c.blockquoteFontSize*.55) + 'px ' + Math.round(c.blockquoteFontSize*.78) + 'px !important;min-height:' + Math.round(c.blockquoteFontSize*2.35) + 'px}' +
+    '.entry blockquote:not(.sourceQuote){background:' + c.blockquoteBg + ' !important;border-left:' + c.blockquoteBorderWidth + 'px solid ' + c.blockquoteBorder + ' !important;color:' + c.blockquoteInk + ' !important;border-radius:' + c.blockquoteRadius + 'px;font-size:' + c.blockquoteFontSize + 'px !important;line-height:' + c.blockquoteLineHeight + ' !important;padding:' + Math.round(c.blockquoteFontSize*.55*c.blockquotePaddingScale) + 'px ' + Math.round(c.blockquoteFontSize*.78*c.blockquotePaddingScale) + 'px !important;min-height:' + Math.round(c.blockquoteFontSize*2.35*c.blockquotePaddingScale) + 'px}' +
     'a.internal-link{text-decoration:underline;font-weight:bold}';
 }
 
@@ -3573,6 +3764,7 @@ function bind(){
     $(id).addEventListener('change', changed);
   });
   $('commentEditor').addEventListener('keydown', handleCommentKeydown);
+  $('quoteInput').addEventListener('keydown', ev => handleEditableTab(ev, $('quoteInput')));
   $('manualSaveBtn').onclick = manualSave;
   $('manualSaveTop').onclick = manualSave;
   $('newBtn').onclick = newEntry;
@@ -3619,11 +3811,14 @@ function bind(){
   document.querySelectorAll('.clean').forEach(b => {
     b.onclick = () => cleanup(b.dataset.clean);
   });
-  $('blockquoteBtn').onclick = () => {
-    $('commentEditor').focus();
-    document.execCommand('formatBlock', false, 'blockquote');
-    changed();
-  };
+  $('blockquoteBtn').onclick = makeStyledBlockquote;
+  if ($('commentTextSmallerBtn')) $('commentTextSmallerBtn').onclick = () => adjustCommentaryTextSize(-1);
+  if ($('commentTextLargerBtn')) $('commentTextLargerBtn').onclick = () => adjustCommentaryTextSize(1);
+  if ($('commentIndentBtn')) $('commentIndentBtn').onclick = () => applyEditorIndent($('commentEditor'), false);
+  if ($('commentOutdentBtn')) $('commentOutdentBtn').onclick = () => applyEditorIndent($('commentEditor'), true);
+  if ($('blockquoteSmallerBtn')) $('blockquoteSmallerBtn').onclick = () => adjustBlockquoteTextSize(-1);
+  if ($('blockquoteLargerBtn')) $('blockquoteLargerBtn').onclick = () => adjustBlockquoteTextSize(1);
+  if ($('openStyleSettingsBtn')) $('openStyleSettingsBtn').onclick = openStyleSettings;
   $('cfBtn').onclick = insertCfReference;
   $('linkBtn').onclick = insertSmartLink;
   $('editBtn').onclick = () => setMode(false);
@@ -3657,7 +3852,7 @@ function bind(){
     document.body.classList.toggle('dark', $('darkThemeToggle').checked);
     localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
   };
-  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','commentBgInput','commentInkInput','commentFontInput','commentLineHeightInput','commentFontFamilyInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteFontInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','commentBgInput','commentInkInput','commentFontInput','commentLineHeightInput','commentFontFamilyInput','commentTabSizeInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteFontInput','blockquoteLineHeightInput','blockquotePaddingInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
     if ($(id)) $(id).addEventListener('change', applyBetaSettings);
   });
   [
