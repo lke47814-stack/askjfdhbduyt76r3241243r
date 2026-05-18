@@ -1,0 +1,23 @@
+ALL RIGHTS RESERVED
+
+Copyright (c) 2026 Samuel
+
+All Rights Reserved.
+
+This software and associated files are proprietary and confidential.
+
+No part of this software may be copied, reproduced, modified,
+distributed, sublicensed, published, reverse engineered,
+or used in any form without explicit prior written permission
+from the copyright holder.
+
+Permission is not granted to use this software commercially,
+privately, academically, or publicly except through officially
+authorized deployments controlled by the copyright holder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NONINFRINGEMENT.
+
+Unauthorized use, duplication, or distribution is strictly prohibited.
