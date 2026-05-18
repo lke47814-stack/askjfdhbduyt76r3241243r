@@ -18,6 +18,19 @@
   --shadow:0 12px 28px rgba(73,48,12,.12);
   --ui:Inter,"Segoe UI",Arial,sans-serif;
   --serif:Georgia,"Times New Roman",serif;
+  --panel2:var(--field);
+  --text:var(--ink);
+  --source-quote-bg:#fffdf8;
+  --source-quote-border:#8a6412;
+  --source-quote-ink:#202632;
+  --source-quote-font-size:18px;
+  --blockquote-bg:#fff8e8;
+  --blockquote-border:#8a6412;
+  --blockquote-ink:#202632;
+  --blockquote-border-width:4px;
+  --blockquote-radius:10px;
+  --rail-width:230px;
+  --list-width:380px;
 }
 body.dark{
   --bg:#10141f;
@@ -105,8 +118,55 @@ h1{
   margin:16px auto;
   padding:0 16px 42px;
   display:grid;
-  grid-template-columns:230px 380px minmax(0,1fr);
-  gap:14px;
+  grid-template-columns:var(--rail-width) 8px var(--list-width) 8px minmax(0,1fr);
+  gap:7px;
+  align-items:start;
+}
+.app.libraryCollapsed{
+  --rail-width:0px;
+  grid-template-columns:0 0 var(--list-width) 8px minmax(0,1fr);
+}
+.app.entriesCollapsed{
+  --list-width:0px;
+  grid-template-columns:var(--rail-width) 8px 0 0 minmax(0,1fr);
+}
+.app.libraryCollapsed.entriesCollapsed{
+  grid-template-columns:0 0 0 0 minmax(0,1fr);
+}
+.app.libraryCollapsed .rail,
+.app.libraryCollapsed #railResizer,
+.app.entriesCollapsed .listPane,
+.app.entriesCollapsed #listResizer{display:none}
+.paneResizer{
+  align-self:stretch;
+  min-height:calc(100vh - 162px);
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:linear-gradient(180deg, transparent, var(--field), transparent);
+  cursor:col-resize;
+  opacity:.78;
+}
+.paneResizer:hover{
+  background:var(--accent);
+  opacity:.95;
+}
+body.resizing,
+body.resizing *{
+  cursor:col-resize!important;
+  user-select:none!important;
+}
+.paneMiniHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.paneMiniHead strong{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
 }
 .card{
   background:var(--panel);
@@ -224,11 +284,15 @@ h1{
   padding:13px;
   line-height:1.68;
   outline:none;
+  resize:vertical;
+  overflow:auto;
 }
 .quoteBox{
   font-family:var(--serif);
-  font-size:18px;
-  border-left:5px solid var(--accent);
+  font-size:var(--source-quote-font-size);
+  border-left:5px solid var(--source-quote-border);
+  background:var(--source-quote-bg);
+  color:var(--source-quote-ink);
   min-height:92px;
   white-space:pre-wrap;
 }
@@ -309,17 +373,31 @@ h1{
   margin-bottom:16px;
 }
 .readQuote{
-  border-left:5px solid var(--accent);
-  background:var(--field);
+  border-left:5px solid var(--source-quote-border);
+  background:var(--source-quote-bg);
+  color:var(--source-quote-ink);
   padding:14px 18px;
-  font-size:18px;
+  font-size:var(--source-quote-font-size);
 }
 .editor blockquote,.sectionContent blockquote{
   margin:12px 0;
   padding:10px 14px;
-  border-left:4px solid var(--accent);
-  background:var(--field);
-  color:var(--text);
+  border-left:var(--blockquote-border-width) solid var(--blockquote-border);
+  border-radius:var(--blockquote-radius);
+  background:var(--blockquote-bg);
+  color:var(--blockquote-ink);
+  resize:both;
+  overflow:auto;
+  min-height:42px;
+  max-width:100%;
+}
+.editor blockquote:hover,.sectionContent blockquote:hover{
+  outline:1px dashed var(--line);
+}
+a.internal-link{
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:2px;
 }
 a.cf-link{
   font-weight:800;
@@ -535,12 +613,14 @@ body.locked .settingsPanel{
 .hidden{display:none!important}
 a{color:var(--accent)}
 @media(max-width:1240px){
-  .app{grid-template-columns:230px minmax(0,1fr)}
-  .listPane{display:none}
   .toolbar{grid-template-columns:1fr 1fr}
 }
 @media(max-width:850px){
-  .app,.grid2,.grid3,.toolbar{grid-template-columns:1fr}
+  .app{grid-template-columns:1fr}
+  .paneResizer{display:none!important}
+  .app.libraryCollapsed .rail,
+  .app.entriesCollapsed .listPane{display:none!important}
+  .grid2,.grid3,.toolbar{grid-template-columns:1fr}
   .top{display:block}
 }
 </style>
@@ -566,6 +646,8 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 </div>
 </div>
 <div class="actions">
+<button id="toggleLibraryBtn">Hide Library</button>
+<button id="toggleEntriesBtn">Hide Entries</button>
 <button id="settingsBtn">Settings</button>
 <button id="manualSaveTop" class="primary">Manual Save</button>
 </div>
@@ -607,6 +689,7 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
     <button class="settingsTabBtn" data-settings-tab="export">Export</button>
     <button class="settingsTabBtn" data-settings-tab="front">Book Front Matter</button>
     <button class="settingsTabBtn" data-settings-tab="notes">Footnotes / Endnotes</button>
+    <button class="settingsTabBtn" data-settings-tab="style">Style Freedom</button>
   </div>
 
   <div class="settingsContent">
@@ -742,6 +825,29 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
       </div>
       <div class="exportHint">Scripture references inside footnotes and endnotes, such as John 3:16, Psalm 51, or Ruth 1-4, are automatically linked to Bible Gateway NKJV + YLT.</div>
     </section>
+
+    <section class="settingTabSection" data-settings-section="style">
+      <h3>Quote and blockquote styling</h3>
+      <div class="sub">These controls affect the live editor and exported PDF/Book HTML. Drag the lower-right corner of a commentary blockquote to resize it; the resized width and height save with the entry.</div>
+      <div class="settingBlock">
+        <h4>Source / passage quote box</h4>
+        <div class="styleGrid">
+          <div class="styleControl"><label for="sourceQuoteBgInput">Quote background</label><input id="sourceQuoteBgInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteBorderInput">Quote border</label><input id="sourceQuoteBorderInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteInkInput">Quote text</label><input id="sourceQuoteInkInput" type="color"></div>
+          <div class="styleControl"><label for="sourceQuoteFontInput">Quote font size px</label><input id="sourceQuoteFontInput" type="number" min="10" max="34" step="1"></div>
+        </div>
+        <h4>Main commentary blockquotes</h4>
+        <div class="styleGrid">
+          <div class="styleControl"><label for="blockquoteBgInput">Blockquote background</label><input id="blockquoteBgInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteBorderInput">Blockquote border</label><input id="blockquoteBorderInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteInkInput">Blockquote text</label><input id="blockquoteInkInput" type="color"></div>
+          <div class="styleControl"><label for="blockquoteBorderWidthInput">Border width px</label><input id="blockquoteBorderWidthInput" type="number" min="1" max="18" step="1"></div>
+          <div class="styleControl"><label for="blockquoteRadiusInput">Corner radius px</label><input id="blockquoteRadiusInput" type="number" min="0" max="32" step="1"></div>
+        </div>
+      </div>
+      <div class="exportHint">Use the normal Blockquote button for a resizable styled quote inside the main commentary. The separate source quote box keeps its own color and font controls.</div>
+    </section>
   </div>
 
   <div class="settingsFooter">
@@ -749,9 +855,9 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
   </div>
 </div>
 
-<main class="app">
+<main id="appGrid" class="app">
 <aside class="rail card">
-<div class="navTitle">Library</div>
+<div class="paneMiniHead"><strong>Library</strong><button id="collapseLibraryBtn" class="small">Hide</button></div>
 <button class="navBtn active" data-view="active">Active <span id="nActive">0</span></button>
 <button class="navBtn" data-view="drafts">Drafts <span id="nDrafts">0</span></button>
 <button class="navBtn" data-view="final">Final <span id="nFinal">0</span></button>
@@ -787,13 +893,20 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <input id="importFile" type="file" class="hidden" accept=".json,application/json">
 </aside>
 
+<div id="railResizer" class="paneResizer" title="Drag to resize the Library pane. Double-click to reset." aria-label="Resize Library"></div>
+
 <section class="listPane card">
 <div class="listHead">
 <strong id="listTitle">Active Entries</strong>
+<div class="actions">
 <span id="selectedCount" class="pill">0 selected</span>
+<button id="collapseEntriesBtn" class="small">Hide</button>
+</div>
 </div>
 <div id="entries" class="entries"></div>
 </section>
+
+<div id="listResizer" class="paneResizer" title="Drag to resize the Entries pane. Double-click to reset." aria-label="Resize Entries"></div>
 
 <section class="card">
 <div class="paneHead">
@@ -991,6 +1104,17 @@ function modeHintText(m){
   if (m === 'scripture') return 'Structured for normal Scripture commentary organized by biblical reference.';
   return 'General flexible commentary sections.';
 }
+const DEFAULT_STYLE_CONTROLS = {
+  sourceQuoteBg:'#fffdf8',
+  sourceQuoteBorder:'#8a6412',
+  sourceQuoteInk:'#202632',
+  sourceQuoteFontSize:18,
+  blockquoteBg:'#fff8e8',
+  blockquoteBorder:'#8a6412',
+  blockquoteInk:'#202632',
+  blockquoteBorderWidth:4,
+  blockquoteRadius:10
+};
 const BETA_SETTINGS_KEY = 'CatenaBetaSettings';
 let appSettings = {
   mode:'universal',
@@ -1002,6 +1126,7 @@ let appSettings = {
   exportShowStatus:true,
   footnotePlacement:'entry',
   endnotePlacement:'entry',
+  styleControls:Object.assign({}, DEFAULT_STYLE_CONTROLS),
   frontMatter:{
     title:'',
     subtitle:'',
@@ -2105,6 +2230,115 @@ function updateExistingCfLinks(root){
     }
   });
 }
+
+function updateExistingInternalLinks(root){
+  root.querySelectorAll('a.internal-link').forEach(a => {
+    const id = a.dataset.linkEntryId;
+    const folder = a.dataset.linkFolder;
+    if (id) {
+      const e = entries.find(x => x.id === id);
+      if (e) a.setAttribute('href','#' + entryAnchorId(e));
+    } else if (folder) {
+      a.setAttribute('href','#' + folderAnchorId(folder));
+    }
+  });
+}
+function internalAnchorFromTarget(target,label){
+  if (!target) return '';
+  if (target.kind === 'entry') {
+    const text = label || titleOf(target.entry);
+    return '<a class="internal-link" data-link-entry-id="' + esc(target.entry.id) + '" href="#' + entryAnchorId(target.entry) + '">' + esc(text) + '</a>';
+  }
+  if (target.kind === 'folder') {
+    const text = label || target.folder;
+    return '<a class="internal-link" data-link-folder="' + esc(target.folder) + '" href="#' + folderAnchorId(target.folder) + '">' + esc(text) + '</a>';
+  }
+  return '';
+}
+function saveEditorSelection(){
+  const ed = $('commentEditor');
+  const sel = window.getSelection();
+  if (!sel.rangeCount || !ed.contains(sel.anchorNode)) return null;
+  return sel.getRangeAt(0).cloneRange();
+}
+function restoreEditorSelection(range){
+  const ed = $('commentEditor');
+  ed.focus();
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  if (range) sel.addRange(range);
+  else {
+    const r = document.createRange();
+    r.selectNodeContents(ed);
+    r.collapse(false);
+    sel.addRange(r);
+  }
+}
+function selectedEditorText(range){
+  if (!range || range.collapsed) return '';
+  return String(range.toString() || '').trim();
+}
+function normalizeExternalUrl(raw){
+  let u = String(raw || '').trim();
+  if (!u) return '';
+  if (/^(javascript|data|vbscript):/i.test(u)) return '';
+  if (/^[\w.-]+\.[A-Za-z]{2,}(?:[/:?#].*)?$/i.test(u) && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+  return u;
+}
+function isExternalUrl(raw){
+  const u = normalizeExternalUrl(raw);
+  return /^https?:\/\//i.test(u) || /^mailto:/i.test(u);
+}
+function decorateAnchorsByHref(href, decorate){
+  const ed = $('commentEditor');
+  Array.from(ed.querySelectorAll('a')).forEach(a => {
+    if (a.getAttribute('href') === href) decorate(a);
+  });
+}
+function insertSmartLink(){
+  if (current < 0) return;
+  const savedRange = saveEditorSelection();
+  const selectedText = selectedEditorText(savedRange);
+  const raw = prompt('Link target:\n\nPaste a website URL, or type an entry title/reference, or type folder:Folder Name for an internal hyperlink.\n\nSelected text becomes the hyperlink.');
+  if (!raw) return;
+  restoreEditorSelection(savedRange);
+  const trimmed = raw.trim().replace(/^\[\[|\]\]$/g,'');
+  if (isExternalUrl(trimmed)) {
+    const href = normalizeExternalUrl(trimmed);
+    if (selectedText) {
+      document.execCommand('createLink', false, href);
+      decorateAnchorsByHref(href, a => {
+        a.setAttribute('target','_blank');
+        a.setAttribute('rel','noopener noreferrer');
+      });
+    } else {
+      insertHtmlAtCursor('<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + esc(href) + '</a>');
+    }
+    changed();
+    return;
+  }
+  const target = findCfTarget(trimmed, true);
+  if (!target) {
+    alert('No internal entry or folder matched that text. Use cf. for an unresolved reference, or paste a website URL.');
+    return;
+  }
+  const href = target.kind === 'entry' ? '#' + entryAnchorId(target.entry) : '#' + folderAnchorId(target.folder);
+  const label = selectedText || (target.kind === 'entry' ? titleOf(target.entry) : target.folder);
+  if (selectedText) {
+    document.execCommand('createLink', false, href);
+    decorateAnchorsByHref(href, a => {
+      a.classList.add('internal-link');
+      if (target.kind === 'entry') a.dataset.linkEntryId = target.entry.id;
+      if (target.kind === 'folder') a.dataset.linkFolder = target.folder;
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+    });
+  } else {
+    insertHtmlAtCursor(internalAnchorFromTarget(target, label));
+  }
+  changed();
+}
+
 function insertCfReference(){
   if (current < 0) return;
   pull();
@@ -2184,6 +2418,7 @@ function linkifyHtml(html){
     }
   });
   updateExistingCfLinks(root);
+  updateExistingInternalLinks(root);
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
   nodes.forEach(n => {
@@ -2295,7 +2530,7 @@ function entryHtml(e){
   const includeEntryEndnotes = (appSettings.endnotePlacement || 'entry') === 'entry';
   return '<article class="entry" id="' + entryAnchorId(e) + '" data-entry-id="' + esc(e.id) + '">' +
     head +
-    '<blockquote>' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
+    '<blockquote class="sourceQuote">' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
     linkifyHtml(normalizeMarkers(e.commentHtml, e, true)) +
     sections +
     notesHtml(e, includeEntryEndnotes) +
@@ -2457,7 +2692,7 @@ function bookHtml(list,title){
   title = title || defaultBookTitle();
 
   const style = appSettings.exportStyle || 'church';
-  const css = exportCss(style);
+  const css = exportCss(style) + exportQuoteCssOverrides();
   const endnotePlacement = appSettings.endnotePlacement || 'entry';
 
   let body = '';
@@ -2676,6 +2911,71 @@ function exportToml(){
   download('catena_commentary_beta.toml', toml, 'text/plain');
 }
 
+
+function normalizeHexColor(v,fallback){
+  v = String(v || '').trim();
+  return /^#[0-9a-f]{6}$/i.test(v) ? v : fallback;
+}
+function normalizeStyleControls(v){
+  v = v && typeof v === 'object' ? v : {};
+  return {
+    sourceQuoteBg:normalizeHexColor(v.sourceQuoteBg, DEFAULT_STYLE_CONTROLS.sourceQuoteBg),
+    sourceQuoteBorder:normalizeHexColor(v.sourceQuoteBorder, DEFAULT_STYLE_CONTROLS.sourceQuoteBorder),
+    sourceQuoteInk:normalizeHexColor(v.sourceQuoteInk, DEFAULT_STYLE_CONTROLS.sourceQuoteInk),
+    sourceQuoteFontSize:clamp(parseInt(v.sourceQuoteFontSize,10) || DEFAULT_STYLE_CONTROLS.sourceQuoteFontSize,10,34),
+    blockquoteBg:normalizeHexColor(v.blockquoteBg, DEFAULT_STYLE_CONTROLS.blockquoteBg),
+    blockquoteBorder:normalizeHexColor(v.blockquoteBorder, DEFAULT_STYLE_CONTROLS.blockquoteBorder),
+    blockquoteInk:normalizeHexColor(v.blockquoteInk, DEFAULT_STYLE_CONTROLS.blockquoteInk),
+    blockquoteBorderWidth:clamp(parseInt(v.blockquoteBorderWidth,10) || DEFAULT_STYLE_CONTROLS.blockquoteBorderWidth,1,18),
+    blockquoteRadius:clamp(parseInt(v.blockquoteRadius,10) || DEFAULT_STYLE_CONTROLS.blockquoteRadius,0,32)
+  };
+}
+function applyVisualSettings(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  appSettings.styleControls = c;
+  const r = document.documentElement.style;
+  r.setProperty('--source-quote-bg', c.sourceQuoteBg);
+  r.setProperty('--source-quote-border', c.sourceQuoteBorder);
+  r.setProperty('--source-quote-ink', c.sourceQuoteInk);
+  r.setProperty('--source-quote-font-size', c.sourceQuoteFontSize + 'px');
+  r.setProperty('--blockquote-bg', c.blockquoteBg);
+  r.setProperty('--blockquote-border', c.blockquoteBorder);
+  r.setProperty('--blockquote-ink', c.blockquoteInk);
+  r.setProperty('--blockquote-border-width', c.blockquoteBorderWidth + 'px');
+  r.setProperty('--blockquote-radius', c.blockquoteRadius + 'px');
+}
+function styleControlsFromInputs(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  if ($('sourceQuoteBgInput')) c.sourceQuoteBg = normalizeHexColor($('sourceQuoteBgInput').value, c.sourceQuoteBg);
+  if ($('sourceQuoteBorderInput')) c.sourceQuoteBorder = normalizeHexColor($('sourceQuoteBorderInput').value, c.sourceQuoteBorder);
+  if ($('sourceQuoteInkInput')) c.sourceQuoteInk = normalizeHexColor($('sourceQuoteInkInput').value, c.sourceQuoteInk);
+  if ($('sourceQuoteFontInput')) c.sourceQuoteFontSize = clamp(parseInt($('sourceQuoteFontInput').value,10) || c.sourceQuoteFontSize,10,34);
+  if ($('blockquoteBgInput')) c.blockquoteBg = normalizeHexColor($('blockquoteBgInput').value, c.blockquoteBg);
+  if ($('blockquoteBorderInput')) c.blockquoteBorder = normalizeHexColor($('blockquoteBorderInput').value, c.blockquoteBorder);
+  if ($('blockquoteInkInput')) c.blockquoteInk = normalizeHexColor($('blockquoteInkInput').value, c.blockquoteInk);
+  if ($('blockquoteBorderWidthInput')) c.blockquoteBorderWidth = clamp(parseInt($('blockquoteBorderWidthInput').value,10) || c.blockquoteBorderWidth,1,18);
+  if ($('blockquoteRadiusInput')) c.blockquoteRadius = clamp(parseInt($('blockquoteRadiusInput').value,10) || c.blockquoteRadius,0,32);
+  return c;
+}
+function pushStyleControls(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  if ($('sourceQuoteBgInput')) $('sourceQuoteBgInput').value = c.sourceQuoteBg;
+  if ($('sourceQuoteBorderInput')) $('sourceQuoteBorderInput').value = c.sourceQuoteBorder;
+  if ($('sourceQuoteInkInput')) $('sourceQuoteInkInput').value = c.sourceQuoteInk;
+  if ($('sourceQuoteFontInput')) $('sourceQuoteFontInput').value = c.sourceQuoteFontSize;
+  if ($('blockquoteBgInput')) $('blockquoteBgInput').value = c.blockquoteBg;
+  if ($('blockquoteBorderInput')) $('blockquoteBorderInput').value = c.blockquoteBorder;
+  if ($('blockquoteInkInput')) $('blockquoteInkInput').value = c.blockquoteInk;
+  if ($('blockquoteBorderWidthInput')) $('blockquoteBorderWidthInput').value = c.blockquoteBorderWidth;
+  if ($('blockquoteRadiusInput')) $('blockquoteRadiusInput').value = c.blockquoteRadius;
+}
+function exportQuoteCssOverrides(){
+  const c = normalizeStyleControls(appSettings.styleControls);
+  return '.sourceQuote{background:' + c.sourceQuoteBg + ' !important;border-left:5px solid ' + c.sourceQuoteBorder + ' !important;color:' + c.sourceQuoteInk + ' !important;font-size:' + c.sourceQuoteFontSize + 'px !important;padding:12px 15px}' +
+    '.entry blockquote:not(.sourceQuote){background:' + c.blockquoteBg + ' !important;border-left:' + c.blockquoteBorderWidth + 'px solid ' + c.blockquoteBorder + ' !important;color:' + c.blockquoteInk + ' !important;border-radius:' + c.blockquoteRadius + 'px;padding:10px 14px}' +
+    'a.internal-link{text-decoration:underline;font-weight:bold}';
+}
+
 function loadBetaSettings(){
   try {
     const saved = JSON.parse(localStorage.getItem(BETA_SETTINGS_KEY) || '{}');
@@ -2687,8 +2987,11 @@ function loadBetaSettings(){
     if (!appSettings.footnotePlacement) appSettings.footnotePlacement = 'entry';
     if (!appSettings.endnotePlacement) appSettings.endnotePlacement = 'entry';
     appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
+    appSettings.styleControls = normalizeStyleControls(appSettings.styleControls);
   } catch(e) {}
   appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
+  appSettings.styleControls = normalizeStyleControls(appSettings.styleControls);
+  applyVisualSettings();
   const savedTheme = localStorage.getItem('CatenaThemeV55');
   if (savedTheme === 'dark') document.body.classList.add('dark');
 }
@@ -2712,6 +3015,7 @@ function pushBetaSettings(){
   if ($('frontDedicationInput')) $('frontDedicationInput').value = fm.dedication;
   if ($('frontPrefaceInput')) $('frontPrefaceInput').value = fm.preface;
   if ($('frontIntroductionInput')) $('frontIntroductionInput').value = fm.introduction;
+  pushStyleControls();
 }
 function saveBetaSettings(){
   localStorage.setItem(BETA_SETTINGS_KEY, JSON.stringify(appSettings));
@@ -2727,6 +3031,8 @@ function applyBetaSettings(){
   appSettings.footnotePlacement = $('footnotePlacementSetting') ? $('footnotePlacementSetting').value : 'entry';
   appSettings.endnotePlacement = $('endnotePlacementSetting') ? $('endnotePlacementSetting').value : 'entry';
   appSettings.frontMatter = frontMatterFromInputs();
+  appSettings.styleControls = styleControlsFromInputs();
+  applyVisualSettings();
   saveBetaSettings();
   renderAll();
   setStatus('Settings saved.', true);
@@ -2758,7 +3064,149 @@ function activateSettingsTab(name){
     sec.classList.toggle('active', sec.dataset.settingsSection === name);
   });
 }
+
+const PANE_LAYOUT_KEY = 'CatenaPaneLayoutV1';
+const DEFAULT_PANE_LAYOUT = {
+  rail:230,
+  list:380,
+  libraryCollapsed:false,
+  entriesCollapsed:false
+};
+let paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT);
+function clamp(n,min,max){
+  return Math.max(min, Math.min(max, n));
+}
+function loadPaneLayout(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(PANE_LAYOUT_KEY) || 'null');
+    if (saved && typeof saved === 'object') {
+      paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT, saved);
+    }
+  } catch(e) {
+    paneLayout = Object.assign({}, DEFAULT_PANE_LAYOUT);
+  }
+  paneLayout.rail = clamp(parseInt(paneLayout.rail,10) || DEFAULT_PANE_LAYOUT.rail, 150, 520);
+  paneLayout.list = clamp(parseInt(paneLayout.list,10) || DEFAULT_PANE_LAYOUT.list, 220, 720);
+  paneLayout.libraryCollapsed = !!paneLayout.libraryCollapsed;
+  paneLayout.entriesCollapsed = !!paneLayout.entriesCollapsed;
+}
+function savePaneLayout(){
+  localStorage.setItem(PANE_LAYOUT_KEY, JSON.stringify(paneLayout));
+}
+function applyPaneLayout(){
+  const grid = $('appGrid');
+  if (!grid) return;
+  grid.style.setProperty('--rail-width', paneLayout.rail + 'px');
+  grid.style.setProperty('--list-width', paneLayout.list + 'px');
+  grid.classList.toggle('libraryCollapsed', paneLayout.libraryCollapsed);
+  grid.classList.toggle('entriesCollapsed', paneLayout.entriesCollapsed);
+  const libText = paneLayout.libraryCollapsed ? 'Show Library' : 'Hide Library';
+  const entText = paneLayout.entriesCollapsed ? 'Show Entries' : 'Hide Entries';
+  ['toggleLibraryBtn','collapseLibraryBtn'].forEach(id => {
+    if ($(id)) $(id).textContent = id === 'collapseLibraryBtn' ? (paneLayout.libraryCollapsed ? 'Show' : 'Hide') : libText;
+  });
+  ['toggleEntriesBtn','collapseEntriesBtn'].forEach(id => {
+    if ($(id)) $(id).textContent = id === 'collapseEntriesBtn' ? (paneLayout.entriesCollapsed ? 'Show' : 'Hide') : entText;
+  });
+}
+function togglePane(which){
+  if (which === 'library') paneLayout.libraryCollapsed = !paneLayout.libraryCollapsed;
+  if (which === 'entries') paneLayout.entriesCollapsed = !paneLayout.entriesCollapsed;
+  savePaneLayout();
+  applyPaneLayout();
+}
+function bindPaneToggle(id, which){
+  const el = $(id);
+  if (!el) return;
+  el.onclick = () => togglePane(which);
+}
+function bindPaneResizer(id, key, min, max){
+  const handle = $(id);
+  if (!handle) return;
+  handle.addEventListener('pointerdown', ev => {
+    ev.preventDefault();
+    const startX = ev.clientX;
+    const startVal = paneLayout[key];
+    document.body.classList.add('resizing');
+    if (handle.setPointerCapture) handle.setPointerCapture(ev.pointerId);
+    function move(e){
+      const dx = e.clientX - startX;
+      paneLayout[key] = clamp(startVal + dx, min, Math.min(max, Math.max(min, window.innerWidth - 520)));
+      applyPaneLayout();
+    }
+    function up(){
+      document.body.classList.remove('resizing');
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      savePaneLayout();
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  });
+  handle.addEventListener('dblclick', () => {
+    paneLayout[key] = DEFAULT_PANE_LAYOUT[key];
+    savePaneLayout();
+    applyPaneLayout();
+  });
+}
+
+function blockquoteResizeTarget(ev){
+  const b = ev.target && ev.target.closest && ev.target.closest('.editor blockquote,.sectionContent blockquote');
+  if (!b) return null;
+  const rect = b.getBoundingClientRect();
+  const nearRight = ev.clientX >= rect.right - 18 && ev.clientX <= rect.right + 8;
+  const nearBottom = ev.clientY >= rect.bottom - 18 && ev.clientY <= rect.bottom + 8;
+  return nearRight && nearBottom ? b : null;
+}
+function setupBlockquoteResizing(){
+  document.addEventListener('mousemove', ev => {
+    const b = ev.target && ev.target.closest && ev.target.closest('.editor blockquote,.sectionContent blockquote');
+    if (!b) return;
+    b.style.cursor = blockquoteResizeTarget(ev) ? 'nwse-resize' : '';
+  });
+  document.addEventListener('pointerdown', ev => {
+    const b = blockquoteResizeTarget(ev);
+    if (!b) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const parent = b.parentElement;
+    const startX = ev.clientX;
+    const startY = ev.clientY;
+    const startW = b.getBoundingClientRect().width;
+    const startH = b.getBoundingClientRect().height;
+    document.body.classList.add('resizing');
+    function move(e){
+      const maxW = parent ? Math.max(180, parent.getBoundingClientRect().width - 8) : 900;
+      const nextW = clamp(Math.round(startW + e.clientX - startX),180,maxW);
+      const nextH = clamp(Math.round(startH + e.clientY - startY),42,900);
+      b.style.width = nextW + 'px';
+      b.style.minHeight = nextH + 'px';
+    }
+    function up(){
+      document.body.classList.remove('resizing');
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      b.style.cursor = '';
+      changed();
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  });
+}
+
+function setupPaneLayout(){
+  loadPaneLayout();
+  applyPaneLayout();
+  bindPaneToggle('toggleLibraryBtn', 'library');
+  bindPaneToggle('collapseLibraryBtn', 'library');
+  bindPaneToggle('toggleEntriesBtn', 'entries');
+  bindPaneToggle('collapseEntriesBtn', 'entries');
+  bindPaneResizer('railResizer', 'rail', 150, 520);
+  bindPaneResizer('listResizer', 'list', 220, 720);
+}
 function bind(){
+  setupPaneLayout();
+  setupBlockquoteResizing();
   document.querySelectorAll('.navBtn[data-view]').forEach(b => {
     b.onclick = () => {
       activeView = b.dataset.view;
@@ -2834,14 +3282,7 @@ function bind(){
     changed();
   };
   $('cfBtn').onclick = insertCfReference;
-  $('linkBtn').onclick = () => {
-    $('commentEditor').focus();
-    const u = prompt('Paste website or video URL:');
-    if (u) {
-      document.execCommand('createLink', false, u);
-      changed();
-    }
-  };
+  $('linkBtn').onclick = insertSmartLink;
   $('editBtn').onclick = () => setMode(false);
   $('readBtn').onclick = () => setMode(true);
   $('previewPdfBtn').onclick = previewPdf;
@@ -2873,7 +3314,7 @@ function bind(){
     document.body.classList.toggle('dark', $('darkThemeToggle').checked);
     localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
   };
-  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting'].forEach(id => {
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
     if ($(id)) $(id).addEventListener('change', applyBetaSettings);
   });
   [
@@ -2884,18 +3325,43 @@ function bind(){
     'frontDateInput',
     'frontDedicationInput',
     'frontPrefaceInput',
-    'frontIntroductionInput'
+    'frontIntroductionInput',
+    'sourceQuoteBgInput',
+    'sourceQuoteBorderInput',
+    'sourceQuoteInkInput',
+    'sourceQuoteFontInput',
+    'blockquoteBgInput',
+    'blockquoteBorderInput',
+    'blockquoteInkInput',
+    'blockquoteBorderWidthInput',
+    'blockquoteRadiusInput'
   ].forEach(id => {
     $(id).addEventListener('input', applyBetaSettings);
   });
 
   document.addEventListener('click', e => {
-    const a = e.target.closest && e.target.closest('a.cf-link[data-cf-id]');
-    if (!a) return;
-    const idx = entries.findIndex(x => x.id === a.dataset.cfId);
-    if (idx >= 0 && (!a.getAttribute('href') || a.getAttribute('href').charAt(0) === '#')) {
+    const cf = e.target.closest && e.target.closest('a.cf-link[data-cf-id]');
+    if (cf) {
+      const idx = entries.findIndex(x => x.id === cf.dataset.cfId);
+      if (idx >= 0 && (!cf.getAttribute('href') || cf.getAttribute('href').charAt(0) === '#')) {
+        e.preventDefault();
+        openEntry(idx);
+      }
+      return;
+    }
+    const internal = e.target.closest && e.target.closest('a.internal-link');
+    if (!internal || !internal.getAttribute('href') || internal.getAttribute('href').charAt(0) !== '#') return;
+    if (internal.dataset.linkEntryId) {
+      const idx = entries.findIndex(x => x.id === internal.dataset.linkEntryId);
+      if (idx >= 0) {
+        e.preventDefault();
+        openEntry(idx);
+      }
+    } else if (internal.dataset.linkFolder) {
       e.preventDefault();
-      openEntry(idx);
+      activeFolder = internal.dataset.linkFolder;
+      activeView = 'active';
+      renderAll();
     }
   });
 
