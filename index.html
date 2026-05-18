@@ -317,12 +317,49 @@ body.resizing *{
 }
 .tools{
   display:flex;
-  gap:6px;
+  gap:7px;
   flex-wrap:wrap;
   background:var(--field);
   border:1px solid var(--line);
   border-radius:12px 12px 0 0;
   padding:8px;
+  align-items:center;
+}
+.mainTools{
+  padding:7px;
+  gap:8px;
+}
+.toolGroup{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  padding:5px;
+  border:1px solid rgba(128,128,128,.22);
+  border-radius:10px;
+  background:rgba(255,255,255,.25);
+}
+.toolGroupLabel{
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+  padding:0 2px;
+}
+.toolColor{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--muted);
+}
+.toolColor input[type=color]{
+  width:30px;
+  height:28px;
+  padding:2px;
+  border-radius:8px;
 }
 .compactTools{
   margin-bottom:0;
@@ -626,8 +663,7 @@ sup.note-ref[contenteditable="false"]{
 #passwordMsg{min-height:22px;margin-top:12px;font-size:13px;font-weight:800}
 body.locked header,
 body.locked main,
-body.locked .settingsPanel,
-body.locked .aiPanel{
+body.locked .settingsPanel{
   display:none!important;
 }
 .settingBlock{
@@ -648,27 +684,8 @@ body.locked .aiPanel{
 }
 @media(max-width:520px){.settingBlock .frontGrid{grid-template-columns:1fr}}
 
-.aiPanel{
-  position:fixed; top:58px; right:18px; bottom:18px; width:min(560px,calc(100vw - 36px)); z-index:71;
-  background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:0 18px 60px rgba(0,0,0,.28);
-  display:flex; flex-direction:column; overflow:hidden;
-}
-.aiHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(156,111,42,.12),transparent)}
-.aiHead h2{margin:0;font-family:var(--serif);font-size:24px}
-.aiBody{padding:14px;overflow:auto;display:grid;gap:12px}
-.aiBody textarea{min-height:105px;resize:vertical}
-.aiConnect{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--soft);display:grid;gap:9px}
-.aiConnectGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.aiConnectGrid input,.aiConnectGrid select{width:100%}
-.aiConnectActions{display:flex;flex-wrap:wrap;gap:8px}
-.aiPresetGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.aiOutput{min-height:180px;white-space:pre-wrap;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--soft);color:var(--ink);font-family:var(--serif);line-height:1.55}
-.aiFine{font-size:12px;color:var(--muted);line-height:1.45}
-.aiBusy{opacity:.65;pointer-events:none}
 .sectionAnchorBadge{display:inline-flex;align-items:center;margin-left:8px;padding:3px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--soft);font-size:12px;cursor:pointer}
 .sectionCard.linkFlash,.readSection.linkFlash{outline:3px solid rgba(156,111,42,.45);outline-offset:3px}
-@media(max-width:700px){.aiPanel{left:8px;right:8px;top:48px;bottom:8px;width:auto}.aiPresetGrid{grid-template-columns:1fr}}
-
 .hidden{display:none!important}
 a{color:var(--accent)}
 @media(max-width:1240px){
@@ -707,7 +724,6 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <div class="actions">
 <button id="toggleLibraryBtn">Hide Library</button>
 <button id="toggleEntriesBtn">Hide Entries</button>
-<button id="aiBtn" class="good">AI</button>
 <button id="settingsBtn">Settings</button>
 <button id="manualSaveTop" class="primary">Manual Save</button>
 </div>
@@ -927,35 +943,6 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
   </div>
 </div>
 
-<div id="aiPanel" class="aiPanel hidden" role="dialog" aria-modal="false" aria-label="Catena AI support">
-  <div class="aiHead"><div><h2>AI Support</h2><div class="sub">Direct HTML AI: paste your OpenAI API key once on this browser, or switch to Vercel /api/ai mode.</div></div><button id="closeAiBtn" class="small">Close</button></div>
-  <div class="aiBody">
-    <div class="aiConnect">
-      <div class="label">OpenAI connection</div>
-      <div class="aiConnectGrid">
-        <input id="aiKeyInput" type="password" autocomplete="off" placeholder="OpenAI API key: sk-...">
-        <input id="aiModelInput" type="text" value="gpt-4.1-mini" placeholder="Model, e.g. gpt-4.1-mini">
-        <select id="aiConnectionMode">
-          <option value="direct">Direct from this HTML</option>
-          <option value="vercel">Vercel /api/ai</option>
-        </select>
-        <button id="testAiBtn" class="small">Test AI</button>
-      </div>
-      <div class="aiConnectActions">
-        <button id="saveAiKeyBtn" class="primary small">Save Key on This Browser</button>
-        <button id="clearAiKeyBtn" class="small">Forget Key</button>
-      </div>
-      <div class="aiFine">Direct mode keeps the key out of your GitHub repo, but it is still stored in this browser profile. Use Vercel mode when you want the key hidden on the server.</div>
-    </div>
-    <div><div class="label">Instruction</div><textarea id="aiInstruction" placeholder="Example: Strengthen this in a patristic, contemplative style, but preserve the wording unless I ask for rewriting."></textarea></div>
-    <div class="aiPresetGrid"><button id="aiAskBtn" class="primary">Run Custom Instruction</button><button id="aiPolishBtn">Polish Selection / Entry</button><button id="aiOutlineBtn">Create Structure</button><button id="aiFootnotesBtn">Suggest Footnotes</button><button id="aiLinksBtn">Suggest Internal Links</button><button id="aiReviewBtn">Review Export Readiness</button></div>
-    <div class="aiFine">Select text in the main commentary first to work only on that text. With no selection, the AI receives the current entry title, reference, quote, commentary, sections, and note text. It cannot save anything by itself; you choose whether to insert or replace.</div>
-    <div><div class="label">AI output</div><div id="aiOutput" class="aiOutput">No AI output yet.</div></div>
-    <div class="actions"><button id="aiReplaceSelectionBtn" class="primary">Replace Selection</button><button id="aiInsertBtn">Insert at Cursor</button><button id="aiCopyBtn">Copy Output</button></div>
-    <div id="aiStatus" class="sub"></div>
-  </div>
-</div>
-
 <main id="appGrid" class="app">
 <aside class="rail card">
 <div class="paneMiniHead"><strong>Library</strong><button id="collapseLibraryBtn" class="small">Hide</button></div>
@@ -1073,26 +1060,35 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 <div id="quoteInput" class="quoteBox" contenteditable="true" spellcheck="true"></div>
 
 <div class="label">Main commentary</div>
-<div class="tools">
-<button class="small fmt" data-target="commentEditor" data-cmd="bold"><b>B</b></button>
-<button class="small fmt" data-target="commentEditor" data-cmd="italic"><i>I</i></button>
-<button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
-<button id="commentTextSmallerBtn" class="small" title="Make selected commentary text smaller; with no selection, reduce the whole commentary font">A−</button>
-<button id="commentTextLargerBtn" class="small" title="Make selected commentary text larger; with no selection, increase the whole commentary font">A+</button>
-<button id="commentOutdentBtn" class="small" title="Outdent selected text or current paragraph">Outdent</button>
-<button id="commentIndentBtn" class="small" title="Indent selected text or current paragraph. Tab also works.">Indent</button>
-<button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
-<button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
-<button id="blockquoteBtn" class="small">Blockquote</button>
-<button id="blockquoteSmallerBtn" class="small" title="Make commentary blockquotes smaller">BQ−</button>
-<button id="blockquoteLargerBtn" class="small" title="Make commentary blockquotes larger">BQ+</button>
-<button id="openStyleSettingsBtn" class="small" title="Open text and blockquote style settings">Style</button>
-<button id="cfBtn" class="small">cf.</button>
-<button id="linkBtn" class="small">Link</button>
-<button id="aiInlineBtn" class="small good">AI</button>
-<button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
-<button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
-<button class="small fmt" data-target="commentEditor" data-cmd="removeFormat">Clear</button>
+<div class="tools mainTools">
+  <span class="toolGroup"><span class="toolGroupLabel">Text</span>
+    <button class="small fmt" data-target="commentEditor" data-cmd="bold"><b>B</b></button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="italic"><i>I</i></button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="underline"><u>U</u></button>
+    <button id="commentTextSmallerBtn" class="small" title="Make selected commentary text smaller; with no selection, reduce the whole commentary font">A−</button>
+    <button id="commentTextLargerBtn" class="small" title="Make selected commentary text larger; with no selection, increase the whole commentary font">A+</button>
+    <label class="toolColor" title="Selected text color">Text <input id="commentTextColorInput" type="color" value="#202632"></label>
+    <label class="toolColor" title="Selected highlight color">Highlight <input id="commentHighlightColorInput" type="color" value="#fff3a3"></label>
+    <button class="small fmt" data-target="commentEditor" data-cmd="removeFormat">Clear</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Paragraph</span>
+    <button id="commentOutdentBtn" class="small" title="Outdent selected text or current paragraph">Outdent</button>
+    <button id="commentIndentBtn" class="small" title="Indent selected text or current paragraph. Tab also works.">Indent</button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="insertUnorderedList">List</button>
+    <button class="small fmt" data-target="commentEditor" data-cmd="insertOrderedList">Numbered</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Quote</span>
+    <button id="blockquoteBtn" class="small">Blockquote</button>
+    <button id="blockquoteSmallerBtn" class="small" title="Make commentary blockquotes smaller">BQ−</button>
+    <button id="blockquoteLargerBtn" class="small" title="Make commentary blockquotes larger">BQ+</button>
+    <button id="openStyleSettingsBtn" class="small" title="Open text and blockquote style settings">Style</button>
+  </span>
+  <span class="toolGroup"><span class="toolGroupLabel">Links / Notes</span>
+    <button id="cfBtn" class="small">cf.</button>
+    <button id="linkBtn" class="small">Link</button>
+    <button id="insertFootnoteBtn" class="small primary">Insert Footnote 1</button>
+    <button id="insertCitationBtn" class="small primary">Insert Citation 1</button>
+  </span>
 </div>
 <div id="commentEditor" class="editor" contenteditable="true" spellcheck="true"></div>
 
@@ -2101,22 +2097,43 @@ function selectedBlockElements(target){
 function applyEditorIndent(target, outdent){
   target = target || $('commentEditor');
   if (!target) return;
-  target.focus();
-  const c = normalizeStyleControls(appSettings.styleControls);
-  const amount = c.commentTabSize || 32;
-  const blocks = selectedBlockElements(target);
-  if (!blocks.length && !outdent) {
-    insertHtmlAtEditable(target, '<span class="tab-space" style="display:inline-block;width:' + amount + 'px">&nbsp;</span>');
-    changed();
-    return;
-  }
-  blocks.forEach(el => {
-    const cur = parseInt(el.style.marginLeft || '0', 10) || 0;
-    const next = outdent ? Math.max(0, cur - amount) : Math.min(320, cur + amount);
-    if (next) el.style.marginLeft = next + 'px';
-    else el.style.removeProperty('margin-left');
+  runWithEditableSelection(target, () => {
+    const c = normalizeStyleControls(appSettings.styleControls);
+    const amount = c.commentTabSize || 32;
+    const sel = window.getSelection();
+    const range = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+    const blocks = selectedBlockElements(target);
+    if (!blocks.length) {
+      if (outdent) {
+        const tabs = Array.from(target.querySelectorAll('.tab-space'));
+        const beforeCaret = tabs.filter(t => {
+          if (!range) return true;
+          const r = document.createRange();
+          r.selectNode(t);
+          return range.compareBoundaryPoints(Range.START_TO_END, r) >= 0;
+        });
+        const tab = beforeCaret.pop() || tabs.pop();
+        if (tab) tab.remove();
+        return;
+      }
+      if (range && !range.collapsed) {
+        const wrap = document.createElement('div');
+        wrap.style.marginLeft = amount + 'px';
+        wrap.appendChild(range.extractContents());
+        range.insertNode(wrap);
+        setCaretAfterNode(wrap);
+        return;
+      }
+      insertHtmlAtEditable(target, '<span class="tab-space" style="display:inline-block;width:' + amount + 'px">&nbsp;</span>');
+      return;
+    }
+    blocks.forEach(el => {
+      const cur = parseInt(el.style.marginLeft || '0', 10) || 0;
+      const next = outdent ? Math.max(0, cur - amount) : Math.min(360, cur + amount);
+      if (next) el.style.marginLeft = next + 'px';
+      else el.style.removeProperty('margin-left');
+    });
   });
-  changed();
 }
 function handleEditableTab(ev, target){
   if (ev.key !== 'Tab') return false;
@@ -2142,7 +2159,7 @@ function setCaretInsideNode(node){
 }
 function makeStyledBlockquote(){
   const ed = $('commentEditor');
-  ed.focus();
+  restoreEditableSelection(ed);
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) {
     const r = document.createRange();
@@ -2169,7 +2186,7 @@ function makeStyledBlockquote(){
 }
 function applyInlineFontSize(target, delta){
   target = target || $('commentEditor');
-  target.focus();
+  restoreEditableSelection(target);
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return false;
   const range = sel.getRangeAt(0);
@@ -2196,6 +2213,7 @@ function adjustCommentaryTextSize(delta){
   pushStyleControls();
   saveBetaSettings();
   changed();
+  setTimeout(() => restoreEditableSelection(ed), 0);
 }
 function scaleInlineBlockquoteBoxes(ratio){
   document.querySelectorAll('#commentEditor blockquote,.sectionContent blockquote').forEach(b => {
@@ -2292,7 +2310,7 @@ function insertExistingNoteMarker(type,idx){
 }
 function insertHtmlAtEditable(target, html){
   target = target || $('commentEditor');
-  target.focus();
+  restoreEditableSelection(target);
   let sel = window.getSelection();
   if (!sel.rangeCount || !target.contains(sel.anchorNode)) {
     const r = document.createRange();
@@ -2602,27 +2620,127 @@ function internalAnchorFromTarget(target,label){
   return '';
 }
 function saveEditorSelection(){
-  const ed = $('commentEditor');
-  const sel = window.getSelection();
-  if (!sel.rangeCount || !ed.contains(sel.anchorNode)) return null;
-  return sel.getRangeAt(0).cloneRange();
+  return saveEditableSelection($('commentEditor'));
 }
 function restoreEditorSelection(range){
-  const ed = $('commentEditor');
-  ed.focus();
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  if (range) sel.addRange(range);
-  else {
-    const r = document.createRange();
-    r.selectNodeContents(ed);
-    r.collapse(false);
-    sel.addRange(r);
-  }
+  return restoreEditableSelection($('commentEditor'), range);
 }
 function selectedEditorText(range){
   if (!range || range.collapsed) return '';
   return String(range.toString() || '').trim();
+}
+
+const savedEditableRanges = Object.create(null);
+function editableIdOf(target){
+  return target && target.id ? target.id : 'commentEditor';
+}
+function editableFromNode(node){
+  let el = node && (node.nodeType === 1 ? node : node.parentElement);
+  while (el) {
+    if (el.isContentEditable) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+function saveEditableSelection(target){
+  const sel = window.getSelection();
+  target = target || (sel && sel.rangeCount ? editableFromNode(sel.anchorNode) : null) || $('commentEditor');
+  if (!target || !sel || !sel.rangeCount || !target.contains(sel.anchorNode)) return null;
+  const r = sel.getRangeAt(0).cloneRange();
+  savedEditableRanges[editableIdOf(target)] = r;
+  return r;
+}
+function restoreEditableSelection(target, range){
+  target = target || $('commentEditor');
+  if (!target) return null;
+  const id = editableIdOf(target);
+  range = range || savedEditableRanges[id] || null;
+  target.focus({preventScroll:true});
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  if (range && target.contains(range.commonAncestorContainer)) {
+    sel.addRange(range);
+    return range;
+  }
+  const r = document.createRange();
+  r.selectNodeContents(target);
+  r.collapse(false);
+  sel.addRange(r);
+  savedEditableRanges[id] = r.cloneRange();
+  return r;
+}
+function runWithEditableSelection(target, fn){
+  target = target || $('commentEditor');
+  const range = restoreEditableSelection(target);
+  const result = fn(range);
+  saveEditableSelection(target);
+  changed();
+  setTimeout(() => restoreEditableSelection(target), 0);
+  return result;
+}
+function rememberEditableSelectionFromEvent(ev){
+  const target = ev && ev.currentTarget;
+  if (target && target.isContentEditable) saveEditableSelection(target);
+}
+function bindSelectionMemory(){
+  ['commentEditor','quoteInput'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    ['keyup','mouseup','input','focus','blur'].forEach(type => el.addEventListener(type, rememberEditableSelectionFromEvent));
+  });
+  document.querySelectorAll('.sectionContent,.noteText').forEach(el => {
+    ['keyup','mouseup','input','focus','blur'].forEach(type => el.addEventListener(type, rememberEditableSelectionFromEvent));
+  });
+  document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const ed = editableFromNode(sel.anchorNode);
+    if (ed) saveEditableSelection(ed);
+  });
+}
+function unwrapElement(el){
+  const frag = document.createDocumentFragment();
+  while (el.firstChild) frag.appendChild(el.firstChild);
+  el.replaceWith(frag);
+}
+function stripInlineFormattingInTarget(target){
+  if (!target) return;
+  target.querySelectorAll('[style]').forEach(el => {
+    if (el.classList && (el.classList.contains('tab-space') || el.classList.contains('note-ref'))) return;
+    if (el.matches && el.matches('blockquote')) return;
+    el.removeAttribute('style');
+  });
+  target.querySelectorAll('b,strong,i,em,u,s,strike,font,span').forEach(el => {
+    if (el.classList && (el.classList.contains('tab-space') || el.classList.contains('note-ref'))) return;
+    unwrapElement(el);
+  });
+}
+function applyRichCommand(target, cmd, value){
+  target = target || $('commentEditor');
+  runWithEditableSelection(target, () => {
+    if (cmd === 'removeFormat') {
+      const sel = window.getSelection();
+      const hasSelection = sel && sel.rangeCount && target.contains(sel.anchorNode) && !sel.getRangeAt(0).collapsed;
+      if (hasSelection) {
+        document.execCommand('removeFormat', false, null);
+      } else {
+        stripInlineFormattingInTarget(target);
+      }
+      return;
+    }
+    document.execCommand(cmd, false, value || null);
+  });
+}
+function applyCommentaryColor(kind, color){
+  if (!color) return;
+  const ed = $('commentEditor');
+  runWithEditableSelection(ed, () => {
+    if (kind === 'highlight') {
+      if (!document.execCommand('hiliteColor', false, color)) document.execCommand('backColor', false, color);
+    } else {
+      document.execCommand('foreColor', false, color);
+    }
+  });
 }
 function normalizeExternalUrl(raw){
   let u = String(raw || '').trim();
@@ -3617,130 +3735,9 @@ function setupPaneLayout(){
   bindPaneResizer('listResizer', 'list', 220, 720);
 }
 
-let lastAiRange = null;
-const AI_CONFIG_KEY = 'CatenaDirectOpenAIConfigV1';
-function plainSections(e){ return (e.sections || []).map(s => ({id:s.id, title:s.title, text:htmlToPlain(s.html)})); }
-function getSelectedEditorRange(){ const ed = $('commentEditor'); const sel = window.getSelection(); if (!sel || !sel.rangeCount || !ed.contains(sel.anchorNode)) return null; return sel.getRangeAt(0).cloneRange(); }
-function getAiContext(){
-  if (current < 0 || !entries[current]) return null;
-  pull();
-  const e = entries[current];
-  const range = getSelectedEditorRange();
-  if (range) lastAiRange = range.cloneRange();
-  return {
-    app:'Catena Commentary Studio Beta',
-    selectedText: range && !range.collapsed ? String(range.toString() || '') : '',
-    entry:{ id:e.id, title:titleOf(e), reference:e.reference || '', collection:e.collection || '', folder:e.folder || '', status:e.status || '', mode:modeLabel(e.workMode || appSettings.mode), quote:htmlToPlain(quoteHtmlOf(e)), commentary:htmlToPlain(e.commentHtml), sections:plainSections(e), footnotes:(e.footnotes || []).map(n => ({num:n.num, text:n.text || ''})), citations:(e.endnotes || []).map(n => ({num:n.num, text:n.text || ''})) },
-    internalIndex:entries.filter(x => !x.deleted).map(x => ({ id:x.id, title:titleOf(x), reference:x.reference || '', folder:x.folder || '', sections:(x.sections || []).map(s => ({id:s.id, title:s.title || 'Section'})) }))
-  };
-}
-function defaultAiInstruction(){ return 'Help with the current entry. Preserve my meaning and do not invent sources. If suggesting internal links, use syntax like [[section:Entry Title > Section Title]] or [[Entry Title]].'; }
-function loadAiConfig(){
-  try { return JSON.parse(localStorage.getItem(AI_CONFIG_KEY) || '{}') || {}; }
-  catch { return {}; }
-}
-function saveAiConfig(){
-  const cfg = {
-    mode:($('aiConnectionMode') && $('aiConnectionMode').value) || 'direct',
-    key:($('aiKeyInput') && $('aiKeyInput').value.trim()) || '',
-    model:($('aiModelInput') && $('aiModelInput').value.trim()) || 'gpt-4.1-mini'
-  };
-  localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(cfg));
-  setAiStatus('AI connection settings saved on this browser.', false);
-}
-function clearAiConfig(){
-  localStorage.removeItem(AI_CONFIG_KEY);
-  if ($('aiKeyInput')) $('aiKeyInput').value = '';
-  if ($('aiModelInput')) $('aiModelInput').value = 'gpt-4.1-mini';
-  if ($('aiConnectionMode')) $('aiConnectionMode').value = 'direct';
-  setAiStatus('AI key forgotten on this browser.', false);
-}
-function fillAiConfig(){
-  const cfg = loadAiConfig();
-  if ($('aiConnectionMode')) $('aiConnectionMode').value = cfg.mode || 'direct';
-  if ($('aiKeyInput')) $('aiKeyInput').value = cfg.key || '';
-  if ($('aiModelInput')) $('aiModelInput').value = cfg.model || 'gpt-4.1-mini';
-}
-function openAiPanel(){ const range = getSelectedEditorRange(); if (range) lastAiRange = range.cloneRange(); fillAiConfig(); $('aiPanel').classList.remove('hidden'); if (!$('aiInstruction').value.trim()) $('aiInstruction').value = defaultAiInstruction(); }
-function closeAiPanel(){ $('aiPanel').classList.add('hidden'); }
-function setAiStatus(msg,bad){ const el = $('aiStatus'); if (!el) return; el.textContent = msg || ''; el.className = bad ? 'bad' : 'sub'; }
-function extractAiText(data){ if (!data) return ''; if (typeof data.text === 'string') return data.text; if (typeof data.output_text === 'string') return data.output_text; if (Array.isArray(data.output)) return data.output.map(item => (item.content || []).map(c => c.text || c.output_text || '').join('')).join('\n').trim(); if (Array.isArray(data.choices)) return data.choices.map(c => (c.message && c.message.content) || c.text || '').join('\n').trim(); return ''; }
-function aiTaskLabel(task){
-  return ({custom:'Custom instruction', polish:'Polish selection / entry', structure:'Create structure', footnotes:'Suggest footnotes', internal_links:'Suggest internal links', export_review:'Review export readiness', test:'Connection test'})[task] || task;
-}
-function buildAiPrompt(payload){
-  const ctx = payload.context || {};
-  const selected = ctx.selectedText ? '\n\nSELECTED TEXT:\n' + ctx.selectedText : '';
-  const entry = ctx.entry || {};
-  const index = (ctx.internalIndex || []).slice(0,80).map(x => `- ${x.title || x.reference || x.id} | ref: ${x.reference || ''} | folder: ${x.folder || ''} | sections: ${(x.sections || []).map(s => s.title).join(', ')}`).join('\n');
-  return `CATENA AI TASK: ${aiTaskLabel(payload.task)}\n\nUSER INSTRUCTION:\n${payload.instruction || defaultAiInstruction()}\n${selected}\n\nCURRENT ENTRY:\nTitle: ${entry.title || ''}\nReference: ${entry.reference || ''}\nFolder: ${entry.folder || ''}\nStatus: ${entry.status || ''}\nMode: ${entry.mode || ''}\n\nSOURCE / QUOTE:\n${entry.quote || ''}\n\nMAIN COMMENTARY:\n${entry.commentary || ''}\n\nSTRUCTURED SECTIONS:\n${(entry.sections || []).map(s => '[' + (s.title || 'Section') + ']\n' + (s.text || '')).join('\n\n')}\n\nFOOTNOTES:\n${(entry.footnotes || []).map(n => '[' + n.num + '] ' + (n.text || '')).join('\n')}\n\nCITATIONS / ENDNOTES:\n${(entry.citations || []).map(n => '[' + n.num + '] ' + (n.text || '')).join('\n')}\n\nINTERNAL LINK INDEX:\n${index}\n\nRules: Do not claim a source exists unless it is supplied here. Preserve theological intent. For internal links, use exact syntax like [[Entry Title]], [[folder:Folder Name]], or [[section:Entry Title > Section Title]].`; 
-}
-async function callOpenAiDirect(payload){
-  const key = ($('aiKeyInput') && $('aiKeyInput').value.trim()) || (loadAiConfig().key || '');
-  const model = (($('aiModelInput') && $('aiModelInput').value.trim()) || loadAiConfig().model || 'gpt-4.1-mini');
-  if (!key) throw new Error('No OpenAI API key entered. Paste your key in the AI panel and click Save Key on This Browser.');
-  const body = {
-    model,
-    instructions:'You are Catena AI inside a theological writing workstation. Be precise, conservative with claims, preserve user meaning, never invent citations, and return only the requested usable text.',
-    input: buildAiPrompt(payload),
-    max_output_tokens: 1800
-  };
-  const res = await fetch('https://api.openai.com/v1/responses', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer ' + key},
-    body:JSON.stringify(body)
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error && data.error.message ? data.error.message : ('OpenAI request failed with status ' + res.status));
-  return data;
-}
-async function callVercelAi(payload){
-  const res = await fetch('/api/ai', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || ('Vercel AI request failed with status ' + res.status));
-  return data;
-}
-async function runAiTask(task){
-  const ctx = task === 'test' ? {app:'Catena Commentary Studio Beta', selectedText:'', entry:{title:'Connection test'}, internalIndex:[]} : getAiContext();
-  if (!ctx) return alert('Select or create an entry first.');
-  openAiPanel();
-  saveAiConfig();
-  const payload = {task, instruction:$('aiInstruction').value.trim(), context:ctx};
-  const mode = ($('aiConnectionMode') && $('aiConnectionMode').value) || 'direct';
-  const panel = $('aiPanel'); panel.classList.add('aiBusy'); setAiStatus(mode === 'direct' ? 'Calling OpenAI directly from this HTML...' : 'Calling Vercel /api/ai...', false);
-  try {
-    const data = mode === 'vercel' ? await callVercelAi(payload) : await callOpenAiDirect(payload);
-    const text = extractAiText(data).trim();
-    $('aiOutput').textContent = text || (task === 'test' ? 'Connection worked, but no text was returned.' : 'The AI returned no text.');
-    setAiStatus('AI output ready. Review it before inserting.', false);
-  } catch (err) {
-    const extra = mode === 'direct' ? 'Direct HTML mode stores the key only in this browser, but client-side API calls can still be blocked by browser/network policy. Try Vercel mode if this fails. ' : 'Vercel mode needs /api/ai and OPENAI_API_KEY set in Vercel. ';
-    $('aiOutput').textContent = 'AI connection failed. ' + extra + 'Details: ' + (err && err.message ? err.message : err);
-    setAiStatus('AI connection failed.', true);
-  } finally { panel.classList.remove('aiBusy'); }
-}
-function insertAiOutput(replace){ const text = $('aiOutput').textContent || ''; if (!text || text === 'No AI output yet.') return; const html = esc(text).replace(/\n/g,'<br>'); const savedRange = lastAiRange || getSelectedEditorRange(); restoreEditorSelection(savedRange); if (replace && savedRange && !savedRange.collapsed) document.execCommand('insertHTML', false, html); else insertHtmlAtCursor(html); changed(); }
-async function copyAiOutput(){ const text = $('aiOutput').textContent || ''; if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text); else prompt('Copy AI output:', text); setAiStatus('AI output copied.', false); }
-
 function bind(){
   setupPaneLayout();
   setupBlockquoteResizing();
-  $('aiBtn').onclick = openAiPanel;
-  $('aiInlineBtn').onclick = openAiPanel;
-  $('closeAiBtn').onclick = closeAiPanel;
-  fillAiConfig();
-  $('saveAiKeyBtn').onclick = saveAiConfig;
-  $('clearAiKeyBtn').onclick = clearAiConfig;
-  $('testAiBtn').onclick = () => runAiTask('test');
-  $('aiAskBtn').onclick = () => runAiTask('custom');
-  $('aiPolishBtn').onclick = () => runAiTask('polish');
-  $('aiOutlineBtn').onclick = () => runAiTask('structure');
-  $('aiFootnotesBtn').onclick = () => runAiTask('footnotes');
-  $('aiLinksBtn').onclick = () => runAiTask('internal_links');
-  $('aiReviewBtn').onclick = () => runAiTask('export_review');
-  $('aiInsertBtn').onclick = () => insertAiOutput(false);
-  $('aiReplaceSelectionBtn').onclick = () => insertAiOutput(true);
-  $('aiCopyBtn').onclick = copyAiOutput;
   document.querySelectorAll('.navBtn[data-view]').forEach(b => {
     b.onclick = () => {
       activeView = b.dataset.view;
@@ -3800,14 +3797,29 @@ function bind(){
   $('insertCitationBtn').onclick = () => addNote('endnotes', true);
   $('renumberFootnotesBtn').onclick = () => renumberNotes('footnotes');
   $('renumberEndnotesBtn').onclick = () => renumberNotes('endnotes');
+  bindSelectionMemory();
+  document.querySelectorAll('.tools button').forEach(b => {
+    b.addEventListener('mousedown', ev => {
+      ev.preventDefault();
+      const target = $(b.dataset.target || 'commentEditor');
+      if (target && target.isContentEditable) restoreEditableSelection(target);
+      else restoreEditableSelection($('commentEditor'));
+    });
+  });
   document.querySelectorAll('.fmt').forEach(b => {
     b.onclick = () => {
       const target = $(b.dataset.target || 'commentEditor');
-      if (target) target.focus();
-      document.execCommand(b.dataset.cmd,false,null);
-      changed();
+      applyRichCommand(target, b.dataset.cmd, null);
     };
   });
+  ['commentTextColorInput','commentHighlightColorInput'].forEach(id => {
+    const input = $(id);
+    if (!input) return;
+    input.addEventListener('mousedown', () => saveEditableSelection($('commentEditor')));
+    input.addEventListener('focus', () => saveEditableSelection($('commentEditor')));
+  });
+  if ($('commentTextColorInput')) $('commentTextColorInput').addEventListener('input', e => applyCommentaryColor('text', e.target.value));
+  if ($('commentHighlightColorInput')) $('commentHighlightColorInput').addEventListener('input', e => applyCommentaryColor('highlight', e.target.value));
   document.querySelectorAll('.clean').forEach(b => {
     b.onclick = () => cleanup(b.dataset.clean);
   });
