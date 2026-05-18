@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Catena Studio v12 Mega Alpha</title>
+<title>Catena Commentary Studio Beta</title>
 <style>
 :root{
   --bg:#f6efe2;
@@ -686,66 +686,22 @@ body.locked .settingsPanel{
 
 .sectionAnchorBadge{display:inline-flex;align-items:center;margin-left:8px;padding:3px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--soft);font-size:12px;cursor:pointer}
 .sectionCard.linkFlash,.readSection.linkFlash{outline:3px solid rgba(156,111,42,.45);outline-offset:3px}
-
-/* v12 Mega Alpha additions */
-.megaRibbon{
-  display:grid;
-  grid-template-columns:repeat(6,minmax(120px,1fr));
-  gap:10px;
-  margin-top:12px;
-}
-.megaStat{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,var(--panel),var(--field));
-  border-radius:16px;
-  padding:10px 12px;
-  box-shadow:0 6px 18px rgba(73,48,12,.06);
-}
-.megaStat strong{display:block;font-size:18px;line-height:1.1}
-.megaStat span{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
-.megaTools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
-.megaTools .pill{cursor:default}
-.projectHealth.ok{color:var(--good);border-color:rgba(46,125,50,.35);background:rgba(46,125,50,.08)}
-.projectHealth.bad{color:var(--danger);border-color:rgba(166,27,52,.35);background:rgba(166,27,52,.08)}
-.exportMiniGrid,.toolMiniGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-}
-.exportMiniGrid button,.toolMiniGrid button{min-height:34px}
-.commandOverlay{
-  position:fixed;inset:0;background:rgba(20,14,8,.42);z-index:70;
-  display:flex;align-items:flex-start;justify-content:center;padding:9vh 18px;
-}
-.commandBox{
-  width:min(720px,96vw);background:var(--panel);border:1px solid var(--line);
-  border-radius:22px;box-shadow:0 28px 70px rgba(0,0,0,.25);overflow:hidden;
-}
-.commandBox input{
-  border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--field);
-  padding:16px 18px;font-size:17px;
-}
-.commandList{max-height:55vh;overflow:auto;padding:8px}
-.commandItem{
-  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  border:1px solid transparent;background:transparent;text-align:left;border-radius:14px;padding:11px 12px;cursor:pointer;
-}
-.commandItem:hover,.commandItem.active{border-color:var(--accent);background:rgba(138,100,18,.09)}
-.commandItem strong{display:block}.commandItem span{color:var(--muted);font-size:12px}
-.commandKbd{font-family:Consolas,monospace;border:1px solid var(--line);border-radius:8px;padding:2px 6px;color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+a{color:var(--accent)}
 body.focusMode .rail,body.focusMode .listPane,body.focusMode .paneResizer{display:none!important}
 body.focusMode .app{grid-template-columns:minmax(0,1fr)!important;max-width:980px}
 body.focusMode .workPane{min-height:calc(100vh - 150px)}
-body.compactUi .tools{gap:5px}body.compactUi button{padding:7px 9px}body.compactUi .card{border-radius:14px}
-.integrityReport{
-  white-space:pre-wrap;font-family:Consolas,monospace;font-size:12px;background:var(--field);
-  border:1px solid var(--line);border-radius:12px;padding:10px;max-height:220px;overflow:auto;margin-top:8px;
-}
-@media(max-width:1040px){.megaRibbon{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:620px){.megaRibbon{grid-template-columns:1fr 1fr}.exportMiniGrid,.toolMiniGrid{grid-template-columns:1fr}}
+.pdfEditorPanel.hidden{display:none!important}
+.pdfEditorPanel{position:fixed;inset:42px;z-index:80;background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+.pdfEditorHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--soft),transparent)}
+.pdfEditorHead h2{margin:0;font-family:var(--serif);font-size:22px}
+.pdfEditorTools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pdfEditorBody{overflow:auto;padding:22px;background:rgba(0,0,0,.035);flex:1}
+.pdfPaper{background:white;color:#111;max-width:850px;min-height:1050px;margin:0 auto;padding:.75in;box-shadow:0 16px 45px rgba(0,0,0,.18);border-radius:3px;outline:none}
+.pdfPaper:focus{box-shadow:0 0 0 3px rgba(138,100,18,.22),0 16px 45px rgba(0,0,0,.18)}
+body.dark .pdfPaper{background:#fff;color:#111}
+@media(max-width:850px){.pdfEditorPanel{inset:8px}.pdfEditorBody{padding:10px}.pdfPaper{padding:22px;min-height:75vh}}
 
-.hidden{display:none!important}
-a{color:var(--accent)}
 @media(max-width:1240px){
   .toolbar{grid-template-columns:1fr 1fr}
 }
@@ -762,7 +718,7 @@ a{color:var(--accent)}
 <body class="locked">
 <div id="passwordScreen" class="passwordScreen">
   <div class="loginCard">
-    <h2>Catena v12</h2>
+    <h2>Catena Beta</h2>
     <p>Enter the password to open the editor.</p>
     <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password">
     <button id="passwordBtn" class="primary">Unlock</button>
@@ -774,15 +730,14 @@ a{color:var(--accent)}
 <div class="header">
 <div class="top">
 <div>
-<h1>Catena Studio v12 Mega Alpha</h1>
+<h1>Catena Commentary Studio Beta</h1>
 <div class="sub">
-Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes, exports, project tools, and internal links.
+Beta: universal commentary app with Scripture Mode, Book Mode, export styles, folders, notes, and citations.
 </div>
 </div>
 <div class="actions">
 <button id="toggleLibraryBtn">Hide Library</button>
 <button id="toggleEntriesBtn">Hide Entries</button>
-<button id="commandBtn">Command</button>
 <button id="focusModeBtn">Focus</button>
 <button id="settingsBtn">Settings</button>
 <button id="manualSaveTop" class="primary">Manual Save</button>
@@ -808,20 +763,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
 <button id="openBtn">Open JSON</button>
 <button id="exportJsonBtn">Export JSON</button>
 </div>
-<div class="megaRibbon" aria-label="Project dashboard">
-  <div class="megaStat"><strong id="statEntries">0</strong><span>Entries</span></div>
-  <div class="megaStat"><strong id="statWords">0</strong><span>Words</span></div>
-  <div class="megaStat"><strong id="statNotes">0</strong><span>Notes</span></div>
-  <div class="megaStat"><strong id="statLinks">0</strong><span>Links</span></div>
-  <div class="megaStat"><strong id="statFolders">0</strong><span>Folders</span></div>
-  <div class="megaStat"><strong id="statUpdated">—</strong><span>Updated</span></div>
-</div>
-<div class="megaTools">
-  <span id="projectHealth" class="pill projectHealth ok">Health: unchecked</span>
-  <button id="quickIntegrityBtn" class="small">Integrity Check</button>
-  <button id="snapshotNowBtn" class="small">Snapshot</button>
-  <button id="openCommandHintBtn" class="small">Ctrl+K Commands</button>
-</div>
 </div>
 </header>
 
@@ -840,7 +781,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
     <button class="settingsTabBtn" data-settings-tab="front">Book Front Matter</button>
     <button class="settingsTabBtn" data-settings-tab="notes">Footnotes / Endnotes</button>
     <button class="settingsTabBtn" data-settings-tab="style">Style Freedom</button>
-    <button class="settingsTabBtn" data-settings-tab="project">Project Tools</button>
   </div>
 
   <div class="settingsContent">
@@ -868,13 +808,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
           <option value="contemplative">Contemplative Mode</option>
           <option value="polemical">Polemical Mode</option>
           <option value="book">Book Mode</option>
-          <option value="article">Article / Essay</option>
-          <option value="lecture">Lecture Notes</option>
-          <option value="catechism">Catechism / Q&amp;A</option>
-          <option value="prayer">Prayer / Devotional Office</option>
-          <option value="research">Research Dossier</option>
-          <option value="translation">Translation Notes</option>
-          <option value="outline">Structured Outline</option>
         </select>
       </div>
       <div class="settingRow">
@@ -915,11 +848,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
           <option value="compact">Compact Print</option>
           <option value="manuscript">Manuscript Draft</option>
           <option value="sermon">Homily / Sermon Notes</option>
-          <option value="codex">Codex / Manuscript Leaf</option>
-          <option value="monastery">Monastery Reader</option>
-          <option value="wide_margin">Wide-Margin Study Copy</option>
-          <option value="thesis">Formal Thesis</option>
-          <option value="plain_book">Plain Book Interior</option>
         </select>
       </div>
       <div class="settingRow">
@@ -1023,44 +951,28 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
       </div>
       <div class="exportHint">Use the normal Blockquote button for a resizable styled quote inside the main commentary. Blockquote padding, line height, and minimum height scale with the blockquote font size, so smaller quote text makes the box tighten proportionally. Tab indents selected text or inserts a visible tab space at the cursor.</div>
     </section>
-
-    <section class="settingTabSection" data-settings-section="project">
-      <h3>Project tools</h3>
-      <div class="sub">Backups, diagnostics, manuscript reports, and clean export formats.</div>
-      <div class="settingBlock">
-        <h4>Diagnostics</h4>
-        <div class="toolMiniGrid">
-          <button id="settingsIntegrityBtn">Run Integrity Check</button>
-          <button id="settingsRepairBtn">Repair Safe Issues</button>
-          <button id="settingsSnapshotBtn">Create Snapshot</button>
-          <button id="settingsRestoreSnapshotBtn">Restore Snapshot</button>
-        </div>
-        <div id="integrityReport" class="integrityReport">No report yet.</div>
-      </div>
-      <div class="settingBlock">
-        <h4>Extra exports</h4>
-        <div class="exportMiniGrid">
-          <button id="exportTxtBtn">Plain Text Book</button>
-          <button id="exportCsvBtn">CSV Index</button>
-          <button id="exportLatexBtn">LaTeX Draft</button>
-          <button id="exportOutlineBtn">Outline</button>
-          <button id="exportReportBtn">Project Report</button>
-          <button id="exportBackupBtn">Full Backup JSON</button>
-        </div>
-      </div>
-      <div class="settingBlock">
-        <h4>Interface</h4>
-        <div class="settingRow">
-          <div><strong>Compact interface</strong><div class="sub">Reduces button padding and card spacing without removing features.</div></div>
-          <input id="compactUiToggle" class="toggleSwitch" type="checkbox">
-        </div>
-      </div>
-    </section>
-
   </div>
 
   <div class="settingsFooter">
     <button id="settingsSaveBtn" class="primary small">Save Now</button>
+  </div>
+</div>
+
+<div id="pdfEditorPanel" class="pdfEditorPanel hidden" role="dialog" aria-modal="true" aria-label="PDF editor">
+  <div class="pdfEditorHead">
+    <div>
+      <h2>PDF Editor</h2>
+      <div class="sub">Edit the assembled PDF-style export directly. This is a final-layout editor for printing/exporting; use the normal entry editor for source-entry changes.</div>
+    </div>
+    <div class="pdfEditorTools">
+      <button id="pdfRefreshBtn" class="small">Rebuild From Entries</button>
+      <button id="pdfPrintBtn" class="small primary">Print / Save PDF</button>
+      <button id="pdfHtmlBtn" class="small">Download Edited HTML</button>
+      <button id="pdfCloseBtn" class="small">Close</button>
+    </div>
+  </div>
+  <div class="pdfEditorBody">
+    <article id="pdfEditableDoc" class="pdfPaper" contenteditable="true" spellcheck="true"></article>
   </div>
 </div>
 
@@ -1091,6 +1003,7 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
 <div class="navTitle">Exports</div>
 <div class="stack">
 <button id="previewPdfBtn">PDF Preview</button>
+<button id="pdfEditorBtn">PDF Editor</button>
 <button id="downloadPdfBtn" class="primary">Download PDF</button>
 <button id="folderPreviewBtn">Folder PDF Preview</button>
 <button id="folderPdfBtn">Folder PDF</button>
@@ -1098,9 +1011,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
 <button id="exportMdBtn">Markdown</button>
 <button id="exportTomlBtn">TOML</button>
 <button id="exportHtmlBtn">Book HTML</button>
-<button id="exportTxtRailBtn">Plain Text</button>
-<button id="exportOutlineRailBtn">Outline</button>
-<button id="exportReportRailBtn">Report</button>
 </div>
 <input id="importFile" type="file" class="hidden" accept=".json,application/json">
 </aside>
@@ -1147,13 +1057,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
 <option value="contemplative">Contemplative</option>
 <option value="polemical">Polemical</option>
 <option value="book">Book / Source Note</option>
-<option value="article">Article / Essay</option>
-<option value="lecture">Lecture Notes</option>
-<option value="catechism">Catechism / Q&amp;A</option>
-<option value="prayer">Prayer / Devotional Office</option>
-<option value="research">Research Dossier</option>
-<option value="translation">Translation Notes</option>
-<option value="outline">Structured Outline</option>
 </select>
 </div>
 <div>
@@ -1277,14 +1180,6 @@ Mega Alpha: commentary, books, sermons, treatises, contemplative writing, notes,
 </section>
 </main>
 
-
-<div id="commandOverlay" class="commandOverlay hidden" role="dialog" aria-modal="true" aria-label="Command palette">
-  <div class="commandBox">
-    <input id="commandInput" placeholder="Type a command or search an entry…" autocomplete="off">
-    <div id="commandList" class="commandList"></div>
-  </div>
-</div>
-
 <script>
 (function(){
 'use strict';
@@ -1316,14 +1211,7 @@ const MODE_LABELS = {
   academic:'Academic Treatise',
   contemplative:'Contemplative',
   polemical:'Polemical',
-  book:'Book / Source Note',
-  article:'Article / Essay',
-  lecture:'Lecture Notes',
-  catechism:'Catechism / Q&A',
-  prayer:'Prayer / Devotional Office',
-  research:'Research Dossier',
-  translation:'Translation Notes',
-  outline:'Structured Outline'
+  book:'Book / Source Note'
 };
 const MODE_SECTIONS = {
   universal:DEFAULT_SECTIONS,
@@ -1333,14 +1221,7 @@ const MODE_SECTIONS = {
   sermon:['Passage','Big idea','Introduction','Homiletic outline','Illustrations','Applications','Conclusion','Prayer'],
   academic:['Abstract','Thesis','Status quaestionis','Argument','Sources and evidence','Objections and replies','Conclusion','Bibliography notes'],
   contemplative:['Text for contemplation','Stillness and attention','Christological mystery','Interior application','Prayer','Resolution'],
-  polemical:['Opposing claim','Orthodox thesis','Terms and distinctions','Scriptural refutation','Historical or patristic witness','Logical response','Conclusion'],
-  article:['Working title','Thesis','Lead paragraph','Argument sections','Evidence','Transitions','Conclusion'],
-  lecture:['Lecture aim','Opening problem','Key terms','Main points','Illustrations','Discussion questions','Summary'],
-  catechism:['Question','Short answer','Expanded answer','Scripture witnesses','Theological notes','Practical instruction'],
-  prayer:['Invocation','Thanksgiving','Confession','Petition','Contemplation','Doxology'],
-  research:['Research question','Sources to examine','Primary evidence','Secondary evidence','Findings','Open questions','Bibliography notes'],
-  translation:['Source text','Literal rendering','Polished rendering','Vocabulary','Grammar notes','Textual questions','Commentary'],
-  outline:['Thesis','Part I','Part II','Part III','Subpoints','Unplaced material','Next revision']
+  polemical:['Opposing claim','Orthodox thesis','Terms and distinctions','Scriptural refutation','Historical or patristic witness','Logical response','Conclusion']
 };
 function validMode(m){
   return MODE_LABELS[m] ? m : 'universal';
@@ -1358,13 +1239,6 @@ function modeHintText(m){
   if (m === 'academic') return 'Structured for a treatise: thesis, scholarly state of the question, argument, objections, replies, and bibliography notes.';
   if (m === 'contemplative') return 'Structured for meditative theological writing, prayer, interior application, and contemplation.';
   if (m === 'polemical') return 'Structured for controversy: opposing claim, orthodox thesis, distinctions, refutation, witnesses, and conclusion.';
-  if (m === 'article') return 'Structured for essays, articles, and polished arguments with thesis, evidence, transitions, and conclusion.';
-  if (m === 'lecture') return 'Structured for teaching notes: aim, key terms, main points, illustrations, discussion questions, and summary.';
-  if (m === 'catechism') return 'Structured for question-and-answer doctrinal instruction with Scripture witnesses and practical teaching.';
-  if (m === 'prayer') return 'Structured for prayer, devotional offices, invocation, confession, petition, contemplation, and doxology.';
-  if (m === 'research') return 'Structured for research dossiers, sources, evidence, findings, open questions, and bibliography notes.';
-  if (m === 'translation') return 'Structured for translation work with source text, literal and polished renderings, vocabulary, grammar, and textual notes.';
-  if (m === 'outline') return 'Structured for long-form outlines and planning where material still needs organization.';
   if (m === 'book') return 'Structured for notes on a book, source, page, chapter, or author.';
   if (m === 'scripture') return 'Structured for normal Scripture commentary organized by biblical reference.';
   return 'General flexible commentary sections.';
@@ -1398,7 +1272,6 @@ let appSettings = {
   exportShowEntryTitle:true,
   exportShowMeta:true,
   exportShowStatus:true,
-  compactUi:false,
   footnotePlacement:'entry',
   endnotePlacement:'entry',
   styleControls:Object.assign({}, DEFAULT_STYLE_CONTROLS),
@@ -1610,21 +1483,16 @@ function canonicalBook(raw){
   return found || raw;
 }
 function parseReference(ref){
-  const m = String(ref || '').trim().match(/^((?:[1-3]\s+)?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?(?:\s+[A-Za-z]+)?)\s+(\d{1,3})(?:(?::(\d{1,3})(?:[-–](?:(\d{1,3}):)?(\d{1,3}))?)|(?:\s*[-–]\s*(\d{1,3})))?/);
+  const m = String(ref || '').trim().match(/^((?:[1-3]\s+)?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?(?:\s+[A-Za-z]+)?)\s+(\d{1,3})(?::(\d{1,3})(?:[-–](\d{1,3}))?)?/);
   if (!m) return null;
   const book = canonicalBook(m[1]);
   const bi = BIBLE_ORDER.indexOf(book);
-  const chapter = parseInt(m[2] || '0',10);
-  const verse = parseInt(m[3] || '0',10);
-  const endChapter = parseInt(m[4] || m[6] || m[2] || '0',10);
-  const endVerse = parseInt(m[5] || m[3] || '0',10);
   return {
     book:book,
     bookIndex:bi < 0 ? 999 : bi,
-    chapter:chapter,
-    verse:verse,
-    endChapter:endChapter,
-    endVerse:endVerse
+    chapter:parseInt(m[2] || '0',10),
+    verse:parseInt(m[3] || '0',10),
+    endVerse:parseInt(m[4] || m[3] || '0',10)
   };
 }
 function isUntitledEntryTitle(t){
@@ -1689,7 +1557,6 @@ async function manualSave(){
   pull();
   try {
     await idbSet(KEY, entries);
-    makeSnapshot('auto-save', true);
     setStatus('Manual save completed at ' + new Date().toLocaleTimeString(), true);
   } catch(e) {
     setStatus('Save failed: ' + e.message, false);
@@ -1868,7 +1735,6 @@ function renderAll(){
   renderFolders();
   renderList();
   updateRead();
-  updateDashboard();
 }
 function pull(){
   if (current < 0 || !entries[current]) return;
@@ -2337,6 +2203,12 @@ function makeStyledBlockquote(){
     sel.addRange(r);
   }
   const range = sel.getRangeAt(0);
+  const activeBlock = closestEditableBlockquote(sel.anchorNode, ed);
+  if (activeBlock && range.collapsed) {
+    escapeBlockquote(activeBlock);
+    changed();
+    return;
+  }
   const b = document.createElement('blockquote');
   if (range.collapsed) {
     b.innerHTML = '<br>';
@@ -2350,8 +2222,52 @@ function makeStyledBlockquote(){
     range.insertNode(b);
     setCaretAfterNode(b);
   }
+  saveEditableSelection(ed);
   changed();
 }
+
+function closestEditableBlockquote(node, root){
+  let el = node && (node.nodeType === 1 ? node : node.parentElement);
+  while (el && el !== root) {
+    if (el.matches && el.matches('blockquote')) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+function isRangeAtEndOfElement(range, el){
+  if (!range || !el) return false;
+  const test = document.createRange();
+  test.selectNodeContents(el);
+  test.setStart(range.endContainer, range.endOffset);
+  return test.toString().replace(/ /g,' ').trim().length === 0;
+}
+function escapeBlockquote(blockquote){
+  if (!blockquote) return;
+  const after = document.createElement('p');
+  after.innerHTML = '<br>';
+  blockquote.after(after);
+  setCaretInsideNode(after);
+  const ed = $('commentEditor');
+  if (ed) saveEditableSelection(ed);
+}
+function handleBlockquoteExitKey(ev, target){
+  if (ev.key !== 'Enter' || ev.shiftKey) return false;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !target || !target.contains(sel.anchorNode)) return false;
+  const range = sel.getRangeAt(0);
+  if (!range.collapsed) return false;
+  const bq = closestEditableBlockquote(sel.anchorNode, target);
+  if (!bq) return false;
+  const emptyQuote = bq.innerText.replace(/ /g,' ').trim() === '';
+  if (emptyQuote || isRangeAtEndOfElement(range, bq)) {
+    ev.preventDefault();
+    escapeBlockquote(bq);
+    changed();
+    return true;
+  }
+  return false;
+}
+
 function applyInlineFontSize(target, delta){
   target = target || $('commentEditor');
   restoreEditableSelection(target);
@@ -2367,7 +2283,11 @@ function applyInlineFontSize(target, delta){
   span.style.fontSize = next + 'px';
   span.appendChild(range.extractContents());
   range.insertNode(span);
-  setCaretAfterNode(span);
+  const newRange = document.createRange();
+  newRange.selectNodeContents(span);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+  savedEditableRanges[editableIdOf(target)] = newRange.cloneRange();
   changed();
   return true;
 }
@@ -2410,7 +2330,9 @@ function openStyleSettings(){
 }
 
 function handleCommentKeydown(ev){
-  if (handleEditableTab(ev, $('commentEditor'))) return;
+  const ed0 = $('commentEditor');
+  if (handleEditableTab(ev, ed0)) return;
+  if (handleBlockquoteExitKey(ev, ed0)) return;
   if (ev.key !== 'Backspace' && ev.key !== 'Delete') return;
   const ed = $('commentEditor');
   const sel = window.getSelection();
@@ -3312,50 +3234,6 @@ function exportCss(style){
       'h3{font-size:20px;margin-top:24px}.entry{margin-bottom:36px}.meta{font-family:Arial,sans-serif;color:#555;font-size:13px}' +
       'blockquote{font-size:1.12em;background:#f3f3f3;border-left:6px solid #222;padding:14px 16px}a{color:#111;text-decoration:underline}';
   }
-
-  if (style === 'codex') {
-    return base +
-      '@page{margin:.82in}' +
-      'body{font-family:Georgia,serif;max-width:820px;margin:48px auto;padding:0 28px;background:#fff7e6;color:#24180c;line-height:1.76}' +
-      'h1{text-align:center;font-size:38px;letter-spacing:.08em;text-transform:uppercase;border:5px double #9b6f16;padding:18px;margin-bottom:34px}' +
-      'h2{font-variant:small-caps;color:#593b09;border-bottom:2px solid #d6b365;padding-bottom:7px}' +
-      '.entry{margin-bottom:38px;padding:22px;background:#fffaf0;border:1px solid #e7c98f}' +
-      '.meta{font-family:Arial,sans-serif;color:#826b46;font-size:12px;letter-spacing:.04em}' +
-      'blockquote{background:#fff1c9;border-left:8px solid #9b6f16;padding:14px 18px}a{color:#61400a}';
-  }
-  if (style === 'monastery') {
-    return base +
-      '@page{margin:.9in}' +
-      'body{font-family:Georgia,serif;max-width:760px;margin:54px auto;padding:0 24px;background:#fffdf6;color:#17130e;line-height:1.9;font-size:17px}' +
-      'h1{text-align:center;font-size:35px;font-variant:small-caps}h2{text-align:center;font-size:25px;margin-top:44px;color:#4c3210}' +
-      'h3{font-size:18px;color:#67451a}.entry{margin-bottom:46px}' +
-      '.meta{text-align:center;font-family:Arial,sans-serif;color:#756a5a;font-size:12px}' +
-      'blockquote{background:#f9f0dd;border-left:0;border-top:1px solid #cfa85e;border-bottom:1px solid #cfa85e;margin:20px 0;padding:16px;text-align:center}a{color:#6b4511}';
-  }
-  if (style === 'wide_margin') {
-    return base +
-      '@page{margin:1.15in 1.35in}' +
-      'body{font-family:Georgia,serif;max-width:720px;margin:48px auto;color:#111;line-height:1.7;font-size:16px}' +
-      'h1{text-align:left;font-size:32px}h2{font-size:23px;border-bottom:1px solid #bbb;padding-bottom:8px}' +
-      'h3{font-size:17px}.entry{margin-bottom:34px}.meta{font-family:Arial,sans-serif;color:#666;font-size:12px}' +
-      'blockquote{margin:16px 42px;border-left:3px solid #777;padding-left:14px;color:#333}.notesList{font-size:12px}a{color:#111;text-decoration:underline}';
-  }
-  if (style === 'thesis') {
-    return base +
-      '@page{margin:1in}' +
-      'body{font-family:"Times New Roman",serif;max-width:760px;margin:50px auto;color:#000;line-height:2;font-size:12pt}' +
-      'h1{text-align:center;font-size:24pt;text-transform:uppercase}h2{font-size:16pt;margin-top:36px}h3{font-size:13pt;font-style:italic}' +
-      '.entry{margin-bottom:34px}.meta{font-family:Arial,sans-serif;color:#444;font-size:10pt}' +
-      'blockquote{margin:18px 48px;font-size:11pt}.notesList{font-size:10pt}a{color:#000}';
-  }
-  if (style === 'plain_book') {
-    return base +
-      '@page{margin:.8in}' +
-      'body{font-family:Georgia,serif;max-width:760px;margin:44px auto;padding:0 22px;color:#171717;line-height:1.72;font-size:16px}' +
-      'h1{text-align:center;font-size:32px}h2{font-size:24px;margin-top:34px}h3{font-size:18px}' +
-      '.entry{margin-bottom:32px}.meta{font-family:Arial,sans-serif;color:#666;font-size:12px}' +
-      'blockquote{border-left:3px solid #999;padding-left:14px;margin:16px 0;color:#333;background:#fafafa}a{color:#111;text-decoration:underline}';
-  }
   return base +
     'body{font-family:Arial,sans-serif;max-width:820px;margin:35px auto;padding:0 22px;color:#111;line-height:1.55}' +
     'h1{text-align:center}h2{font-size:22px}.entry{margin-bottom:24px;border-bottom:1px solid #ddd}' +
@@ -3441,6 +3319,60 @@ function bookHtml(list,title){
     esc(title) + '</title><style>' + css + '</style></head><body>' +
     frontMatterHtml(title) + body + '</body></html>';
 }
+
+function extractBodyFromBookHtml(html){
+  const m = String(html || '').match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  return m ? m[1] : html;
+}
+function openPdfEditor(){
+  pull();
+  updateRead();
+  manualSave();
+  const panel = $('pdfEditorPanel');
+  const doc = $('pdfEditableDoc');
+  if (!panel || !doc) return;
+  doc.innerHTML = extractBodyFromBookHtml(bookHtml());
+  panel.classList.remove('hidden');
+  setTimeout(() => doc.focus(), 60);
+  setStatus('PDF Editor opened. Edit this final-layout copy, then Print / Save PDF.', true);
+}
+function closePdfEditor(){
+  const panel = $('pdfEditorPanel');
+  if (panel) panel.classList.add('hidden');
+}
+function editedPdfHtml(){
+  const doc = $('pdfEditableDoc');
+  const style = appSettings.exportStyle || 'church';
+  const css = exportCss(style) + exportQuoteCssOverrides() + '.pdfEditorNotice{display:none}';
+  return '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(defaultBookTitle()) + ' — edited PDF</title><style>' + css + '</style></head><body>' + (doc ? doc.innerHTML : '') + '</body></html>';
+}
+function printEditedPdf(){
+  const old = $('pdfEditorFrame');
+  if (old) old.remove();
+  const f = document.createElement('iframe');
+  f.id = 'pdfEditorFrame';
+  f.style.position = 'fixed';
+  f.style.width = '0';
+  f.style.height = '0';
+  f.style.opacity = '0';
+  f.style.border = '0';
+  f.onload = () => setTimeout(() => {
+    f.contentWindow.focus();
+    f.contentWindow.print();
+    setStatus('Print dialog opened from the edited PDF layout. Choose Save as PDF.', true);
+  }, 300);
+  f.srcdoc = editedPdfHtml();
+  document.body.appendChild(f);
+}
+function downloadEditedPdfHtml(){
+  download('catena_edited_pdf_layout.html', editedPdfHtml(), 'text/html');
+  setStatus('Edited PDF-layout HTML downloaded.', true);
+}
+function toggleFocusMode(){
+  document.body.classList.toggle('focusMode');
+  if ($('focusModeBtn')) $('focusModeBtn').textContent = document.body.classList.contains('focusMode') ? 'Exit Focus' : 'Focus';
+}
+
 function previewPdf(){
   pull();
   updateRead();
@@ -3561,15 +3493,7 @@ function importJson(file){
   const r = new FileReader();
   r.onload = () => {
     try {
-      const raw = JSON.parse(r.result);
-      const importedEntries = Array.isArray(raw) ? raw : Array.isArray(raw.entries) ? raw.entries : null;
-      if (!importedEntries) throw new Error('Expected a Catena entry array or v12 backup object.');
-      entries = importedEntries.map(norm);
-      if (raw && raw.settings) {
-        appSettings = Object.assign(appSettings, raw.settings);
-        pushBetaSettings();
-        applyVisualSettings();
-      }
+      entries = JSON.parse(r.result).map(norm);
       selected.clear();
       current = -1;
       if (entries.length) openEntry(0);
@@ -3619,280 +3543,6 @@ function exportToml(){
       q + '\n';
   }).join('\n');
   download('catena_commentary_beta.toml', toml, 'text/plain');
-}
-
-
-const SNAPSHOT_KEY = 'CatenaSnapshotsV12';
-let lastSnapshotAt = 0;
-function safeText(s){
-  return String(s || '').replace(/\s+/g,' ').trim();
-}
-function wordCountText(s){
-  const m = safeText(s).match(/[\w'’\-]+/g);
-  return m ? m.length : 0;
-}
-function allEntryPlainText(e){
-  return [
-    e.title,e.reference,e.collection,e.folder,e.status,e.tags,e.page,e.quote,
-    stripHtml(e.commentHtml),
-    (e.sections || []).map(s => s.title + ' ' + stripHtml(s.html)).join(' '),
-    (e.footnotes || []).map(n => n.text).join(' '),
-    (e.endnotes || []).map(n => n.text).join(' ')
-  ].join(' ');
-}
-function projectStats(){
-  const active = entries.filter(e => !e.deleted);
-  const words = active.reduce((n,e) => n + wordCountText(allEntryPlainText(e)), 0);
-  const notes = active.reduce((n,e) => n + (e.footnotes || []).length + (e.endnotes || []).length, 0);
-  const links = active.reduce((n,e) => n + ((e.commentHtml || '').match(/<a\b/gi) || []).length + ((e.sections || []).map(s => s.html || '').join(' ').match(/<a\b/gi) || []).length, 0);
-  const folderCount = new Set(active.map(e => e.folder || 'Unfiled')).size;
-  const updated = active.map(e => e.updatedAt || '').sort().pop() || '';
-  return {active, words, notes, links, folderCount, updated};
-}
-function updateDashboard(){
-  const s = projectStats();
-  if ($('statEntries')) $('statEntries').textContent = String(s.active.length);
-  if ($('statWords')) $('statWords').textContent = String(s.words.toLocaleString());
-  if ($('statNotes')) $('statNotes').textContent = String(s.notes);
-  if ($('statLinks')) $('statLinks').textContent = String(s.links);
-  if ($('statFolders')) $('statFolders').textContent = String(s.folderCount);
-  if ($('statUpdated')) $('statUpdated').textContent = s.updated ? new Date(s.updated).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) : '—';
-}
-function noteMarkerIdsFromHtml(html,type){
-  const ids = new Set();
-  String(html || '').replace(/data-note-type=["']([^"']+)["'][^>]*data-note-id=["']([^"']+)["']/g, (m,t,id) => {
-    if (t === type) ids.add(id);
-    return m;
-  });
-  String(html || '').replace(/data-note-id=["']([^"']+)["'][^>]*data-note-type=["']([^"']+)["']/g, (m,id,t) => {
-    if (t === type) ids.add(id);
-    return m;
-  });
-  return ids;
-}
-function internalLinkIdsFromHtml(html){
-  const ids = [];
-  String(html || '').replace(/data-(?:cf-id|link-entry-id)=["']([^"']+)["']/g, (m,id) => {
-    ids.push(id);
-    return m;
-  });
-  return ids;
-}
-function integrityCheck(){
-  pull();
-  const warnings = [];
-  const ids = new Set();
-  const dupes = new Set();
-  entries.forEach((e,i) => {
-    if (!e.id) warnings.push('Entry ' + (i+1) + ' has no ID.');
-    if (ids.has(e.id)) dupes.add(e.id);
-    ids.add(e.id);
-    if (!safeText(titleOf(e)) && !safeText(e.reference)) warnings.push('Entry ' + (i+1) + ' has no title or reference.');
-    const fh = noteMarkerIdsFromHtml(e.commentHtml,'footnotes');
-    const eh = noteMarkerIdsFromHtml(e.commentHtml,'endnotes');
-    (e.footnotes || []).forEach(n => { if (n.linked && n.id && !fh.has(n.id)) warnings.push('Missing footnote marker: ' + titleOf(e) + ' — note ' + n.num + '.'); });
-    (e.endnotes || []).forEach(n => { if (n.linked && n.id && !eh.has(n.id)) warnings.push('Missing citation marker: ' + titleOf(e) + ' — citation ' + n.num + '.'); });
-    fh.forEach(id => { if (!(e.footnotes || []).some(n => n.id === id)) warnings.push('Orphan footnote marker in ' + titleOf(e) + '.'); });
-    eh.forEach(id => { if (!(e.endnotes || []).some(n => n.id === id)) warnings.push('Orphan citation marker in ' + titleOf(e) + '.'); });
-    const html = [e.commentHtml].concat((e.sections || []).map(s => s.html || '')).join(' ');
-    internalLinkIdsFromHtml(html).forEach(id => { if (!entries.some(x => x.id === id)) warnings.push('Broken internal link in ' + titleOf(e) + ' -> ' + id + '.'); });
-  });
-  dupes.forEach(id => warnings.push('Duplicate entry ID: ' + id + '.'));
-  const report = warnings.length ? ('Issues found: ' + warnings.length + '\n\n- ' + warnings.join('\n- ')) : 'No structural issues found. Notes, citations, IDs, and internal links passed the v12 check.';
-  const health = $('projectHealth');
-  if (health) {
-    health.textContent = warnings.length ? 'Health: ' + warnings.length + ' issue(s)' : 'Health: clean';
-    health.classList.toggle('ok', !warnings.length);
-    health.classList.toggle('bad', !!warnings.length);
-  }
-  if ($('integrityReport')) $('integrityReport').textContent = report;
-  setStatus(warnings.length ? 'Integrity check found ' + warnings.length + ' issue(s).' : 'Integrity check passed.', !warnings.length);
-  return {warnings, report};
-}
-function repairSafeProject(){
-  pull();
-  makeSnapshot('before safe repair', false);
-  const seen = new Set();
-  entries.forEach((e,i) => {
-    if (!e.id || seen.has(e.id)) e.id = uid();
-    seen.add(e.id);
-    e.order = i + 1;
-    e.workMode = validMode(e.workMode || appSettings.mode);
-    e.sections = normSections(e.sections || [], e.workMode);
-    e.footnotes = normNotes(e.footnotes || []);
-    e.endnotes = normNotes(e.endnotes || []);
-    e.footnotes.forEach((n,j) => n.num = j + 1);
-    e.endnotes.forEach((n,j) => n.num = j + 1);
-    e.updatedAt = e.updatedAt || now();
-    e.createdAt = e.createdAt || e.updatedAt;
-  });
-  sortByOrder();
-  if (current >= entries.length) current = entries.length - 1;
-  if (current >= 0) push();
-  renderAll();
-  manualSave();
-  integrityCheck();
-}
-function snapshots(){
-  try {
-    const s = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]');
-    return Array.isArray(s) ? s : [];
-  } catch(e) { return []; }
-}
-function makeSnapshot(label, throttled){
-  const t = Date.now();
-  if (throttled && t - lastSnapshotAt < 10 * 60 * 1000) return false;
-  try {
-    const list = snapshots();
-    list.unshift({
-      id:'snap-' + t,
-      label:label || 'snapshot',
-      createdAt:new Date(t).toISOString(),
-      count:entries.length,
-      entries:JSON.parse(JSON.stringify(entries)),
-      settings:JSON.parse(JSON.stringify(appSettings))
-    });
-    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(list.slice(0,14)));
-    lastSnapshotAt = t;
-    setStatus('Snapshot created.', true);
-    return true;
-  } catch(e) {
-    setStatus('Snapshot skipped: browser storage is full.', false);
-    return false;
-  }
-}
-async function restoreSnapshot(){
-  const list = snapshots();
-  if (!list.length) { alert('No snapshots available yet.'); return; }
-  const menu = list.map((s,i) => (i+1) + '. ' + new Date(s.createdAt).toLocaleString() + ' — ' + s.label + ' — ' + s.count + ' entries').join('\n');
-  const raw = prompt('Restore which snapshot?\n\n' + menu, '1');
-  if (!raw) return;
-  const idx = parseInt(raw,10) - 1;
-  if (!list[idx]) { alert('That snapshot number does not exist.'); return; }
-  if (!confirm('Restore this snapshot? Current entries will be replaced, but a safety snapshot will be created first.')) return;
-  makeSnapshot('before restore', false);
-  entries = (list[idx].entries || []).map(norm);
-  if (list[idx].settings) appSettings = Object.assign(appSettings, list[idx].settings);
-  sortByOrder();
-  current = entries.length ? 0 : -1;
-  await idbSet(KEY, entries);
-  pushBetaSettings();
-  applyVisualSettings();
-  if (current >= 0) push();
-  renderAll();
-  setStatus('Snapshot restored.', true);
-}
-function csvCell(s){
-  return '"' + String(s || '').replace(/"/g,'""') + '"';
-}
-function exportCsv(){
-  pull();
-  const rows = [['Order','Title','Reference','Collection','Folder','Status','Mode','Tags','Words','Footnotes','Citations','Updated']];
-  exportList().forEach(e => rows.push([
-    e.order,titleOf(e),e.reference,e.collection,e.folder || 'Unfiled',e.status,modeLabel(e.workMode),e.tags,wordCountText(allEntryPlainText(e)),(e.footnotes||[]).length,(e.endnotes||[]).length,e.updatedAt
-  ]));
-  download('catena_v12_index.csv', rows.map(r => r.map(csvCell).join(',')).join('\n'), 'text/csv');
-}
-function entryPlainExport(e){
-  const secs = (e.sections || []).filter(s => safeText(stripHtml(s.html))).map(s => '\n\n' + s.title.toUpperCase() + '\n' + stripHtml(s.html)).join('');
-  const fn = (e.footnotes || []).length ? '\n\nFootnotes\n' + e.footnotes.map((n,i) => (i+1) + '. ' + stripHtml(n.text)).join('\n') : '';
-  const en = (e.endnotes || []).length ? '\n\nCitations\n' + e.endnotes.map((n,i) => (i+1) + '. ' + stripHtml(n.text)).join('\n') : '';
-  return titleOf(e).toUpperCase() + '\n' + (e.reference ? 'Reference: ' + e.reference + '\n' : '') + (e.folder ? 'Folder: ' + e.folder + '\n' : '') + '\n' + (e.quote ? 'SOURCE\n' + e.quote + '\n\n' : '') + 'COMMENTARY\n' + stripHtml(e.commentHtml) + secs + fn + en;
-}
-function exportTxt(){
-  pull();
-  const text = defaultBookTitle().toUpperCase() + '\n\n' + exportList().map(entryPlainExport).join('\n\n' + '='.repeat(72) + '\n\n');
-  download('catena_v12_plain_text.txt', text, 'text/plain');
-}
-function latexEscape(s){
-  return String(s || '').replace(/\\/g,'\\textbackslash{}').replace(/([#$%&_{}])/g,'\\$1').replace(/\^/g,'\\textasciicircum{}').replace(/~/g,'\\textasciitilde{}');
-}
-function exportLatex(){
-  pull();
-  const body = exportList().map(e => {
-    const secs = (e.sections || []).filter(s => safeText(stripHtml(s.html))).map(s => '\\subsection*{' + latexEscape(s.title) + '}\n' + latexEscape(stripHtml(s.html))).join('\n\n');
-    return '\\section*{' + latexEscape(titleOf(e)) + '}\n' + (e.reference ? '\\textit{' + latexEscape(e.reference) + '}\n\n' : '') + (e.quote ? '\\begin{quote}\n' + latexEscape(e.quote) + '\n\\end{quote}\n' : '') + latexEscape(stripHtml(e.commentHtml)) + '\n\n' + secs;
-  }).join('\n\n');
-  const tex = '\\documentclass[12pt]{article}\n\\usepackage[margin=1in]{geometry}\n\\usepackage{hyperref}\n\\begin{document}\n\\title{' + latexEscape(defaultBookTitle()) + '}\n\\maketitle\n' + body + '\n\\end{document}\n';
-  download('catena_v12_latex_draft.tex', tex, 'application/x-tex');
-}
-function exportOutline(){
-  pull();
-  const text = exportList().map(e => {
-    const secs = (e.sections || []).map(s => '    - ' + s.title + (safeText(stripHtml(s.html)) ? ' — ' + safeText(stripHtml(s.html)).slice(0,160) : '')).join('\n');
-    return '- ' + titleOf(e) + (e.reference ? ' (' + e.reference + ')' : '') + '\n' + secs;
-  }).join('\n');
-  download('catena_v12_outline.txt', text, 'text/plain');
-}
-function projectReportText(){
-  const s = projectStats();
-  const byMode = {};
-  const byStatus = {};
-  s.active.forEach(e => {
-    byMode[modeLabel(e.workMode)] = (byMode[modeLabel(e.workMode)] || 0) + 1;
-    byStatus[e.status] = (byStatus[e.status] || 0) + 1;
-  });
-  const integrity = integrityCheck();
-  return 'CATENA V12 PROJECT REPORT\n\n' +
-    'Entries: ' + s.active.length + '\nWords: ' + s.words + '\nNotes/Citations: ' + s.notes + '\nLinks: ' + s.links + '\nFolders: ' + s.folderCount + '\nUpdated: ' + (s.updated || '—') + '\n\n' +
-    'By mode:\n' + Object.keys(byMode).sort().map(k => '- ' + k + ': ' + byMode[k]).join('\n') + '\n\n' +
-    'By status:\n' + Object.keys(byStatus).sort().map(k => '- ' + k + ': ' + byStatus[k]).join('\n') + '\n\n' +
-    'Integrity:\n' + integrity.report + '\n';
-}
-function exportReport(){
-  pull();
-  download('catena_v12_project_report.txt', projectReportText(), 'text/plain');
-}
-function exportBackupJson(){
-  pull();
-  const pack = {app:'Catena Studio', version:'v12-mega-alpha', exportedAt:now(), settings:appSettings, entries:entries, snapshots:snapshots().map(s => ({id:s.id,label:s.label,createdAt:s.createdAt,count:s.count}))};
-  download('catena_v12_full_backup.json', JSON.stringify(pack,null,2), 'application/json');
-}
-function openCommandPalette(){
-  const o = $('commandOverlay');
-  if (!o) return;
-  o.classList.remove('hidden');
-  if ($('commandInput')) {
-    $('commandInput').value = '';
-    renderCommandList('');
-    setTimeout(() => $('commandInput').focus(), 20);
-  }
-}
-function closeCommandPalette(){
-  if ($('commandOverlay')) $('commandOverlay').classList.add('hidden');
-}
-function commandActions(){
-  const base = [
-    {name:'New entry', detail:'Create a blank entry', run:add},
-    {name:'Manual save', detail:'Save the project now', run:manualSave},
-    {name:'Preview PDF', detail:'Open print/PDF preview', run:previewPdf},
-    {name:'Export plain text', detail:'Download a clean text manuscript', run:exportTxt},
-    {name:'Export outline', detail:'Download an outline of entries and sections', run:exportOutline},
-    {name:'Export project report', detail:'Diagnostics and counts', run:exportReport},
-    {name:'Integrity check', detail:'Check notes, citations, IDs, and internal links', run:integrityCheck},
-    {name:'Create snapshot', detail:'Save a local restore point', run:() => makeSnapshot('manual command snapshot', false)},
-    {name:'Restore snapshot', detail:'Restore from a local restore point', run:restoreSnapshot},
-    {name:'Toggle focus mode', detail:'Hide library and entry list', run:toggleFocusMode},
-    {name:'Open settings', detail:'Open formal settings tabs', run:() => { $('settingsPanel').classList.remove('hidden'); activateSettingsTab('general'); }}
-  ];
-  entries.filter(e => !e.deleted).forEach((e,i) => base.push({name:'Open: ' + titleOf(e), detail:[e.reference,e.folder,modeLabel(e.workMode)].filter(Boolean).join(' · '), run:() => openEntry(i)}));
-  return base;
-}
-function renderCommandList(q){
-  const list = $('commandList');
-  if (!list) return;
-  const needle = String(q || '').toLowerCase();
-  const actions = commandActions().filter(a => (a.name + ' ' + a.detail).toLowerCase().includes(needle)).slice(0,80);
-  list.innerHTML = actions.map((a,i) => '<button class="commandItem' + (i === 0 ? ' active' : '') + '" data-command-index="' + i + '"><span><strong>' + esc(a.name) + '</strong><span>' + esc(a.detail || '') + '</span></span>' + (i === 0 ? '<span class="commandKbd">Enter</span>' : '') + '</button>').join('') || '<div class="sub" style="padding:14px">No command found.</div>';
-  list.querySelectorAll('[data-command-index]').forEach(btn => btn.onclick = () => {
-    const idx = parseInt(btn.dataset.commandIndex,10);
-    closeCommandPalette();
-    if (actions[idx]) actions[idx].run();
-  });
-}
-function toggleFocusMode(){
-  document.body.classList.toggle('focusMode');
-  if ($('focusModeBtn')) $('focusModeBtn').textContent = document.body.classList.contains('focusMode') ? 'Exit Focus' : 'Focus';
 }
 
 
@@ -3947,9 +3597,7 @@ function applyVisualSettings(){
   r.setProperty('--blockquote-min-height', Math.round(c.blockquoteFontSize * 2.35 * c.blockquotePaddingScale) + 'px');
   r.setProperty('--blockquote-border-width', c.blockquoteBorderWidth + 'px');
   r.setProperty('--blockquote-radius', c.blockquoteRadius + 'px');
-  document.body.classList.toggle('compactUi', !!appSettings.compactUi);
 }
-
 function styleControlsFromInputs(){
   const c = normalizeStyleControls(appSettings.styleControls);
   if ($('sourceQuoteBgInput')) c.sourceQuoteBg = normalizeHexColor($('sourceQuoteBgInput').value, c.sourceQuoteBg);
@@ -4010,7 +3658,6 @@ function loadBetaSettings(){
     if (appSettings.exportShowEntryTitle === undefined) appSettings.exportShowEntryTitle = true;
     if (appSettings.exportShowMeta === undefined) appSettings.exportShowMeta = true;
     if (appSettings.exportShowStatus === undefined) appSettings.exportShowStatus = true;
-    if (appSettings.compactUi === undefined) appSettings.compactUi = false;
     if (!appSettings.footnotePlacement) appSettings.footnotePlacement = 'entry';
     if (!appSettings.endnotePlacement) appSettings.endnotePlacement = 'entry';
     appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
@@ -4033,7 +3680,6 @@ function pushBetaSettings(){
   if ($('footnotePlacementSetting')) $('footnotePlacementSetting').value = appSettings.footnotePlacement || 'entry';
   if ($('endnotePlacementSetting')) $('endnotePlacementSetting').value = appSettings.endnotePlacement || 'entry';
   if ($('darkThemeToggle')) $('darkThemeToggle').checked = document.body.classList.contains('dark');
-  if ($('compactUiToggle')) $('compactUiToggle').checked = !!appSettings.compactUi;
   const fm = normalizeFrontMatter(appSettings.frontMatter);
   if ($('frontTitleInput')) $('frontTitleInput').value = fm.title;
   if ($('frontSubtitleInput')) $('frontSubtitleInput').value = fm.subtitle;
@@ -4058,7 +3704,6 @@ function applyBetaSettings(){
   appSettings.exportShowStatus = $('exportStatusToggle') ? $('exportStatusToggle').checked : true;
   appSettings.footnotePlacement = $('footnotePlacementSetting') ? $('footnotePlacementSetting').value : 'entry';
   appSettings.endnotePlacement = $('endnotePlacementSetting') ? $('endnotePlacementSetting').value : 'entry';
-  appSettings.compactUi = $('compactUiToggle') ? $('compactUiToggle').checked : !!appSettings.compactUi;
   appSettings.frontMatter = frontMatterFromInputs();
   appSettings.styleControls = styleControlsFromInputs();
   applyVisualSettings();
@@ -4334,6 +3979,12 @@ function bind(){
   $('linkBtn').onclick = insertSmartLink;
   $('editBtn').onclick = () => setMode(false);
   $('readBtn').onclick = () => setMode(true);
+  if ($('focusModeBtn')) $('focusModeBtn').onclick = toggleFocusMode;
+  if ($('pdfEditorBtn')) $('pdfEditorBtn').onclick = openPdfEditor;
+  if ($('pdfCloseBtn')) $('pdfCloseBtn').onclick = closePdfEditor;
+  if ($('pdfRefreshBtn')) $('pdfRefreshBtn').onclick = openPdfEditor;
+  if ($('pdfPrintBtn')) $('pdfPrintBtn').onclick = printEditedPdf;
+  if ($('pdfHtmlBtn')) $('pdfHtmlBtn').onclick = downloadEditedPdfHtml;
   $('previewPdfBtn').onclick = previewPdf;
   $('downloadPdfBtn').onclick = downloadPdf;
   $('folderPreviewBtn').onclick = previewFolderPdf;
@@ -4345,38 +3996,11 @@ function bind(){
   $('exportHtmlBtn').onclick = () => {
     download('catena_book_beta.html', bookHtml(), 'text/html');
   };
-  ['exportTxtBtn','exportTxtRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportTxt; });
-  ['exportCsvBtn'].forEach(id => { if ($(id)) $(id).onclick = exportCsv; });
-  ['exportLatexBtn'].forEach(id => { if ($(id)) $(id).onclick = exportLatex; });
-  ['exportOutlineBtn','exportOutlineRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportOutline; });
-  ['exportReportBtn','exportReportRailBtn'].forEach(id => { if ($(id)) $(id).onclick = exportReport; });
-  ['exportBackupBtn'].forEach(id => { if ($(id)) $(id).onclick = exportBackupJson; });
   $('openBtn').onclick = () => $('importFile').click();
   $('importFile').onchange = e => importJson(e.target.files[0]);
   
   loadBetaSettings();
   pushBetaSettings();
-  if ($('commandBtn')) $('commandBtn').onclick = openCommandPalette;
-  if ($('openCommandHintBtn')) $('openCommandHintBtn').onclick = openCommandPalette;
-  if ($('focusModeBtn')) $('focusModeBtn').onclick = toggleFocusMode;
-  if ($('quickIntegrityBtn')) $('quickIntegrityBtn').onclick = integrityCheck;
-  if ($('snapshotNowBtn')) $('snapshotNowBtn').onclick = () => makeSnapshot('manual dashboard snapshot', false);
-  if ($('settingsIntegrityBtn')) $('settingsIntegrityBtn').onclick = integrityCheck;
-  if ($('settingsRepairBtn')) $('settingsRepairBtn').onclick = repairSafeProject;
-  if ($('settingsSnapshotBtn')) $('settingsSnapshotBtn').onclick = () => makeSnapshot('manual settings snapshot', false);
-  if ($('settingsRestoreSnapshotBtn')) $('settingsRestoreSnapshotBtn').onclick = restoreSnapshot;
-  if ($('commandOverlay')) $('commandOverlay').addEventListener('mousedown', e => { if (e.target === $('commandOverlay')) closeCommandPalette(); });
-  if ($('commandInput')) {
-    $('commandInput').addEventListener('input', e => renderCommandList(e.target.value));
-    $('commandInput').addEventListener('keydown', e => {
-      if (e.key === 'Escape') { e.preventDefault(); closeCommandPalette(); }
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const first = $('commandList') && $('commandList').querySelector('[data-command-index]');
-        if (first) first.click();
-      }
-    });
-  }
   $('settingsBtn').onclick = () => {
     $('settingsPanel').classList.remove('hidden');
     activateSettingsTab('general');
@@ -4390,7 +4014,7 @@ function bind(){
     document.body.classList.toggle('dark', $('darkThemeToggle').checked);
     localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
   };
-  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','compactUiToggle','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','commentBgInput','commentInkInput','commentFontInput','commentLineHeightInput','commentFontFamilyInput','commentTabSizeInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteFontInput','blockquoteLineHeightInput','blockquotePaddingInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting','sourceQuoteBgInput','sourceQuoteBorderInput','sourceQuoteInkInput','sourceQuoteFontInput','commentBgInput','commentInkInput','commentFontInput','commentLineHeightInput','commentFontFamilyInput','commentTabSizeInput','blockquoteBgInput','blockquoteBorderInput','blockquoteInkInput','blockquoteFontInput','blockquoteLineHeightInput','blockquotePaddingInput','blockquoteBorderWidthInput','blockquoteRadiusInput'].forEach(id => {
     if ($(id)) $(id).addEventListener('change', applyBetaSettings);
   });
   [
@@ -4442,14 +4066,6 @@ function bind(){
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
       e.preventDefault();
       manualSave();
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      openCommandPalette();
-    }
-    if (e.key === 'Escape' && $('commandOverlay') && !$('commandOverlay').classList.contains('hidden')) {
-      e.preventDefault();
-      closeCommandPalette();
     }
   });
 }
