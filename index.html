@@ -346,35 +346,107 @@ sup.note-ref{
 
 .settingsPanel{
   position:fixed;
-  right:18px;
-  top:86px;
+  inset:72px 18px 18px 18px;
   z-index:50;
-  width:min(380px,calc(100vw - 36px));
+  width:min(1040px,calc(100vw - 36px));
+  margin:0 auto;
   background:var(--panel);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:22px;
   box-shadow:var(--shadow);
-  padding:14px;
+  padding:0;
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto;
+  overflow:hidden;
 }
 .settingsPanel h2{
   font-family:var(--serif);
-  margin:0 0 8px;
-  font-size:24px;
+  margin:0;
+  font-size:30px;
+}
+.settingsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 20px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(212,175,55,.13),transparent);
+}
+.settingsTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--panel2);
+}
+.settingsTabBtn{
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:9px 13px;
+}
+.settingsTabBtn.active{
+  background:var(--accent);
+  color:#111;
+  border-color:var(--accent);
+}
+.settingsContent{
+  overflow:auto;
+  padding:20px;
+}
+.settingsFooter{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:14px 20px;
+  border-top:1px solid var(--line);
+  background:var(--panel2);
+}
+.settingTabSection{display:none;max-width:880px;margin:0 auto}
+.settingTabSection.active{display:block}
+.settingTabSection h3{
+  font-family:var(--serif);
+  font-size:25px;
+  margin:0 0 6px;
 }
 .settingRow{
   display:flex;
   justify-content:space-between;
-  gap:12px;
+  gap:18px;
   align-items:center;
   border-top:1px solid var(--line);
-  padding:10px 0;
+  padding:14px 0;
 }
 .settingRow:first-of-type{border-top:0}
 .toggleSwitch{
   width:auto;
   transform:scale(1.2);
+  flex:0 0 auto;
 }
-.settingRow select{max-width:170px}
+.settingRow select{max-width:290px}
+.settingsPanel .settingRow input[type="text"],
+.settingsPanel .settingRow input:not([type]),
+.settingsPanel .settingRow select,
+.settingsPanel textarea{
+  width:min(360px,100%);
+}
+.settingsPanel textarea{min-height:110px}
+.exportHint{
+  margin:10px 0 0;
+  padding:12px 14px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
+}
+@media(max-width:760px){
+  .settingsPanel{inset:58px 8px 8px 8px;width:auto}
+  .settingRow{display:block}
+  .settingRow select,.settingsPanel .settingRow input,.settingsPanel textarea{width:100%;max-width:none;margin-top:8px}
+}
 
 .passwordScreen{
   position:fixed;
@@ -495,88 +567,156 @@ Beta: universal commentary app with Scripture Mode, Book Mode, export styles, fo
 </div>
 </header>
 
-<div id="settingsPanel" class="settingsPanel hidden">
-  <div class="actions" style="justify-content:space-between;align-items:center">
-    <h2>Settings</h2>
+<div id="settingsPanel" class="settingsPanel hidden" role="dialog" aria-modal="true" aria-label="Catena settings">
+  <div class="settingsHead">
+    <div>
+      <h2>Settings</h2>
+      <div class="sub">Formal export, writing, front matter, and note controls.</div>
+    </div>
     <button id="closeSettingsBtn" class="small">Close</button>
   </div>
-  <div class="settingRow">
-    <div>
-      <strong>Dark theme</strong>
-      <div class="sub">Saved automatically and remembered after reload.</div>
-    </div>
-    <input id="darkThemeToggle" class="toggleSwitch" type="checkbox">
-  </div>
-  <div class="settingRow">
-    <div>
-      <strong>Writing mode</strong>
-      <div class="sub">Universal is normal. Scripture organizes by Bible references. Book organizes by source/page.</div>
-    </div>
-    <select id="modeSetting">
-      <option value="universal">Universal</option>
-      <option value="scripture">Scripture Mode</option>
-      <option value="book">Book Mode</option>
-    </select>
-  </div>
-  <div class="settingRow">
-    <div>
-      <strong>Export style</strong>
-      <div class="sub">Changes only the PDF/Book HTML appearance.</div>
-    </div>
-    <select id="styleSetting">
-      <option value="church">Church Fathers / Catena</option>
-      <option value="academic">Modern Academic</option>
-      <option value="study">Study Bible</option>
-      <option value="minimal">Minimal Notes</option>
-      <option value="patristic_ornate">Patristic Ornate</option>
-      <option value="oriental_liturgical">Oriental Liturgical</option>
-      <option value="seminary">Seminary Paper</option>
-      <option value="journal">Journal Article</option>
-      <option value="devotional">Devotional Reader</option>
-      <option value="two_column">Two-Column Study</option>
-      <option value="compact">Compact Print</option>
-      <option value="manuscript">Manuscript Draft</option>
-      <option value="sermon">Homily / Sermon Notes</option>
-    </select>
-  </div>
-  <div class="settingRow">
-    <div>
-      <strong>Auto-title from reference</strong>
-      <div class="sub">In Scripture Mode, blank titles become the verse reference.</div>
-    </div>
-    <input id="autoTitleToggle" class="toggleSwitch" type="checkbox">
-  </div>
-  <div class="settingRow">
-    <div>
-      <strong>Scripture export sorting</strong>
-      <div class="sub">Sorts export by biblical book/chapter/verse when possible.</div>
-    </div>
-    <input id="scriptureSortToggle" class="toggleSwitch" type="checkbox">
+
+  <div class="settingsTabs">
+    <button class="settingsTabBtn active" data-settings-tab="general">General</button>
+    <button class="settingsTabBtn" data-settings-tab="export">Export</button>
+    <button class="settingsTabBtn" data-settings-tab="front">Book Front Matter</button>
+    <button class="settingsTabBtn" data-settings-tab="notes">Footnotes / Endnotes</button>
   </div>
 
-  <div class="settingBlock">
-    <strong>Book front matter</strong>
-    <div class="sub">Used in Book HTML, PDF Preview, Download PDF, and folder exports.</div>
-    <input id="frontTitleInput" placeholder="Book title">
-    <input id="frontSubtitleInput" placeholder="Subtitle" style="margin-top:7px">
-    <div class="frontGrid">
-      <input id="frontAuthorInput" placeholder="Author name">
-      <input id="frontEditionInput" placeholder="Edition / volume">
-    </div>
-    <input id="frontDateInput" placeholder="Date shown on title page">
-    <textarea id="frontDedicationInput" placeholder="Dedication"></textarea>
-    <textarea id="frontPrefaceInput" placeholder="Preface"></textarea>
-    <textarea id="frontIntroductionInput" placeholder="Introduction"></textarea>
+  <div class="settingsContent">
+    <section class="settingTabSection active" data-settings-section="general">
+      <h3>General writing controls</h3>
+      <div class="sub">These affect how the editor organizes and displays your material.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Dark theme</strong>
+          <div class="sub">Saved automatically and remembered after reload.</div>
+        </div>
+        <input id="darkThemeToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Writing mode</strong>
+          <div class="sub">Universal is normal. Scripture organizes by Bible references. Book organizes by source/page.</div>
+        </div>
+        <select id="modeSetting">
+          <option value="universal">Universal</option>
+          <option value="scripture">Scripture Mode</option>
+          <option value="book">Book Mode</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Auto-title from reference</strong>
+          <div class="sub">In Scripture Mode, blank titles become the verse reference.</div>
+        </div>
+        <input id="autoTitleToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Scripture export sorting</strong>
+          <div class="sub">Sorts export by biblical book/chapter/verse when possible.</div>
+        </div>
+        <input id="scriptureSortToggle" class="toggleSwitch" type="checkbox">
+      </div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="export">
+      <h3>Export appearance</h3>
+      <div class="sub">These options affect Book HTML, PDF Preview, Download PDF, and folder exports.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Export style</strong>
+          <div class="sub">Changes the visual style of exported books and PDFs.</div>
+        </div>
+        <select id="styleSetting">
+          <option value="church">Church Fathers / Catena</option>
+          <option value="academic">Modern Academic</option>
+          <option value="study">Study Bible</option>
+          <option value="minimal">Minimal Notes</option>
+          <option value="patristic_ornate">Patristic Ornate</option>
+          <option value="oriental_liturgical">Oriental Liturgical</option>
+          <option value="seminary">Seminary Paper</option>
+          <option value="journal">Journal Article</option>
+          <option value="devotional">Devotional Reader</option>
+          <option value="two_column">Two-Column Study</option>
+          <option value="compact">Compact Print</option>
+          <option value="manuscript">Manuscript Draft</option>
+          <option value="sermon">Homily / Sermon Notes</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show entry titles in exports</strong>
+          <div class="sub">Turn this off when the title repeats the reference or passage heading.</div>
+        </div>
+        <input id="exportTitleToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show entry metadata in exports</strong>
+          <div class="sub">Controls the small reference / folder / status line under each title.</div>
+        </div>
+        <input id="exportMetaToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Show Draft / Final / Published status in exports</strong>
+          <div class="sub">Turn this off to remove Draft, Final, Finished, Published, etc. from PDF output.</div>
+        </div>
+        <input id="exportStatusToggle" class="toggleSwitch" type="checkbox">
+      </div>
+      <div class="exportHint">For a clean book/PDF: turn off entry titles if they repeat your references, and turn off status labels when you do not want Draft / Finished language in the manuscript.</div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="front">
+      <h3>Book front matter</h3>
+      <div class="sub">Used at the beginning of full-book and folder exports.</div>
+      <div class="settingBlock">
+        <input id="frontTitleInput" placeholder="Book title">
+        <input id="frontSubtitleInput" placeholder="Subtitle" style="margin-top:7px">
+        <div class="frontGrid">
+          <input id="frontAuthorInput" placeholder="Author name">
+          <input id="frontEditionInput" placeholder="Edition / volume">
+        </div>
+        <input id="frontDateInput" placeholder="Date shown on title page">
+        <textarea id="frontDedicationInput" placeholder="Dedication"></textarea>
+        <textarea id="frontPrefaceInput" placeholder="Preface"></textarea>
+        <textarea id="frontIntroductionInput" placeholder="Introduction"></textarea>
+      </div>
+    </section>
+
+    <section class="settingTabSection" data-settings-section="notes">
+      <h3>Footnotes and endnotes</h3>
+      <div class="sub">Controls how note material is placed when exported.</div>
+      <div class="settingRow">
+        <div>
+          <strong>Footnote placement</strong>
+          <div class="sub">Footnotes remain directly beneath each entry so the linked marker stays near the note.</div>
+        </div>
+        <select id="footnotePlacementSetting">
+          <option value="entry">Footnotes at bottom of each entry</option>
+        </select>
+      </div>
+      <div class="settingRow">
+        <div>
+          <strong>Endnote / citation placement</strong>
+          <div class="sub">Choose where citation-style notes are collected in exported books and PDFs.</div>
+        </div>
+        <select id="endnotePlacementSetting">
+          <option value="entry">Citations at bottom of each entry</option>
+          <option value="chapter">Endnotes at end of chapter / folder</option>
+          <option value="book">Endnotes at end of whole book</option>
+        </select>
+      </div>
+      <div class="exportHint">Scripture references inside footnotes and endnotes, such as John 3:16, Psalm 51, or Ruth 1-4, are automatically linked to Bible Gateway NKJV + YLT.</div>
+    </section>
   </div>
-  <div class="settingRow">
-    <div>
-      <strong>Manual Save</strong>
-      <div class="sub">Ctrl+S also saves. Your project saves in this browser with IndexedDB.</div>
-    </div>
+
+  <div class="settingsFooter">
     <button id="settingsSaveBtn" class="primary small">Save Now</button>
   </div>
 </div>
-
 
 <main class="app">
 <aside class="rail card">
@@ -764,6 +904,11 @@ let appSettings = {
   exportStyle:'church',
   autoTitle:true,
   scriptureSort:true,
+  exportShowEntryTitle:true,
+  exportShowMeta:true,
+  exportShowStatus:true,
+  footnotePlacement:'entry',
+  endnotePlacement:'entry',
   frontMatter:{
     title:'',
     subtitle:'',
@@ -1534,7 +1679,8 @@ function normalizeMarkers(html,e,withLinks){
   });
   return root.innerHTML;
 }
-function notesHtml(e){
+function notesHtml(e, includeEndnotes){
+  if (includeEndnotes === undefined) includeEndnotes = true;
   let out = '';
   if (e.footnotes.some(n => n.text)) {
     out += '<section class="readSection"><h3>Footnotes</h3><ol class="notesList">';
@@ -1547,7 +1693,7 @@ function notesHtml(e){
     });
     out += '</ol></section>';
   }
-  if (e.endnotes.some(n => n.text)) {
+  if (includeEndnotes && e.endnotes.some(n => n.text)) {
     out += '<section class="readSection"><h3>Citations</h3>';
     out += '<ol class="notesList">';
     e.endnotes.forEach((n,i) => {
@@ -1681,19 +1827,56 @@ function cleanup(kind){
   }
   changed();
 }
+function exportMetaForEntry(e){
+  const parts = [];
+  if (e.reference) parts.push(e.reference);
+  if (e.folder) parts.push(e.folder);
+  if (appSettings.exportShowStatus !== false && e.status) parts.push(e.status);
+  return parts;
+}
+function endnoteGroupKey(e){
+  if (appSettings.mode === 'scripture') {
+    const p = parseReference(e.reference);
+    if (p) return p.book + ' ' + p.chapter;
+  }
+  return e.folder || 'Unfiled';
+}
+function endnotesAggregateHtml(list,label){
+  let items = '';
+  (list || []).forEach(e => {
+    (e.endnotes || []).forEach((n,i) => {
+      if (!n.text) return;
+      const context = [titleOf(e), e.reference].filter(Boolean).join(' — ');
+      items += '<li id="en-' + e.id + '-' + (i + 1) + '">' +
+        (context ? '<span class="noteContext">' + esc(context) + ':</span> ' : '') +
+        linkifyPlain(n.text) + ' <a href="#enref-' + e.id + '-' +
+        (i + 1) + '">↩</a></li>';
+    });
+  });
+  if (!items) return '';
+  return '<section class="endnotesBlock"><h2>' + esc(label || 'Endnotes') +
+    '</h2><ol class="notesList">' + items + '</ol></section>';
+}
 function entryHtml(e){
   const sections = e.sections
     .filter(s => stripHtml(s.html).trim())
     .map(s => '<h3>' + esc(s.title) + '</h3>' + linkifyHtml(s.html))
     .join('');
+  let head = '';
+  if (appSettings.exportShowEntryTitle !== false) {
+    head += '<h2>' + esc(titleOf(e)) + '</h2>';
+  }
+  if (appSettings.exportShowMeta !== false) {
+    const meta = exportMetaForEntry(e).filter(Boolean).join(' | ');
+    if (meta) head += '<div class="meta">' + esc(meta) + '</div>';
+  }
+  const includeEntryEndnotes = (appSettings.endnotePlacement || 'entry') === 'entry';
   return '<article class="entry">' +
-    '<h2>' + esc(titleOf(e)) + '</h2>' +
-    '<div class="meta">' + esc([e.reference,e.folder,e.status]
-      .filter(Boolean).join(' | ')) + '</div>' +
+    head +
     '<blockquote>' + linkifyHtml(quoteHtmlOf(e)) + '</blockquote>' +
     linkifyHtml(normalizeMarkers(e.commentHtml, e, true)) +
     sections +
-    notesHtml(e) +
+    notesHtml(e, includeEntryEndnotes) +
     '</article>';
 }
 function exportCss(style){
@@ -1708,7 +1891,8 @@ function exportCss(style){
     '.titlePage .byline,.titlePage .edition{font-family:Arial,sans-serif;color:#555;font-size:14px;margin:6px 0}' +
     '.frontMatter{page-break-after:always;margin-bottom:34px}' +
     '.frontMatter h2{margin-top:32px}' +
-    '.frontMatter .dedication{font-style:italic;text-align:center;margin:42px auto;max-width:620px}';
+    '.frontMatter .dedication{font-style:italic;text-align:center;margin:42px auto;max-width:620px}' +
+    '.endnotesBlock{page-break-before:always;margin-top:36px}.endnotesBlock h2{text-align:left}.noteContext{font-weight:bold}';
   if (style === 'church') {
     return base +
       'body{font-family:Georgia,serif;max-width:850px;margin:50px auto;padding:0 24px;color:#181818;line-height:1.72;background:#fffdf8}' +
@@ -1851,10 +2035,26 @@ function bookHtml(list,title){
 
   const style = appSettings.exportStyle || 'church';
   const css = exportCss(style);
+  const endnotePlacement = appSettings.endnotePlacement || 'entry';
 
   let body = '';
   let lastBook = '';
+  let currentEndnoteGroup = null;
+  let endnoteGroupEntries = [];
+  function flushEndnoteGroup(){
+    if (endnotePlacement !== 'chapter' || !endnoteGroupEntries.length) return;
+    body += endnotesAggregateHtml(endnoteGroupEntries, 'Endnotes — ' + (currentEndnoteGroup || 'Unfiled'));
+    endnoteGroupEntries = [];
+  }
+
   list.forEach(e => {
+    const groupKey = endnoteGroupKey(e);
+    if (endnotePlacement === 'chapter') {
+      if (currentEndnoteGroup !== null && groupKey !== currentEndnoteGroup) {
+        flushEndnoteGroup();
+      }
+      currentEndnoteGroup = groupKey;
+    }
     if (appSettings.mode === 'scripture') {
       const p = parseReference(e.reference);
       if (p && p.book !== lastBook) {
@@ -1863,7 +2063,13 @@ function bookHtml(list,title){
       }
     }
     body += entryHtml(e);
+    if (endnotePlacement === 'chapter') endnoteGroupEntries.push(e);
   });
+
+  flushEndnoteGroup();
+  if (endnotePlacement === 'book') {
+    body += endnotesAggregateHtml(list, 'Endnotes');
+  }
 
   return '<!doctype html><html><head><meta charset="utf-8"><title>' +
     esc(title) + '</title><style>' + css + '</style></head><body>' +
@@ -2045,6 +2251,11 @@ function loadBetaSettings(){
   try {
     const saved = JSON.parse(localStorage.getItem(BETA_SETTINGS_KEY) || '{}');
     appSettings = Object.assign(appSettings, saved);
+    if (appSettings.exportShowEntryTitle === undefined) appSettings.exportShowEntryTitle = true;
+    if (appSettings.exportShowMeta === undefined) appSettings.exportShowMeta = true;
+    if (appSettings.exportShowStatus === undefined) appSettings.exportShowStatus = true;
+    if (!appSettings.footnotePlacement) appSettings.footnotePlacement = 'entry';
+    if (!appSettings.endnotePlacement) appSettings.endnotePlacement = 'entry';
     appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
   } catch(e) {}
   appSettings.frontMatter = normalizeFrontMatter(appSettings.frontMatter);
@@ -2056,6 +2267,11 @@ function pushBetaSettings(){
   if ($('styleSetting')) $('styleSetting').value = appSettings.exportStyle || 'church';
   if ($('autoTitleToggle')) $('autoTitleToggle').checked = !!appSettings.autoTitle;
   if ($('scriptureSortToggle')) $('scriptureSortToggle').checked = !!appSettings.scriptureSort;
+  if ($('exportTitleToggle')) $('exportTitleToggle').checked = appSettings.exportShowEntryTitle !== false;
+  if ($('exportMetaToggle')) $('exportMetaToggle').checked = appSettings.exportShowMeta !== false;
+  if ($('exportStatusToggle')) $('exportStatusToggle').checked = appSettings.exportShowStatus !== false;
+  if ($('footnotePlacementSetting')) $('footnotePlacementSetting').value = appSettings.footnotePlacement || 'entry';
+  if ($('endnotePlacementSetting')) $('endnotePlacementSetting').value = appSettings.endnotePlacement || 'entry';
   if ($('darkThemeToggle')) $('darkThemeToggle').checked = document.body.classList.contains('dark');
   const fm = normalizeFrontMatter(appSettings.frontMatter);
   if ($('frontTitleInput')) $('frontTitleInput').value = fm.title;
@@ -2075,6 +2291,11 @@ function applyBetaSettings(){
   appSettings.exportStyle = $('styleSetting').value;
   appSettings.autoTitle = $('autoTitleToggle').checked;
   appSettings.scriptureSort = $('scriptureSortToggle').checked;
+  appSettings.exportShowEntryTitle = $('exportTitleToggle') ? $('exportTitleToggle').checked : true;
+  appSettings.exportShowMeta = $('exportMetaToggle') ? $('exportMetaToggle').checked : true;
+  appSettings.exportShowStatus = $('exportStatusToggle') ? $('exportStatusToggle').checked : true;
+  appSettings.footnotePlacement = $('footnotePlacementSetting') ? $('footnotePlacementSetting').value : 'entry';
+  appSettings.endnotePlacement = $('endnotePlacementSetting') ? $('endnotePlacementSetting').value : 'entry';
   appSettings.frontMatter = frontMatterFromInputs();
   saveBetaSettings();
   renderAll();
@@ -2098,6 +2319,15 @@ function exportList(){
   return list;
 }
 
+function activateSettingsTab(name){
+  name = name || 'general';
+  document.querySelectorAll('.settingsTabBtn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.settingsTab === name);
+  });
+  document.querySelectorAll('.settingTabSection').forEach(sec => {
+    sec.classList.toggle('active', sec.dataset.settingsSection === name);
+  });
+}
 function bind(){
   document.querySelectorAll('.navBtn[data-view]').forEach(b => {
     b.onclick = () => {
@@ -2183,15 +2413,21 @@ function bind(){
   
   loadBetaSettings();
   pushBetaSettings();
-  $('settingsBtn').onclick = () => $('settingsPanel').classList.toggle('hidden');
+  $('settingsBtn').onclick = () => {
+    $('settingsPanel').classList.remove('hidden');
+    activateSettingsTab('general');
+  };
   $('closeSettingsBtn').onclick = () => $('settingsPanel').classList.add('hidden');
+  document.querySelectorAll('.settingsTabBtn').forEach(btn => {
+    btn.onclick = () => activateSettingsTab(btn.dataset.settingsTab);
+  });
   $('settingsSaveBtn').onclick = manualSave;
   $('darkThemeToggle').onchange = () => {
     document.body.classList.toggle('dark', $('darkThemeToggle').checked);
     localStorage.setItem('CatenaThemeV55', $('darkThemeToggle').checked ? 'dark' : 'light');
   };
-  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle'].forEach(id => {
-    $(id).addEventListener('change', applyBetaSettings);
+  ['modeSetting','styleSetting','autoTitleToggle','scriptureSortToggle','exportTitleToggle','exportMetaToggle','exportStatusToggle','footnotePlacementSetting','endnotePlacementSetting'].forEach(id => {
+    if ($(id)) $(id).addEventListener('change', applyBetaSettings);
   });
   [
     'frontTitleInput',
