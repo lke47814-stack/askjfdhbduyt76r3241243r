@@ -194,7 +194,7 @@ body.resizing *{
   box-shadow:var(--shadow);
   overflow:hidden;
 }
-.rail{padding:12px}
+.rail{padding:12px;max-height:calc(100vh - 220px);overflow:auto}
 .navTitle{
   font-size:12px;
   text-transform:uppercase;
@@ -1877,6 +1877,25 @@ function renderFolders(){
     renderAll();
   };
   box.appendChild(all);
+  
+  const addNewBtn = document.createElement('button');
+  addNewBtn.className = 'navBtn';
+  addNewBtn.innerHTML = '+ New Folder';
+  addNewBtn.onclick = () => {
+    const name = prompt('Enter new folder name (e.g., "Genesis", "John / Chapter 1"):');
+    if (name && name.trim()) {
+      const e = blank();
+      e.folder = name.trim();
+      e.title = 'New entry in ' + name.trim();
+      entries.push(e);
+      activeFolder = name.trim();
+      changed();
+      renderAll();
+      openEntry(entries.length - 1);
+    }
+  };
+  box.appendChild(addNewBtn);
+  
   folders().forEach(f => {
     const b = document.createElement('button');
     b.className = 'navBtn' + (activeFolder === f ? ' active' : '');
@@ -3229,10 +3248,27 @@ function normalizeBibleReference(r){
     .replace(/\s*[-–]\s*/g, '-')
     .trim();
 }
-function bibleUrl(r){
-  return 'https://www.biblegateway.com/passage/?search=' +
-    encodeURIComponent(normalizeBibleReference(r)) +
-    '&version=NKJV,YLT';
+const BIBLE_SOURCES = [
+  { name: 'Bible Gateway (NKJV)', url: (ref) => 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(normalizeBibleReference(ref)) + '&version=NKJV' },
+  { name: 'Bible Gateway (ESV)', url: (ref) => 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(normalizeBibleReference(ref)) + '&version=ESV' },
+  { name: 'Bible Gateway (KJV)', url: (ref) => 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(normalizeBibleReference(ref)) + '&version=KJV' },
+  { name: 'Blue Letter Bible', url: (ref) => 'https://www.blueletterbible.org/search/verse.cfm?keyword=' + encodeURIComponent(normalizeBibleReference(ref)) + '&t=KJV' },
+  { name: 'Step Bible', url: (ref) => 'https://www.stepbible.org/?q=' + encodeURIComponent(normalizeBibleReference(ref)) },
+  { name: 'YouVersion', url: (ref) => 'https://www.bible.com/bible/114/' + encodeURIComponent(normalizeBibleReference(ref).replace(/ /g, '+')) }
+];
+
+function bibleUrl(r, sourceIndex = 0){
+  const source = BIBLE_SOURCES[sourceIndex] || BIBLE_SOURCES[0];
+  return source.url(r);
+}
+
+function getBibleSourceSelectHtml(selectedIndex = 0){
+  let html = '<select id="bibleSourceSelect" style="max-width:180px;padding:6px;border-radius:6px;font-size:12px;">';
+  BIBLE_SOURCES.forEach((src, idx) => {
+    html += '<option value="' + idx + '"' + (idx === selectedIndex ? ' selected' : '') + '>' + esc(src.name) + '</option>';
+  });
+  html += '</select>';
+  return html;
 }
 function linkifyPlain(s){
   let out = esc(s || '');
