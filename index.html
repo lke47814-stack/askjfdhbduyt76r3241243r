@@ -1648,7 +1648,62 @@ function toast(msg){
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
 }
 function saveSoon(){$('saveStatus').textContent='Saving…';clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,350)}
-function saveNow(){localStorage.setItem(STORE,JSON.stringify(state));$('saveStatus').textContent='Saved'}
+/* ── INDEXEDDB HELPERS (large-translation fallback) ──────────── */
+var _catenaIDB=null;
+function catenaOpenIDB(){
+  if(_catenaIDB)return Promise.resolve(_catenaIDB);
+  return new Promise(function(res,rej){
+    var req=indexedDB.open('catena_idb_v1',1);
+    req.onupgradeneeded=function(e){e.target.result.createObjectStore('kv');};
+    req.onsuccess=function(e){_catenaIDB=e.target.result;res(_catenaIDB);};
+    req.onerror=function(){rej(req.error);};
+  });
+}
+function catenaSaveTransIDB(translations){
+  return catenaOpenIDB().then(function(db){
+    return new Promise(function(res,rej){
+      var tx=db.transaction('kv','readwrite');
+      tx.objectStore('kv').put(translations,'translations');
+      tx.oncomplete=function(){res();};
+      tx.onerror=function(){rej(tx.error);};
+    });
+  });
+}
+function catenaLoadTransIDB(){
+  return catenaOpenIDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction('kv','readonly');
+      var req=tx.objectStore('kv').get('translations');
+      req.onsuccess=function(){res(req.result||null);};
+      req.onerror=function(){res(null);};
+    });
+  }).catch(function(){return null;});
+}
+function saveNow(){
+  var el=$('saveStatus');
+  try{
+    var fullJson=JSON.stringify(state);
+    localStorage.setItem(STORE,fullJson);
+    // Full save succeeded — clean up any IDB flag so we don't load stale data
+    if(localStorage.getItem('catena_idb_v')==='1'){
+      localStorage.removeItem('catena_idb_v');
+      catenaSaveTransIDB({}).catch(function(){});
+    }
+    if(el)el.textContent='Saved';
+  }catch(e){
+    // Quota exceeded — save state without translations to localStorage, translations to IndexedDB
+    try{
+      var small={};
+      for(var k in state){if(k!=='translations')small[k]=state[k];}
+      small.__idb=true;
+      localStorage.setItem(STORE,JSON.stringify(small));
+      localStorage.setItem('catena_idb_v','1');
+    }catch(e2){if(el)el.textContent='⚠ Save error';return;}
+    catenaSaveTransIDB(state.translations)
+      .then(function(){if(el)el.textContent='Saved';})
+      .catch(function(){if(el)el.textContent='⚠ IDB error';});
+  }
+}
 function manualSave(){
   saveNow();toast('Saved ✓');
   const btn=$('manualSaveBtn');btn.classList.remove('save-flash');void btn.offsetWidth;btn.classList.add('save-flash');
@@ -8748,6 +8803,256 @@ body.cux-search #cuxSearch{display:flex}
     try{eval(name+'=window["'+name+'"]');}catch(e){}
   }
   ['setActiveTranslation','toggleParallel','deleteTranslationNamed','deleteActiveTranslation','clearTranslationChapter','importFullTranslation','importCurrentChapter','importSequential','importOwnTranslationWithCommentary','importReaderQuickTranslation'].forEach(wrapLayerFunction);
+
+
+  /* ── USER PATCH: collapsible reader text-layer strip + repaired online imports ── */
+  (function installReaderStripAndImportRepair(){
+    if(window.catenaReaderStripAndImportRepair)return;
+    window.catenaReaderStripAndImportRepair=true;
+
+    const css=document.createElement('style');
+    css.textContent=`
+      #reader .reader-layer-actions{position:relative!important;}
+      #reader .reader-layer-actions .reader-layer-toggle{
+        height:30px!important;border-radius:999px!important;padding:0 12px!important;
+        font-size:11px!important;letter-spacing:.08em!important;text-transform:uppercase!important;
+        border-color:rgba(201,168,76,.42)!important;color:var(--gold3,var(--gold))!important;
+        background:rgba(201,168,76,.06)!important;white-space:nowrap!important;
+      }
+      #reader .reader-layer-actions.is-collapsed{
+        display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;
+        align-items:center!important;padding:8px 10px!important;margin-bottom:10px!important;
+        min-height:42px!important;
+      }
+      #reader .reader-layer-actions.is-collapsed .layer-meta{min-width:0!important;flex:1 1 auto!important;overflow:hidden!important;}
+      #reader .reader-layer-actions.is-collapsed .layer-meta span:not(.layer-pill):nth-of-type(n+2){display:none!important;}
+      #reader .reader-layer-actions.is-collapsed .layer-pill{max-width:220px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+      #reader .reader-layer-actions.is-collapsed .layer-quick-controls,
+      #reader .reader-layer-actions.is-collapsed .layer-actions-right{display:none!important;}
+      #reader .reader-layer-actions:not(.is-collapsed) .reader-layer-toggle{margin-left:auto!important;}
+      @media(max-width:760px){
+        #reader .reader-layer-actions.is-collapsed{grid-template-columns:1fr auto!important;}
+        #reader .reader-layer-actions.is-collapsed .layer-pill{max-width:150px!important;}
+      }
+    `;
+    document.head.appendChild(css);
+
+    const sourceVersions=[
+      ['NKJV','New King James Version'],['KJV','King James Version'],['YLT',"Young's Literal Translation"],['ASV','American Standard Version'],
+      ['WEB','World English Bible'],['BSB','Berean Standard Bible'],['LSV','Literal Standard Version'],['DRA','Douay-Rheims'],
+      ['RSVCE','RSV Catholic Edition'],['NRSVUE','NRSV Updated Edition'],['VUL','Latin Vulgate'],['SBLGNT','SBL Greek NT'],['WLC','Hebrew WLC']
+    ];
+    function esc2(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function refreshReaderStrip(reason){try{refreshLayerSurfaces(reason||'reader-strip');}catch(e){try{renderReader();}catch(_){}}}
+    window.readerLayerActionBar=function(book,chapter,layers,rows){
+      const active=(state.active&&state.active.translation)||'';
+      state.settings=state.settings||{};
+      const collapsed=!!state.settings.textLayerBarCollapsed;
+      const div=document.createElement('div');
+      div.className='reader-layer-actions'+(collapsed?' is-collapsed':'');
+      const all=(typeof allTransNames==='function'?allTransNames():Object.keys(state.translations||{}));
+      const activeCount=active&&typeof getTransObj==='function'?Object.keys(getTransObj(active)).filter(k=>k.startsWith(book+'|'+chapter+'|')).length:0;
+      const mode=(state.settings&&state.settings.displayMode)||'single';
+      div.innerHTML=`
+        <div class="layer-meta"><b>Text Layer</b><span class="layer-pill">${esc2(active||'No active layer')}</span><span>${activeCount} verse${activeCount===1?'':'s'} in ${esc2(book)} ${Number(chapter)}</span>${layers&&layers.length>1?`<span>${Number((rows||[]).length)} aligned row${(rows||[]).length===1?'':'s'}</span>`:''}</div>
+        <button type="button" class="reader-layer-toggle" data-role="toggle" title="${collapsed?'Show':'Hide'} text-layer controls">${collapsed?'Expand':'Minimize'}</button>
+        <div class="layer-quick-controls">
+          <select data-role="active-layer" title="Active text layer"><option value="">No active layer</option>${all.map(n=>`<option value="${esc2(n)}" ${n===active?'selected':''}>${esc2(n)}</option>`).join('')}</select>
+          <select data-role="display-mode" title="Reader mode">
+            <option value="single" ${mode==='single'?'selected':''}>Single</option><option value="sideBySide" ${mode==='sideBySide'?'selected':''}>Parallel</option><option value="stacked" ${mode==='stacked'?'selected':''}>Stacked</option><option value="wordInterlinear" ${mode==='wordInterlinear'?'selected':''}>Interlinear</option><option value="compact" ${mode==='compact'?'selected':''}>Table</option>
+          </select>
+          <select id="catenaSourceProvider" title="Source page provider"><option value="gateway">BibleGateway</option><option value="biblehub">BibleHub</option><option value="studylight">StudyLight</option><option value="oremus">Oremus/NRSV</option><option value="search">Web search</option></select>
+          <select data-role="source-version" title="Open source version">${sourceVersions.map(v=>`<option value="${v[0]}" ${v[0]==='NKJV'?'selected':''}>${v[0]}</option>`).join('')}</select>
+          <button type="button" data-role="open-source">Open source</button>
+          <button type="button" data-role="open-ylt">YLT fixed</button>
+        </div>
+        <div class="layer-actions-right"><button type="button" data-role="paste">Paste / Replace Chapter</button><button type="button" data-role="import">Import / Fetch</button><button type="button" class="danger" data-role="clear">Clear Chapter</button><button type="button" class="danger" data-role="delete">Delete Layer</button></div>`;
+      div.querySelector('[data-role="toggle"]')?.addEventListener('click',()=>{state.settings.textLayerBarCollapsed=!collapsed;try{saveSoon();}catch(e){}refreshReaderStrip('toggle-text-layer-strip');});
+      div.querySelector('[data-role="active-layer"]')?.addEventListener('change',ev=>{try{typeof setActiveTranslation==='function'?setActiveTranslation(ev.target.value):(state.active.translation=ev.target.value)}catch(_){state.active.translation=ev.target.value}refreshReaderStrip('active-layer-strip')});
+      div.querySelector('[data-role="display-mode"]')?.addEventListener('change',ev=>{state.settings=state.settings||{};try{typeof catenaSetDisplayMode==='function'?catenaSetDisplayMode(ev.target.value):(state.settings.displayMode=ev.target.value)}catch(_){state.settings.displayMode=ev.target.value}refreshReaderStrip('reader-mode-strip')});
+      div.querySelector('[data-role="open-source"]')?.addEventListener('click',()=>{const v=div.querySelector('[data-role="source-version"]')?.value||'NKJV';window.catenaOpenSourceVersion?window.catenaOpenSourceVersion(v):window.open(`https://www.biblegateway.com/passage/?search=${encodeURIComponent(book+' '+chapter)}&version=${encodeURIComponent(v)}`,'_blank','noopener')});
+      div.querySelector('[data-role="open-ylt"]')?.addEventListener('click',()=>window.catenaOpenSourceVersion?window.catenaOpenSourceVersion('YLT','biblehub'):null);
+      div.querySelector('[data-role="paste"]')?.addEventListener('click',()=>{try{openReaderReplacePanel()}catch(_){openModal('translationModal')}});
+      div.querySelector('[data-role="import"]')?.addEventListener('click',()=>{try{openModal('translationModal');setTimeout(window.catenaEnhanceWholeBiblePanel,80)}catch(_){}});
+      div.querySelector('[data-role="clear"]')?.addEventListener('click',()=>{try{clearActiveLayerChapter()}catch(_){}});
+      div.querySelector('[data-role="delete"]')?.addEventListener('click',()=>{try{deleteActiveTranslation()}catch(_){}});
+      return div;
+    };
+
+    const fixedIds={
+      kjv:['eng_kjv','KJV'],
+      ylt:['eng_ylt','YLT'],
+      asv:['eng_asv','ASV'],
+      web:['ENGWEBP','engwebp','eng_web','WEB'],
+      webbe:['ENGWEBBE','engwebbe','eng_webbe','WEBBE'],
+      webc:['ENGWEBC','engwebc','ENGWEBP','engwebp'],
+      bsb:['BSB','eng_bsb'],
+      lsv:['eng_lsv','LSV'],
+      bbe:['engBBE','eng_bbe','BBE'],
+      darby:['engDBY','eng_dby','DARBY'],
+      dra:['engDRA','eng_dra','DRA'],
+      drb:['engDRB','eng_drb','DRB'],
+      wyc:['engWYC','eng_wyc','WYC'],
+      brenton:['eng-Brenton','eng_brenton','Brenton','LXX2012'],
+      vulgate:['latVUC','lat_vuc','vulgate','VUL'],
+      sblgnt:['grc_sbl','grc_sblgnt','SBLGNT'],
+      wlc:['heb_wlc','WLC']
+    };
+    Object.entries(fixedIds).forEach(([code,ids])=>{if(CATENA_ONLINE_IMPORTS[code])CATENA_ONLINE_IMPORTS[code].ids=ids.slice();});
+    const labelByCode={kjv:'KJV',ylt:'YLT',asv:'ASV',web:'WEB',webbe:'WEBBE',webc:'WEB-C',bsb:'BSB',lsv:'LSV',bbe:'BBE',darby:'DARBY',dra:'DRA',drb:'DRB',wyc:'WYC',brenton:'Brenton LXX',vulgate:'Vulgate',sblgnt:'SBLGNT',wlc:'WLC'};
+    const codeAliases={
+      kingjames:'kjv',kingjamesversion:'kjv',authorizedversion:'kjv',av:'kjv',
+      youngliteral:'ylt',youngsliteral:'ylt',youngsliteraltranslation:'ylt',
+      americanstandard:'asv',americanstandardversion:'asv',worldenglish:'web',worldenglishbible:'web',webus:'web',
+      worldenglishbritish:'webbe',worldenglishbiblebritish:'webbe',webbritish:'webbe',
+      worldenglishcatholic:'webc',webcatholic:'webc',deuterocanon:'webc',apocrypha:'webc',
+      berean:'bsb',bereanstandard:'bsb',bereanstandardbible:'bsb',literalstandard:'lsv',literalstandardversion:'lsv',
+      basicenglish:'bbe',bibleinbasicenglish:'bbe',dby:'darby',darbybible:'darby',douay:'dra',douayrheims:'dra',douayrheimsamerican:'dra',
+      wycliffe:'wyc',brentonseptuagint:'brenton',septuagint:'brenton',lxx:'brenton',vul:'vulgate',latin:'vulgate',latinVulgate:'vulgate',
+      greek:'sblgnt',sbl:'sblgnt',sblgreek:'sblgnt',hebrew:'wlc',westminster:'wlc',westminsterleningrad:'wlc'
+    };
+    function importCode(raw){
+      const original=String(raw||'').trim();
+      const compact=original.toLowerCase().replace(/[^a-z0-9]+/g,'');
+      return codeAliases[compact]||compact||original;
+    }
+    function candidateIdsFor(code){
+      const c=importCode(code);
+      const ids=(fixedIds[c]||[]).slice();
+      const original=String(code||'').trim();
+      if(original&&/^[A-Za-z0-9_-]+$/.test(original)&&!ids.includes(original))ids.push(original);
+      return ids.filter(Boolean);
+    }
+    async function fetchAoCompleteById(id,label){
+      const data=await fetchAoJson(`${id}/complete.json`);
+      const parsed=parseAoComplete(data,`${label||id} / Free Use API (${id})`);
+      parsed.translationId=id;
+      return parsed;
+    }
+    async function fetchOnlineParsedRepaired(code){
+      const c=importCode(code);
+      const label=labelByCode[c]||(CATENA_ONLINE_IMPORTS[c]?.label)||String(code||'').toUpperCase();
+      const tried=[],errors=[];
+      for(const id of candidateIdsFor(code)){
+        if(tried.includes(id))continue; tried.push(id);
+        try{
+          const parsed=await fetchAoCompleteById(id,label);
+          if(parsed.verses&&parsed.verses.length)return parsed;
+          errors.push(`${id}: ${parsed.warnings?.[0]||'0 verses parsed'}`);
+        }catch(e){errors.push(`${id}: ${e.message}`);}
+      }
+      try{return await fetchOnlineParsed(c);}catch(e){
+        if(errors.length)throw new Error(errors.slice(0,3).join(' | ')+' | fallback: '+e.message);
+        throw e;
+      }
+    }
+    function currentImportLayer(label){return (q('wholeBibleLayerName')?.value||q('newTransName')?.value||q('onlineProviderValue')?.value||label||'Imported Bible').trim()||label||'Imported Bible';}
+    function findFetchButton(code){return [...document.querySelectorAll('.fetch-btn-grid button[data-code]')].find(b=>(b.getAttribute('data-code')||'').toLowerCase()===String(code||'').toLowerCase());}
+    window.catenaFetchPublicDomainBible=async function(directCode,directLayer){
+      const raw=String(directCode||q('wholeBiblePublicDomain')?.value||'kjv').trim();
+      const code=importCode(raw);
+      if(['nkjv','niv','esv','nasb','csb','nlt','rsvce','nrsvue','nabre'].includes(code)){
+        report(`${raw.toUpperCase()} is a licensed/copyrighted source in this app. Open the source page, or import a licensed USFM/OSIS/JSON file from your device.`,'warn');
+        return;
+      }
+      const label=directLayer||labelByCode[code]||(CATENA_ONLINE_IMPORTS[code]?.label)||raw.toUpperCase();
+      const layer=(directLayer||q('wholeBibleLayerName')?.value||label).trim()||label;
+      const btn=findFetchButton(code); if(btn)btn.classList.add('fetching');
+      report(`Fetching ${label}. Trying fixed Free Use API IDs first, then the normal resolver…`,'warn');
+      try{
+        const parsed=await fetchOnlineParsedRepaired(code);
+        if(!parsed.verses?.length)throw new Error(parsed.warnings?.[0]||'Parsed 0 verses.');
+        const mode=q('wholeBibleAction')?.value||'replaceLayer';
+        const replace=q('wholeBibleReplace')?.checked!==false;
+        const res=mergeParsedVerses(parsed,layer,mode,replace);
+        state.translationMeta=state.translationMeta||{};
+        state.translationMeta[layer]={...(state.translationMeta[layer]||{}),sourceName:label,sourceFormat:[...new Set([...(parsed.formats||[]),parsed.translationId?`API id: ${parsed.translationId}`:''].filter(Boolean))].join(', '),wholeBible:true,lastImport:new Date().toISOString()};
+        try{rememberImportedLayer(layer);}catch(e){state.active.translation=layer;}
+        state.active.translation=layer;
+        try{saveSoon();}catch(e){}
+        refreshLayerSurfaces('repaired-online-import');
+        const warn=(parsed.warnings||[]).length?` First warning: ${parsed.warnings[0]}`:'';
+        report(`✓ ${label} imported into "${layer}" — ${res.count.toLocaleString()} verse${res.count===1?'':'s'} imported.${res.skipped?` Skipped ${res.skipped.toLocaleString()} existing verse${res.skipped===1?'':'s'}.`:''}${warn}`,(parsed.warnings||[]).length?'warn':'ok');
+      }catch(err){
+        report(`✗ ${label} import failed: ${err.message}. Try another free-use source, or import a local USFM/OSIS/JSON file.`,'error');
+      }finally{if(btn)btn.classList.remove('fetching');}
+    };
+
+    function usfmBookId(book){
+      const normalized=normalizeBookName(book)||book;
+      const hit=Object.entries(USFM_IDS).find(([id,name])=>String(name).toLowerCase()===String(normalized).toLowerCase());
+      return hit?hit[0]:'GEN';
+    }
+    function parseRefParts(ref){
+      const fallbackBook=(state.active&&state.active.book)||'Genesis';
+      const fallbackChapter=Number(state.active&&state.active.chapter)||1;
+      const m=String(ref||'').trim().match(/^(.+?)\s+(\d{1,3})(?::\d+)?/);
+      return {book:normalizeBookName(m?m[1]:fallbackBook)||fallbackBook,chapter:Number(m?m[2]:fallbackChapter)||fallbackChapter};
+    }
+    function parsedFromAoChapter(data,book,chapter,label){
+      const content=data?.content??data?.chapter?.content??data?.verses??data?.chapter?.verses??data?.data?.content??data;
+      return parseAoComplete({books:[{commonName:book,name:book,id:usfmBookId(book),chapters:[{number:Number(chapter)||1,content,verses:data?.verses}]}]},label);
+    }
+    async function fetchAoChapterParsed(code,book,chapter){
+      const c=importCode(code);
+      const label=labelByCode[c]||(CATENA_ONLINE_IMPORTS[c]?.label)||String(code||'').toUpperCase();
+      const bookId=usfmBookId(book);
+      const errors=[];
+      for(const id of candidateIdsFor(code)){
+        try{
+          const data=await fetchAoJson(`${id}/${bookId}/${Number(chapter)||1}.json`);
+          const parsed=parsedFromAoChapter(data,book,chapter,`${label} / Free Use API ${id} ${book} ${chapter}`);
+          parsed.translationId=id;
+          if(parsed.verses?.length)return parsed;
+          errors.push(`${id}: ${parsed.warnings?.[0]||'0 verses parsed'}`);
+        }catch(e){errors.push(`${id}: ${e.message}`);}
+      }
+      throw new Error(errors.slice(0,3).join(' | ')||'No matching Free Use API ID.');
+    }
+    const originalFetchToPaste=window.fetchToPaste;
+    window.fetchToPaste=async function(){
+      const src=q('onlineSource')?.value||'bible-api';
+      const val=(q('onlineProviderValue')?.value||'web').trim()||'web';
+      const ref=(q('onlineRef')?.value||`${state.active.book} ${state.active.chapter}`).trim();
+      const parts=parseRefParts(ref);
+      const target=q('translationPaste');
+      const rep=q('fetchReport');
+      if(src==='bible-api'||src==='public-domain'){
+        if(rep)rep.textContent='Fetching chapter from Free Use Bible API…';
+        try{
+          const parsed=await fetchAoChapterParsed(val,parts.book,parts.chapter);
+          if(target)target.value=parsed.verses.map(v=>`${v.book}\t${v.ch}\t${v.verse}\t${v.text}`).join('\n');
+          if(rep)rep.textContent=`Fetched ${parsed.verses.length} verses into paste box from ${parsed.translationId||val}.`;
+          return;
+        }catch(e){if(rep)rep.textContent='Free Use API failed; trying old fetch method… '+e.message;}
+      }
+      if(typeof originalFetchToPaste==='function')return originalFetchToPaste.apply(this,arguments);
+    };
+    const originalFetchOnlineChapter=window.fetchOnlineChapter;
+    window.fetchOnlineChapter=async function(){
+      const src=q('onlineSource')?.value||'bible-api';
+      const val=(q('onlineProviderValue')?.value||'web').trim()||'web';
+      const ref=(q('onlineRef')?.value||`${state.active.book} ${state.active.chapter}`).trim();
+      const parts=parseRefParts(ref);
+      const rep=q('fetchReport');
+      if(src==='bible-api'||src==='public-domain'){
+        if(rep)rep.textContent='Fetching chapter into layer from Free Use Bible API…';
+        try{
+          const parsed=await fetchAoChapterParsed(val,parts.book,parts.chapter);
+          const label=labelByCode[importCode(val)]||String(val).toUpperCase();
+          const layer=currentImportLayer(label);
+          const mode=q('importAction')?.value==='replaceLayer'?'replaceLayer':'merge';
+          const res=mergeParsedVerses(parsed,layer,mode,true);
+          state.active.translation=layer;
+          try{saveSoon();}catch(e){}
+          refreshLayerSurfaces('repaired-chapter-fetch');
+          if(rep)rep.textContent=`Fetched ${res.count} verses into "${layer}" from ${parsed.translationId||val}.`;
+          return;
+        }catch(e){if(rep)rep.textContent='Free Use API chapter import failed; trying old fetch method… '+e.message;}
+      }
+      if(typeof originalFetchOnlineChapter==='function')return originalFetchOnlineChapter.apply(this,arguments);
+    };
+  })();
 
   function boot(){
     installWholeBibleUi();
