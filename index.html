@@ -1052,30 +1052,8 @@ hr{border:0;border-top:1px solid var(--border);margin:14px 0}
           <button class="tb" onmousedown="toolMouse(event)" onclick="cmd('formatBlock','p')">¶</button>
           <button class="tb" onmousedown="toolMouse(event)" onclick="clearFormatting()">Clear</button>
         </span>
-        <span class="tg" data-label="Color">
-          <details class="tdrop" onmousedown="saveSelRange()"><summary>Text color</summary><div class="drop-panel">
-            <button onmousedown="toolMouse(event)" onclick="setColor('fore','#f8f0dc')">Cream</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('fore','#d8aa3f')">Gold</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('fore','#86b7ff')">Blue</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('fore','#d77a7a')">Red</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('fore','#8ed6ac')">Green</button>
-          </div></details>
-          <details class="tdrop" onmousedown="saveSelRange()"><summary>Highlight</summary><div class="drop-panel">
-            <button onmousedown="toolMouse(event)" onclick="setColor('back','rgba(201,168,76,.25)')">Gold</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('back','rgba(100,150,220,.25)')">Blue</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('back','rgba(200,80,80,.2)')">Red</button>
-            <button onmousedown="toolMouse(event)" onclick="setColor('back','transparent')">None</button>
-          </div></details>
-        </span>
         <span class="tg" data-label="Quote">
-          <details class="tdrop" onmousedown="saveSelRange()"><summary>Quote</summary><div class="drop-panel">
-            <button onmousedown="toolMouse(event)" onclick="makeBlockquote()">Insert quote block</button>
-            <button onmousedown="toolMouse(event)" onclick="styleBlockquote('gold')">Gold edge</button>
-            <button onmousedown="toolMouse(event)" onclick="styleBlockquote('plain')">Plain edge</button>
-            <button onmousedown="toolMouse(event)" onclick="styleBlockquote('blue')">Blue edge</button>
-            <button onmousedown="toolMouse(event)" onclick="styleBlockquote('red')">Red edge</button>
-            <button onmousedown="toolMouse(event)" onclick="exitBlockquote()">Exit quote</button>
-          </div></details>
+          <button class="tb" title="Insert the single minimized gold quote style" onmousedown="toolMouse(event)" onclick="makeBlockquote()">▐ Gold Quote</button>
         </span>
         <span class="tg" data-label="Align">
           <button class="tb" title="Align left" onmousedown="toolMouse(event)" onclick="cmd('justifyLeft')">←</button>
@@ -1464,20 +1442,6 @@ Rejected: a paragraph with no verse numbers, no references, and no # Book 1:1 bl
         <button class="tb" onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','h2')">H2</button>
         <button class="tb" onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','h3')">H3</button>
         <button class="tb" onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','p')">¶</button>
-      </span>
-      <span class="tg" data-label="Color">
-        <details class="tdrop" onmousedown="savePdfSel()"><summary>Text color</summary><div class="drop-panel">
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('fore','#111827')">Ink</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('fore','#d8aa3f')">Gold</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('fore','#1d4ed8')">Blue</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('fore','#991b1b')">Red</button>
-        </div></details>
-        <details class="tdrop" onmousedown="savePdfSel()"><summary>Highlight</summary><div class="drop-panel">
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('back','#fff1b8')">Gold</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('back','#dbeafe')">Blue</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('back','#fee2e2')">Red</button>
-          <button onmousedown="pdfMouse(event)" onclick="pdfColor('back','transparent')">None</button>
-        </div></details>
       </span>
       <span class="tg" data-label="Paragraph">
         <button class="tb" onmousedown="pdfMouse(event)" onclick="pdfCmd('justifyLeft')">←</button>
@@ -9063,5 +9027,739 @@ body.cux-search #cuxSearch{display:flex}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else setTimeout(boot,0);
   setTimeout(boot,350);
+})();
+</script>
+
+
+<style id="catena-single-gold-quote-and-pdf-repair-css">
+  /* One blockquote style only: compact gold, used in editor, reader, PDF preview, and exported HTML. */
+  #commentaryEditor blockquote,
+  #sourceEditor blockquote,
+  .editor blockquote,
+  .catena-body blockquote,
+  #commentaryList blockquote,
+  #pdfPage blockquote,
+  .pdf-page blockquote,
+  .export-doc blockquote,
+  blockquote.catena-gold-quote{
+    margin:8px 0!important;
+    padding:7px 11px!important;
+    border-left:3px solid var(--gold,#c9a84c)!important;
+    border-top:0!important;
+    border-right:0!important;
+    border-bottom:0!important;
+    border-radius:0 9px 9px 0!important;
+    background:rgba(201,168,76,.075)!important;
+    color:inherit!important;
+    font-style:normal!important;
+    line-height:1.48!important;
+    min-height:0!important;
+    box-shadow:none!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+  #commentaryEditor blockquote p,
+  #sourceEditor blockquote p,
+  .editor blockquote p,
+  .catena-body blockquote p,
+  #pdfPage blockquote p{margin:.25em 0!important;}
+  .fn-marker,.cite-marker,.endnote-marker{
+    display:inline-block!important;
+    font-family:var(--ui,system-ui,sans-serif)!important;
+    font-size:.72em!important;
+    line-height:1!important;
+    vertical-align:super!important;
+    margin:0 .12em!important;
+    color:var(--gold2,#c9a84c)!important;
+    text-decoration:none!important;
+    cursor:pointer!important;
+  }
+  a.catena-xref,a.catena-ext-link,
+  #pdfPage a.catena-xref,#pdfPage a.catena-ext-link,
+  .catena-body a.catena-xref,.catena-body a.catena-ext-link{
+    color:var(--gold2,#b9923e)!important;
+    text-decoration:underline!important;
+    text-decoration-thickness:.06em!important;
+    text-underline-offset:.15em!important;
+  }
+  .catena-inline-notes,.pdf-notes-body{display:grid!important;gap:6px!important;}
+  .catena-note-line,.pdf-note-line,.pdf-endnote-item{
+    overflow-wrap:anywhere!important;
+  }
+  .pdf-note-line [data-field="footnote"],
+  .pdf-note-line [data-field="citation"]{
+    outline:none!important;
+  }
+  .pdf-note-line [data-field="footnote"]:focus,
+  .pdf-note-line [data-field="citation"]:focus,
+  #pdfPage [contenteditable="true"]:focus{
+    box-shadow:0 0 0 2px rgba(201,168,76,.18)!important;
+    border-radius:6px!important;
+  }
+  #pdfEditor.catena-pdf-studio-repaired{background:#07101e!important;color:var(--ink,#eee)!important;}
+  #pdfEditor.catena-pdf-studio-repaired.open{display:flex!important;flex-direction:column!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-head{
+    display:grid!important;
+    grid-template-columns:minmax(240px,1fr) auto!important;
+    gap:12px!important;
+    align-items:start!important;
+    padding:12px 16px!important;
+    border-bottom:1px solid rgba(139,159,195,.18)!important;
+    background:linear-gradient(180deg,#101a2c,#091322)!important;
+  }
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-title{display:grid!important;gap:2px!important;min-width:0!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-title b{font-family:var(--title,Georgia,serif)!important;color:var(--gold3,#e4c76b)!important;font-size:17px!important;letter-spacing:.04em!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-title small{font:12px/1.35 var(--ui,system-ui,sans-serif)!important;color:var(--muted,#9aa4b8)!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-actions{display:flex!important;flex-wrap:wrap!important;gap:7px!important;justify-content:flex-end!important;align-items:center!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-actions label{display:inline-flex!important;align-items:center!important;gap:5px!important;color:var(--ink2,#d7dce8)!important;font:12px var(--ui,system-ui,sans-serif)!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-actions select{height:32px!important;min-width:124px!important;max-width:190px!important;border-radius:9px!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-preset-cards{display:flex!important;flex-wrap:wrap!important;gap:8px!important;padding:10px 16px!important;background:#0b1526!important;border-bottom:1px solid rgba(139,159,195,.14)!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-preset-card{flex:1 1 150px!important;min-width:140px!important;max-width:220px!important;border-radius:13px!important;border:1px solid rgba(139,159,195,.24)!important;background:rgba(139,159,195,.055)!important;color:var(--ink2,#e7eaf2)!important;text-align:left!important;padding:9px 10px!important;cursor:pointer!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-preset-card strong{display:block!important;color:var(--gold3,#e4c76b)!important;font:700 12px var(--ui,system-ui,sans-serif)!important;margin-bottom:3px!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-preset-card span{display:block!important;color:var(--muted,#9aa4b8)!important;font:11px/1.3 var(--ui,system-ui,sans-serif)!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-preset-card.active{border-color:rgba(201,168,76,.60)!important;background:rgba(201,168,76,.13)!important;box-shadow:0 0 0 1px rgba(201,168,76,.16) inset!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-advanced{border-bottom:1px solid rgba(139,159,195,.13)!important;background:#091323!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-advanced summary{cursor:pointer!important;list-style:none!important;padding:9px 16px!important;color:var(--blue2,#aebbd5)!important;font:11px var(--ui,system-ui,sans-serif)!important;text-transform:uppercase!important;letter-spacing:.12em!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-studio-settings,#pdfEditor.catena-pdf-studio-repaired .pdf-studio-tools{display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important;padding:0 16px 10px!important;}
+  #pdfEditor.catena-pdf-studio-repaired .pdf-shell{flex:1 1 auto!important;overflow:auto!important;background:#050b14!important;padding:22px!important;}
+  #pdfPage.pdf-page{box-sizing:border-box!important;max-width:920px!important;margin:0 auto!important;min-height:11in!important;border-radius:18px!important;background:#fbf7ee!important;color:#20180e!important;box-shadow:0 20px 60px rgba(0,0,0,.35)!important;outline:none!important;}
+  #pdfPage.pdf-style-plain{background:#fff!important;color:#111!important;}
+  #pdfPage.pdf-style-dark{background:#121b2c!important;color:#f2eadb!important;}
+  #pdfPage.pdf-hide-source .pdf-translation-section,#pdfPage.pdf-hide-source .pdf-source-section{display:none!important;}
+  #pdfPage.pdf-hide-refs .pdf-ref,#pdfPage.pdf-hide-refs .pdf-document-title,#pdfPage.pdf-hide-refs .pdf-export-subtitle{display:none!important;}
+  #pdfPage .pdf-doc-cover{margin:0 0 24px!important;padding-bottom:13px!important;border-bottom:1px solid rgba(154,122,46,.33)!important;}
+  #pdfPage .pdf-document-title{font-family:Georgia,serif!important;margin:0 0 5px!important;font-size:1.8em!important;line-height:1.12!important;color:inherit!important;}
+  #pdfPage .pdf-export-subtitle{margin:0!important;color:inherit!important;opacity:.62!important;font:12px/1.35 system-ui,sans-serif!important;}
+  #pdfPage .pdf-verse-card{break-inside:avoid!important;margin:0 0 16px!important;padding:0 0 13px!important;border-bottom:1px solid rgba(80,70,50,.18)!important;}
+  #pdfPage .pdf-ref{font:700 10px/1.3 system-ui,sans-serif!important;letter-spacing:.12em!important;text-transform:uppercase!important;color:#8a6a1f!important;margin:0 0 7px!important;}
+  #pdfPage .pdf-section{margin:0 0 9px!important;}
+  #pdfPage .pdf-field-label{display:block!important;margin:0 0 3px!important;font:700 8.5px/1.2 system-ui,sans-serif!important;letter-spacing:.11em!important;text-transform:uppercase!important;color:#6f6a5e!important;}
+  #pdfPage .pdf-translation,#pdfPage .pdf-source,#pdfPage .pdf-commentary,#pdfPage .pdf-structured-field{line-height:1.55!important;overflow-wrap:anywhere!important;}
+  #pdfPage .pdf-translation{border-left:2px solid #9a7a2e!important;background:#f7efd8!important;padding:7px 10px!important;border-radius:0 8px 8px 0!important;}
+  #pdfPage.pdf-mode-commentary .pdf-translation-section,#pdfPage.pdf-mode-commentary .pdf-source-section{display:none!important;}
+  #pdfPage.pdf-mode-reading .pdf-commentary-section,#pdfPage.pdf-mode-reading .pdf-source-section,#pdfPage.pdf-mode-reading .pdf-structured-section,#pdfPage.pdf-mode-reading .pdf-notes-section{display:none!important;}
+  #pdfPage.pdf-mode-notes .pdf-translation-section,#pdfPage.pdf-mode-notes .pdf-commentary-section,#pdfPage.pdf-mode-notes .pdf-structured-section{display:none!important;}
+  #pdfPage.pdf-mode-structured .pdf-translation-section,#pdfPage.pdf-mode-structured .pdf-commentary-section,#pdfPage.pdf-mode-structured .pdf-source-section,#pdfPage.pdf-mode-structured .pdf-notes-section{display:none!important;}
+  #pdfPage.pdf-mode-handout{column-count:2!important;column-gap:32px!important;font-size:.94em!important;}
+  #pdfPage.pdf-mode-handout .pdf-doc-cover,#pdfPage.pdf-mode-handout .pdf-verse-card{break-inside:avoid-column!important;}
+  @media(max-width:900px){
+    #pdfEditor.catena-pdf-studio-repaired .pdf-studio-head{grid-template-columns:1fr!important;}
+    #pdfEditor.catena-pdf-studio-repaired .pdf-studio-actions{justify-content:flex-start!important;}
+    #pdfEditor.catena-pdf-studio-repaired .pdf-shell{padding:12px!important;}
+    #pdfPage.pdf-page{max-width:100%!important;}
+  }
+  @media print{
+    @page{margin:.55in;}
+    body.print-pdf-mode{background:#fff!important;overflow:visible!important;}
+    body.print-pdf-mode > *:not(#pdfEditor){display:none!important;}
+    body.print-pdf-mode #pdfEditor{position:static!important;display:block!important;inset:auto!important;width:auto!important;height:auto!important;overflow:visible!important;background:#fff!important;color:#111!important;}
+    body.print-pdf-mode #pdfEditor > *:not(.pdf-shell){display:none!important;}
+    body.print-pdf-mode #pdfEditor .pdf-shell{display:block!important;overflow:visible!important;padding:0!important;background:#fff!important;}
+    body.print-pdf-mode #pdfPage{display:block!important;max-width:none!important;width:auto!important;margin:0!important;min-height:0!important;padding:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;color:#111!important;column-fill:auto!important;}
+    body.print-pdf-mode #pdfPage .pdf-verse-card{break-inside:avoid!important;page-break-inside:avoid!important;}
+    body.print-pdf-mode #pdfPage a{color:#6c5018!important;text-decoration:underline!important;}
+  }
+</style>
+
+<script id="catena-single-gold-quote-link-note-pdf-repair-js">
+(function(){
+  'use strict';
+  const q=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const textOf=html=>{const d=document.createElement('div');d.innerHTML=String(html||'');return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  const has=html=>textOf(html).length>0;
+  const sanitizeId=s=>'catena-'+String(s||'x').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90);
+
+  const aliases={
+    'Gen':'Genesis','Ge':'Genesis','Genesis':'Genesis',
+    'Ex':'Exodus','Exod':'Exodus','Exodus':'Exodus',
+    'Lev':'Leviticus','Leviticus':'Leviticus',
+    'Num':'Numbers','Numbers':'Numbers',
+    'Deut':'Deuteronomy','Dt':'Deuteronomy','Deuteronomy':'Deuteronomy',
+    'Josh':'Joshua','Joshua':'Joshua','Judg':'Judges','Jdg':'Judges','Judges':'Judges','Ruth':'Ruth',
+    '1 Sam':'1 Samuel','1Sam':'1 Samuel','I Sam':'1 Samuel','1 Samuel':'1 Samuel','2 Sam':'2 Samuel','2Sam':'2 Samuel','II Sam':'2 Samuel','2 Samuel':'2 Samuel',
+    '1 Kgs':'1 Kings','1Kgs':'1 Kings','1 Kings':'1 Kings','I Kings':'1 Kings','2 Kgs':'2 Kings','2Kgs':'2 Kings','2 Kings':'2 Kings','II Kings':'2 Kings',
+    '1 Chr':'1 Chronicles','1Chr':'1 Chronicles','1 Chronicles':'1 Chronicles','I Chronicles':'1 Chronicles','2 Chr':'2 Chronicles','2Chr':'2 Chronicles','2 Chronicles':'2 Chronicles','II Chronicles':'2 Chronicles',
+    'Ezra':'Ezra','Neh':'Nehemiah','Nehemiah':'Nehemiah','Esth':'Esther','Esther':'Esther','Job':'Job',
+    'Ps':'Psalms','Psa':'Psalms','Psalm':'Psalms','Psalms':'Psalms','Prov':'Proverbs','Pr':'Proverbs','Proverbs':'Proverbs',
+    'Eccl':'Ecclesiastes','Ecclesiastes':'Ecclesiastes','Qoh':'Ecclesiastes','Song':'Song of Songs','Song of Songs':'Song of Songs','Cant':'Song of Songs','Canticles':'Song of Songs','Isa':'Isaiah','Is':'Isaiah','Isaiah':'Isaiah',
+    'Jer':'Jeremiah','Jeremiah':'Jeremiah','Lam':'Lamentations','Lamentations':'Lamentations','Ezek':'Ezekiel','Ezk':'Ezekiel','Ezekiel':'Ezekiel','Dan':'Daniel','Daniel':'Daniel',
+    'Hos':'Hosea','Hosea':'Hosea','Joel':'Joel','Amos':'Amos','Obad':'Obadiah','Obadiah':'Obadiah','Jonah':'Jonah','Mic':'Micah','Micah':'Micah','Nah':'Nahum','Nahum':'Nahum','Hab':'Habakkuk','Habakkuk':'Habakkuk','Zeph':'Zephaniah','Zephaniah':'Zephaniah','Hag':'Haggai','Haggai':'Haggai','Zech':'Zechariah','Zechariah':'Zechariah','Mal':'Malachi','Malachi':'Malachi',
+    'Tob':'Tobit','Tobit':'Tobit','Jdt':'Judith','Judith':'Judith','Wis':'Wisdom','Wisdom':'Wisdom','Wisdom of Solomon':'Wisdom','Sir':'Sirach','Sirach':'Sirach','Ecclesiasticus':'Sirach','Bar':'Baruch','Baruch':'Baruch','1 Macc':'1 Maccabees','1 Maccabees':'1 Maccabees','2 Macc':'2 Maccabees','2 Maccabees':'2 Maccabees',
+    'Matt':'Matthew','Mt':'Matthew','Matthew':'Matthew','Mark':'Mark','Mk':'Mark','Luke':'Luke','Lk':'Luke','John':'John','Jn':'John',
+    'Acts':'Acts','Rom':'Romans','Romans':'Romans','1 Cor':'1 Corinthians','1Cor':'1 Corinthians','I Cor':'1 Corinthians','1 Corinthians':'1 Corinthians','2 Cor':'2 Corinthians','2Cor':'2 Corinthians','II Cor':'2 Corinthians','2 Corinthians':'2 Corinthians',
+    'Gal':'Galatians','Galatians':'Galatians','Eph':'Ephesians','Ephesians':'Ephesians','Phil':'Philippians','Philippians':'Philippians','Col':'Colossians','Colossians':'Colossians',
+    '1 Thess':'1 Thessalonians','1Thess':'1 Thessalonians','1 Thessalonians':'1 Thessalonians','2 Thess':'2 Thessalonians','2Thess':'2 Thessalonians','2 Thessalonians':'2 Thessalonians',
+    '1 Tim':'1 Timothy','1Tim':'1 Timothy','1 Timothy':'1 Timothy','2 Tim':'2 Timothy','2Tim':'2 Timothy','2 Timothy':'2 Timothy','Titus':'Titus','Phlm':'Philemon','Philemon':'Philemon','Heb':'Hebrews','Hebrews':'Hebrews','Jas':'James','James':'James',
+    '1 Pet':'1 Peter','1Pet':'1 Peter','1 Peter':'1 Peter','2 Pet':'2 Peter','2Pet':'2 Peter','2 Peter':'2 Peter','1 John':'1 John','1Jn':'1 John','1 Jn':'1 John','2 John':'2 John','2Jn':'2 John','2 Jn':'2 John','3 John':'3 John','3Jn':'3 John','3 Jn':'3 John','Jude':'Jude','Rev':'Revelation','Revelation':'Revelation','Apoc':'Revelation','Apocalypse':'Revelation'
+  };
+  const aliasKeys=Object.keys(aliases).sort((a,b)=>b.length-a.length);
+  const aliasPattern=aliasKeys.map(a=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+')).join('|');
+  const refRegex=new RegExp('\\b('+aliasPattern+')\\.?\\s+(\\d{1,3})(?:(?::(\\d{1,3})(?:\\s*[-–—]\\s*(?:(\\d{1,3}):)?(\\d{1,3}))?)|(?:\\s*[-–—]\\s*(\\d{1,3})))?','gi');
+  function resolveBookName(book){
+    const compact=String(book||'').replace(/\s+/g,' ').replace(/\.$/,'').trim();
+    return aliases[compact]||aliases[compact.replace(/\s+/g,'')]||compact;
+  }
+  window.resolveBookName=function(book){return resolveBookName(book)};
+  function normalizeReference(raw){
+    raw=String(raw||'').replace(/[–—]/g,'-').replace(/\s+/g,' ').trim().replace(/\.$/,'');
+    const m=raw.match(new RegExp('^('+aliasPattern+')\\.?\\s+(\\d{1,3})(.*)$','i'));
+    if(!m)return raw;
+    return (resolveBookName(m[1])+' '+m[2]+(m[3]||'')).replace(/\s*:\s*/g,':').replace(/\s*-\s*/g,'-').trim();
+  }
+  function bibleUrl(ref){return 'https://www.biblegateway.com/passage/?search='+encodeURIComponent(normalizeReference(ref))+'&version=NKJV,YLT';}
+  window.buildBGUrl=function(ref){return bibleUrl(ref)};
+  function looksLikeRef(s){refRegex.lastIndex=0;const m=refRegex.exec(String(s||'').trim());return !!m&&m.index===0&&m[0].length>=String(s||'').trim().length-1;}
+  function noteId(key,kind,i){return sanitizeId((kind||'note')+'-'+(key||'entry')+'-'+(Number(i)+1));}
+  function markerId(key,kind,i){return sanitizeId('mark-'+(kind||'note')+'-'+(key||'entry')+'-'+(Number(i)+1));}
+
+  function normalizeLinks(root){
+    root.querySelectorAll('a[href]').forEach(a=>{
+      const href=a.getAttribute('href')||'';
+      a.classList.add(/^https?:/i.test(href)?'catena-ext-link':'catena-note-link');
+      if(/^https?:/i.test(href)){a.target='_blank';a.rel='noopener noreferrer';}
+    });
+  }
+  function normalizeNoteMarkers(root,key){
+    const convert=(sel,kind,labeler)=>{
+      root.querySelectorAll(sel).forEach((node,i)=>{
+        const idx=Number(node.dataset.noteIndex || node.getAttribute('data-note-index') || i);
+        const a=document.createElement('a');
+        a.className=(kind==='citation'?'cite-marker':'fn-marker');
+        a.href='#'+noteId(key,kind,idx);
+        a.id=markerId(key,kind,idx);
+        a.setAttribute('data-note-kind',kind);
+        a.setAttribute('data-note-index',String(idx));
+        a.textContent=labeler(idx);
+        const sup=document.createElement('sup');
+        sup.appendChild(a);
+        if(node.parentElement&&node.parentElement.tagName==='SUP') node.parentElement.replaceWith(sup); else node.replaceWith(sup);
+      });
+    };
+    convert('.fn-marker','footnote',i=>'['+(i+1)+']');
+    convert('.cite-marker','citation',i=>'[c'+(i+1)+']');
+  }
+  function linkifyTextNodes(root){
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
+      if(!node.nodeValue||!node.nodeValue.trim())return NodeFilter.FILTER_REJECT;
+      const p=node.parentElement;
+      if(!p||p.closest('a,script,style,textarea,code,pre,.fn-marker,.cite-marker'))return NodeFilter.FILTER_REJECT;
+      refRegex.lastIndex=0;
+      return refRegex.test(node.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+    }});
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node=>{
+      const text=node.nodeValue; const frag=document.createDocumentFragment(); let last=0; refRegex.lastIndex=0; let m;
+      while((m=refRegex.exec(text))){
+        if(m.index>last)frag.appendChild(document.createTextNode(text.slice(last,m.index)));
+        const raw=m[0]; const a=document.createElement('a'); a.className='catena-xref'; a.href=bibleUrl(raw); a.target='_blank'; a.rel='noopener noreferrer'; a.textContent=raw; frag.appendChild(a); last=m.index+raw.length;
+      }
+      if(last<text.length)frag.appendChild(document.createTextNode(text.slice(last)));
+      node.replaceWith(frag);
+    });
+  }
+  function prepareRichHtml(html,key){
+    const box=document.createElement('div'); box.innerHTML=String(html||'');
+    normalizeLinks(box); normalizeNoteMarkers(box,key); linkifyTextNodes(box); normalizeLinks(box);
+    box.querySelectorAll('blockquote').forEach(b=>{b.classList.add('catena-gold-quote');b.removeAttribute('style');});
+    return box.innerHTML;
+  }
+  window.catenaPrepareRichHtml=prepareRichHtml;
+
+  function installToolbar(){
+    const quoteGroup=document.querySelector('.tg[data-label="Quote"]');
+    if(quoteGroup && !quoteGroup.dataset.singleGoldQuote){
+      quoteGroup.dataset.singleGoldQuote='1';
+      quoteGroup.innerHTML='<button class="tb" title="Insert the single minimized gold quote style" onmousedown="toolMouse(event)" onclick="makeBlockquote()">▐ Gold Quote</button>';
+    }
+  }
+  function activeEditor(){
+    const a=document.activeElement;
+    if(a && a.isContentEditable) return a;
+    return q('commentaryEditor')||q('sourceEditor');
+  }
+  function styleGoldBlockquotes(root){
+    (root||document).querySelectorAll('blockquote').forEach(b=>{
+      b.className=(b.className?b.className+' ':'')+'catena-gold-quote';
+      b.style.borderLeft='3px solid var(--gold,#c9a84c)';
+      b.style.background='rgba(201,168,76,.075)';
+      b.style.padding='7px 11px';
+      b.style.margin='8px 0';
+      b.style.borderRadius='0 9px 9px 0';
+      b.style.fontStyle='normal';
+    });
+  }
+  window.catenaStyleGoldBlockquotes=styleGoldBlockquotes;
+  window.makeBlockquote=function(){
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(_){ }
+    const sel=window.getSelection();
+    const editor=activeEditor();
+    if(sel&&sel.rangeCount&&editor&&editor.contains(sel.anchorNode)){
+      const selected=sel.toString();
+      if(selected.trim()){
+        const r=sel.getRangeAt(0); const b=document.createElement('blockquote'); b.className='catena-gold-quote'; b.appendChild(r.extractContents()); r.insertNode(b);
+        const p=document.createElement('p'); p.innerHTML='<br>'; b.after(p); const nr=document.createRange(); nr.setStart(p,0); nr.collapse(true); sel.removeAllRanges(); sel.addRange(nr);
+      }else{
+        document.execCommand('formatBlock',false,'blockquote');
+      }
+    }else if(editor){
+      editor.focus(); document.execCommand('insertHTML',false,'<blockquote class="catena-gold-quote"><p>Quote…</p></blockquote><p><br></p>');
+    }
+    styleGoldBlockquotes(editor||document);
+    try{if(editor&&editor.id==='sourceEditor'&&typeof updateSource==='function')updateSource();else if(typeof updateCommentary==='function')updateCommentary();}catch(_){ }
+  };
+  window.styleBlockquote=function(){return window.makeBlockquote();};
+
+  window.insertSmartLink=function(){
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(_){ }
+    const sel=window.getSelection(); const selText=sel&&sel.toString().trim();
+    const suggested=selText?(looksLikeRef(selText)?normalizeReference(selText):(/^https?:\/\//i.test(selText)?selText:'')):'';
+    const input=prompt('URL or Bible reference:',suggested);
+    if(!input)return;
+    const href=/^https?:\/\//i.test(input.trim())?input.trim():(looksLikeRef(input)?bibleUrl(input):input.trim());
+    const label=selText || (/^https?:\/\//i.test(input.trim())?input.trim():normalizeReference(input));
+    const a=document.createElement('a'); a.href=href; a.textContent=label; if(/^https?:/i.test(href)){a.target='_blank';a.rel='noopener noreferrer';} a.className=looksLikeRef(input)||looksLikeRef(label)?'catena-xref':'catena-ext-link';
+    if(sel&&sel.rangeCount){const r=sel.getRangeAt(0); r.deleteContents(); r.insertNode(a); sel.collapse(a,1);} 
+    try{if(document.activeElement&&document.activeElement.id==='sourceEditor'&&typeof updateSource==='function')updateSource();else if(typeof updateCommentary==='function')updateCommentary();}catch(_){ }
+  };
+
+  window.syncMarkers=function(){
+    const ed=q('commentaryEditor'); if(!ed)return;
+    ed.querySelectorAll('.fn-marker').forEach((m,i)=>{m.textContent='['+(i+1)+']';m.dataset.noteIndex=String(i);m.setAttribute('data-note-index',String(i));});
+    ed.querySelectorAll('.cite-marker').forEach((m,i)=>{m.textContent='[c'+(i+1)+']';m.dataset.noteIndex=String(i);m.setAttribute('data-note-index',String(i));});
+  };
+  window.insertFootnote=function(){
+    const e=typeof currentEntry==='function'?currentEntry():null; if(e){e.footnotes=e.footnotes||[];e.footnotes.push({text:''});}
+    const marker=document.createElement('sup'); marker.contentEditable='false'; marker.innerHTML='<span class="fn-marker" data-note-index="'+((e?.footnotes?.length||1)-1)+'">['+(e?.footnotes?.length||1)+']</span>';
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(_){ }
+    const sel=window.getSelection(); if(sel&&sel.rangeCount){const r=sel.getRangeAt(0);r.insertNode(marker);sel.collapse(marker,1);}
+    window.syncMarkers(); try{if(typeof updateCommentary==='function')updateCommentary();if(typeof renderNotes==='function')renderNotes();}catch(_){ }
+  };
+  window.insertCitation=function(){
+    const e=typeof currentEntry==='function'?currentEntry():null; if(e){e.citations=e.citations||[];e.citations.push({title:'',url:''});}
+    const marker=document.createElement('sup'); marker.contentEditable='false'; marker.innerHTML='<span class="cite-marker" data-note-index="'+((e?.citations?.length||1)-1)+'">[c'+(e?.citations?.length||1)+']</span>';
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(_){ }
+    const sel=window.getSelection(); if(sel&&sel.rangeCount){const r=sel.getRangeAt(0);r.insertNode(marker);sel.collapse(marker,1);}
+    window.syncMarkers(); try{if(typeof updateCommentary==='function')updateCommentary();if(typeof renderNotes==='function')renderNotes();}catch(_){ }
+  };
+
+  const oldRenderNoteBox=window.renderNoteBox;
+  window.renderNoteBox=function(boxId,arr,prefix,field){
+    const box=q(boxId); if(!box){return oldRenderNoteBox&&oldRenderNoteBox.apply(this,arguments);}
+    box.innerHTML='';
+    (arr||[]).forEach((note,i)=>{
+      const row=document.createElement('div');row.className='note-row';row.id=noteId((typeof currentKey==='function'?currentKey():'entry'),prefix==='cite'?'citation':'footnote',i);
+      row.innerHTML=`<header><span class="note-num">${prefix==='fn'?'['+(i+1)+']':'[c'+(i+1)+']'}</span><div style="flex:1"></div><button class="sm ghost danger" onclick="removeNote('${field}',${i})">✕</button></header>
+      <textarea placeholder="${prefix==='cite'?'Source title / author':'Footnote text'}" rows="2">${esc(note.text||note.title||'')}</textarea>
+      ${prefix==='cite'?`<input placeholder="URL (optional)" value="${esc(note.url||'')}"/>`:''}`;
+      const ta=row.querySelector('textarea');
+      ta.oninput=()=>{const ce=currentEntry();ce[field]=ce[field]||[];ce[field][i]=ce[field][i]||{};if(prefix==='cite')ce[field][i].title=ta.value;else ce[field][i].text=ta.value;try{saveSoon();catenaRefreshPdfIfOpen&&catenaRefreshPdfIfOpen();}catch(_){ }};
+      if(prefix==='cite'){const u=row.querySelector('input');if(u)u.oninput=()=>{const ce=currentEntry();ce[field]=ce[field]||[];ce[field][i]=ce[field][i]||{};ce[field][i].url=u.value;try{saveSoon();catenaRefreshPdfIfOpen&&catenaRefreshPdfIfOpen();}catch(_){ }}};
+      box.appendChild(row);
+    });
+  };
+  const oldRemoveNote=window.removeNote;
+  window.removeNote=function(field,i){
+    const e=typeof currentEntry==='function'?currentEntry():null; if(e&&Array.isArray(e[field]))e[field].splice(i,1); else if(oldRemoveNote)return oldRemoveNote.apply(this,arguments);
+    try{renderNotes();syncMarkers();updateCommentary();saveSoon();catenaRefreshPdfIfOpen&&catenaRefreshPdfIfOpen();}catch(_){ }
+  };
+
+  function currentLayer(){return (typeof catenaActiveLayerOrBlank==='function'?catenaActiveLayerOrBlank():(window.state?.active?.translation||''));}
+  function keyParts(k){if(typeof catenaKeyParts==='function')return catenaKeyParts(k);const p=String(k||'').split('|');return{book:p[0]||'',chapter:Number(p[1])||1,versePart:p[2]||'1',isPassage:/[-,]/.test(p[2]||'')};}
+  function formatKey(k){if(typeof catenaFormatKeyRef==='function')return catenaFormatKeyRef(k);const p=keyParts(k);return `${p.book} ${p.chapter}:${p.versePart}`;}
+  function ensureEntry(k){return window.state.entries[k]||(window.state.entries[k]=(typeof defaultEntry==='function'?defaultEntry(k):{id:k,sourceHtml:'',commentaryHtml:'',structured:{},footnotes:[],citations:[]}));}
+  function verseHtml(k,layer){const p=keyParts(k); if(p.isPassage&&typeof catenaCompileTranslationSpecHtml==='function')return catenaCompileTranslationSpecHtml(p.book,p.chapter,p.versePart,layer)||''; if(typeof getVerseText==='function')return getVerseText(p.book,p.chapter,p.versePart,layer)||''; return window.state?.translations?.[layer]?.[k]||'';}
+  function structuredHtml(e){
+    const obj=e.structured||{}; const out=[];
+    Object.keys(obj).forEach(name=>{if(has(obj[name]))out.push(`<div class="pdf-structured-field" data-field="structured" data-name="${esc(name)}" contenteditable="true"><span class="pdf-field-label">${esc(name)}</span>${prepareRichHtml(obj[name],'structured-'+name)}</div>`);});
+    return out.length?`<div class="pdf-section pdf-structured-section"><span class="pdf-field-label">Structured Commentary</span><div class="pdf-structured-grid">${out.join('')}</div></div>`:'';
+  }
+  function noteLines(e,k,forEndnotes){
+    const lines=[];
+    (e.footnotes||[]).forEach((n,i)=>{const t=n?.text||''; if(has(t))lines.push(`<div class="${forEndnotes?'pdf-endnote-item':'pdf-note-line'}" id="${noteId(k,'footnote',i)}"><a class="fn-marker" href="#${markerId(k,'footnote',i)}">[${i+1}]</a> <span data-field="footnote" data-note-index="${i}" contenteditable="${forEndnotes?'false':'true'}">${prepareRichHtml(esc(t),k)}</span></div>`);});
+    (e.citations||[]).forEach((c,i)=>{const title=c?.title||c?.text||c?.url||''; if(has(title)){const body=c?.url?`<a class="catena-ext-link" href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">${esc(title||c.url)}</a>`:prepareRichHtml(esc(title),k);lines.push(`<div class="${forEndnotes?'pdf-endnote-item':'pdf-note-line'}" id="${noteId(k,'citation',i)}"><a class="cite-marker" href="#${markerId(k,'citation',i)}">[c${i+1}]</a> <span data-field="citation" data-note-index="${i}" data-url="${esc(c?.url||'')}" contenteditable="${forEndnotes?'false':'true'}">${body}</span></div>`);}});
+    return lines.join('');
+  }
+  window.catenaEntryNotesHtml=function(e,opts){
+    const k=opts?.key || (typeof currentKey==='function'?currentKey():'entry'); const lines=noteLines(e,k,false);
+    return lines?`<div class="pdf-section pdf-notes-section"><span class="pdf-field-label">Footnotes / Citations</span><div class="pdf-notes-body">${lines}</div></div>`:'';
+  };
+  window.catenaCollectEndnotes=function(keys){
+    const items=[]; (keys||[]).forEach(k=>{const e=window.state?.entries?.[k]||{};const lines=noteLines(e,k,true);if(lines)items.push(`<section class="pdf-endnote-entry"><h3>${esc(formatKey(k))}</h3>${lines}</section>`);});
+    return items.length?`<section class="pdf-endnotes"><h2>Endnotes</h2>${items.join('')}</section>`:'';
+  };
+  function pdfType(){return q('pdfExportType')?.value||'study';}
+  function pdfScope(){return q('pdfSyncScope')?.value||'chapter';}
+  function pdfNoteLayout(){return q('pdfNoteLayout')?.value||'inline';}
+  function keysFor(sc){
+    sc=sc||pdfScope(); const st=window.state||{}, active=st.active||{}, book=active.book, chapter=Number(active.chapter)||1, layer=currentLayer(), out=[], seen=new Set();
+    const add=k=>{if(k&&!seen.has(k)){seen.add(k);out.push(k);}};
+    if(sc==='current'){add(typeof currentKey==='function'?currentKey():`${book}|${chapter}|${active.verse||1}`);return out;}
+    const start=sc==='book'?1:chapter, end=sc==='book'?(typeof chapterCount==='function'?chapterCount(book):chapter):chapter;
+    for(let c=start;c<=end;c++){
+      const prefix=`${book}|${c}|`;
+      Object.keys(st.translations?.[layer]||{}).forEach(k=>{if(k.startsWith(prefix))add(k);});
+      Object.keys(st.entries||{}).forEach(k=>{if(k.startsWith(prefix))add(k);});
+    }
+    return out.sort(typeof catenaCompareKeys==='function'?catenaCompareKeys:undefined);
+  }
+  function field(label,cls,inner,attrs){return has(inner)?`<div class="pdf-section ${cls}"><span class="pdf-field-label">${esc(label)}</span><div ${attrs||''}>${inner}</div></div>`:'';}
+  function pdfEntry(k){
+    const e=ensureEntry(k), layer=currentLayer(), type=pdfType();
+    const trans=prepareRichHtml(verseHtml(k,layer)||e.sourceHtml||'',k);
+    const source=(has(e.sourceHtml)&&textOf(e.sourceHtml)!==textOf(trans))?prepareRichHtml(e.sourceHtml,k):'';
+    const comm=prepareRichHtml(e.commentaryHtml||'',k);
+    const struct=structuredHtml(e);
+    const notes=(pdfNoteLayout()==='inline')?window.catenaEntryNotesHtml(e,{key:k,pdf:true}):'';
+    if(type==='commentary'&&!has(comm)&&!has(struct))return '';
+    if(type==='notes'&&!has(source)&&!has(notes)&&!has(noteLines(e,k,true)))return '';
+    if(type==='structured'&&!has(struct))return '';
+    const transHtml=field('Translation'+(layer?' · '+layer:''),'pdf-translation-section',trans,`class="pdf-translation" data-field="translation" contenteditable="true" data-placeholder="Translation text"`);
+    const sourceHtml=field('Source Notes','pdf-source-section',source,`class="pdf-source" data-field="source" contenteditable="true" data-placeholder="Source note"`);
+    const commentaryHtml=field('Commentary','pdf-commentary-section',comm,`class="pdf-commentary" data-field="commentary" contenteditable="true" data-placeholder="Write commentary"`);
+    let body='';
+    if(type==='reading')body=transHtml;
+    else if(type==='commentary')body=commentaryHtml+struct;
+    else if(type==='notes')body=sourceHtml+(pdfNoteLayout()==='endnotes'?'':notes);
+    else if(type==='structured')body=struct;
+    else if(type==='handout')body=transHtml+commentaryHtml+notes;
+    else body=transHtml+commentaryHtml+sourceHtml+struct+notes;
+    if(!has(body))return '';
+    return `<section class="pdf-verse-card pdf-linked-entry" data-key="${esc(k)}" data-layer="${esc(layer)}"><div class="pdf-ref">${esc(formatKey(k))}</div>${body}</section>`;
+  }
+  function buildPdf(sc){
+    const st=window.state||{}, active=st.active||{}, layer=currentLayer(), type=pdfType(), keys=keysFor(sc||pdfScope());
+    const title=(sc||pdfScope())==='current'?(typeof currentKey==='function'?formatKey(currentKey()):`${active.book} ${active.chapter}:${active.verse}`):((sc||pdfScope())==='book'?active.book:`${active.book} ${active.chapter}`);
+    const labels={study:'Study PDF',reading:'Reading Text',commentary:'Commentary Only',notes:'Notes / Sources',handout:'Compact Handout',structured:'Structured Fields'};
+    const blocks=keys.map(pdfEntry).filter(Boolean).join('');
+    const endnotes=pdfNoteLayout()==='endnotes'?window.catenaCollectEndnotes(keys):'';
+    const empty='<div class="pdf-empty-message">No material exists for this export preset yet.</div>';
+    return `<header class="pdf-doc-cover"><h1 class="pdf-document-title">${esc(title)}</h1><p class="pdf-export-subtitle">${esc(labels[type]||type)}${layer?' · '+esc(layer):''}</p></header>${blocks||empty}${endnotes}`;
+  }
+  window.getPdfKeys=keysFor; window.getPdfScope=pdfScope; window.catenaPdfExportType=pdfType; window.buildLinkedPdfHtml=buildPdf; window.pdfEntryBlock=pdfEntry;
+  window.catenaRepairPdfEditor=function(){
+    const editor=q('pdfEditor'); if(!editor)return;
+    const open=editor.classList.contains('open'); editor.className='drawer catena-pdf-studio catena-pdf-studio-repaired'+(open?' open':'');
+    editor.innerHTML=`
+      <div class="pdf-studio-head">
+        <div class="pdf-studio-title"><b>PDF Studio</b><small>Rebuilt export preview linked to translation text, commentary, footnotes, endnotes, citations, and cross-reference hyperlinks.</small></div>
+        <div class="pdf-studio-actions">
+          <label>Scope <select id="pdfSyncScope" onchange="refreshPdfFromWorkspace(true)"><option value="current">Current Verse / Passage</option><option value="chapter" selected>Current Chapter</option><option value="book">Current Book</option></select></label>
+          <label>Notes <select id="pdfNoteLayout" onchange="refreshPdfFromWorkspace(true)"><option value="inline" selected>Inline footnotes</option><option value="endnotes">Endnotes</option><option value="none">Hidden</option></select></label>
+          <label><input id="pdfLiveSync" type="checkbox" checked> Live Link</label>
+          <button class="sm" onclick="refreshPdfFromWorkspace(false)">Reload</button>
+          <button class="sm gold" onclick="syncPdfToEntries(false)">Save Back</button>
+          <button class="sm gold" onclick="printPdfClean()">Print / Save PDF</button>
+          <button class="sm" onclick="downloadPdfHTML()">Download HTML</button>
+          <button class="sm" onclick="closePdfEditor()">Close</button>
+        </div>
+      </div>
+      <select id="pdfExportType" style="display:none" onchange="refreshPdfFromWorkspace(true)"><option value="study" selected>Study PDF</option><option value="reading">Reading Text</option><option value="commentary">Commentary Only</option><option value="notes">Notes / Sources</option><option value="handout">Compact Handout</option><option value="structured">Structured Fields</option></select>
+      <div id="pdfPresetStrip" class="pdf-preset-cards">
+        <button class="pdf-preset-card active" data-preset="study" onclick="catenaSetPdfPreset('study')"><strong>Study PDF</strong><span>Translation, commentary, notes, sources.</span></button>
+        <button class="pdf-preset-card" data-preset="reading" onclick="catenaSetPdfPreset('reading')"><strong>Reading Text</strong><span>Clean source / scripture text.</span></button>
+        <button class="pdf-preset-card" data-preset="commentary" onclick="catenaSetPdfPreset('commentary')"><strong>Commentary Only</strong><span>Commentary and structured fields.</span></button>
+        <button class="pdf-preset-card" data-preset="notes" onclick="catenaSetPdfPreset('notes')"><strong>Notes / Sources</strong><span>Footnotes, endnotes, citations.</span></button>
+        <button class="pdf-preset-card" data-preset="handout" onclick="catenaSetPdfPreset('handout')"><strong>Compact Handout</strong><span>Condensed two-column print form.</span></button>
+        <button class="pdf-preset-card" data-preset="structured" onclick="catenaSetPdfPreset('structured')"><strong>Structured</strong><span>Fielded notes only.</span></button>
+      </div>
+      <details id="pdfAdvancedTools" class="pdf-studio-advanced">
+        <summary>Advanced formatting</summary>
+        <div id="pdfSettingsBar" class="pdf-studio-settings">
+          <label>Page <select id="pdfPageStyle" onchange="applyPdfSettings()"><option value="paper" selected>Paper</option><option value="plain">Plain</option><option value="dark">Dark</option></select></label>
+          <label>Font <input id="pdfBaseSize" type="number" value="17" min="10" max="32" onchange="applyPdfSettings()"></label>
+          <label>Margins <input id="pdfMarginSize" type="number" value="44" min="0" max="96" onchange="applyPdfSettings()"></label>
+          <label><input id="pdfShowRefs" type="checkbox" checked onchange="applyPdfSettings()"> Refs</label>
+          <label><input id="pdfShowSource" type="checkbox" checked onchange="applyPdfSettings()"> Translation/source</label>
+        </div>
+        <div id="pdfToolbar" class="pdf-studio-tools">
+          <span class="toolgrp"><button onmousedown="pdfMouse(event)" onclick="pdfCmd('bold')"><b>B</b></button><button onmousedown="pdfMouse(event)" onclick="pdfCmd('italic')"><i>I</i></button><button onmousedown="pdfMouse(event)" onclick="pdfCmd('underline')"><u>U</u></button><button onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','blockquote')">Gold Quote</button></span>
+          <span class="toolgrp"><button onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','h1')">H1</button><button onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','h2')">H2</button><button onmousedown="pdfMouse(event)" onclick="pdfCmd('formatBlock','p')">¶</button></span>
+          <span class="toolgrp"><button onmousedown="pdfMouse(event)" onclick="pdfCleanForPrint&&pdfCleanForPrint()">Clean</button><button onmousedown="pdfMouse(event)" onclick="pdfRemoveEmptyBlocks&&pdfRemoveEmptyBlocks()">Remove Blanks</button><button onmousedown="pdfMouse(event)" onclick="pdfToggleTwoColumns&&pdfToggleTwoColumns()">Two Columns</button></span>
+        </div>
+      </details>
+      <div class="pdf-shell"><article id="pdfPage" class="pdf-page pdf-style-paper pdf-mode-study" contenteditable="true" oninput="debouncePdfSync()"></article></div>`;
+  };
+  window.catenaSetPdfPreset=function(mode){const sel=q('pdfExportType'); if(sel)sel.value=mode; document.querySelectorAll('#pdfPresetStrip [data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===mode)); refreshPdfFromWorkspace(true);};
+  window.applyPdfSettings=function(){
+    const page=q('pdfPage'); if(!page)return; const style=q('pdfPageStyle')?.value||'paper', fs=Number(q('pdfBaseSize')?.value)||17, mg=Number(q('pdfMarginSize')?.value)||44, type=pdfType();
+    page.style.fontSize=fs+'px'; page.style.padding=mg+'px'; page.className='pdf-page pdf-style-'+style+' pdf-mode-'+type;
+    if(q('pdfShowSource')?.checked===false)page.classList.add('pdf-hide-source'); if(q('pdfShowRefs')?.checked===false)page.classList.add('pdf-hide-refs');
+    document.querySelectorAll('#pdfPresetStrip [data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===type));
+    styleGoldBlockquotes(page);
+  };
+  window.refreshPdfFromWorkspace=function(silent){window.catenaRepairPdfEditor(); const page=q('pdfPage'); if(!page)return; page.innerHTML=buildPdf(pdfScope()); applyPdfSettings(); if(!silent&&typeof toast==='function')toast('PDF preview rebuilt.');};
+  window.catenaRefreshPdfIfOpen=function(){if(q('pdfEditor')?.classList.contains('open')&&q('pdfLiveSync')?.checked!==false)refreshPdfFromWorkspace(true);};
+  function cleanEditableHtml(input,kind){
+    const tmp=document.createElement('div'); tmp.innerHTML=String(input||'');
+    tmp.querySelectorAll('script,style,meta,link,button,select,input,textarea,.pdf-field-label,.pdf-ref').forEach(n=>n.remove());
+    tmp.querySelectorAll('a.fn-marker,a.cite-marker').forEach(a=>a.replaceWith(document.createTextNode(a.textContent||'')));
+    tmp.querySelectorAll('*').forEach(el=>{[...el.attributes].forEach(a=>{if(el.tagName==='A'&&a.name==='href')return; if(el.tagName==='A'&&(a.name==='target'||a.name==='rel'||a.name==='class'))return; el.removeAttribute(a.name);});});
+    styleGoldBlockquotes(tmp);
+    return tmp.innerHTML.replace(/(?:\s|&nbsp;)*(?:<br\s*\/?>\s*){3,}/gi,'<br><br>').trim();
+  }
+  window.syncPdfToEntries=function(silent){
+    const page=q('pdfPage'); if(!page||!window.state)return; let changed=0; window.pdfInternalSync=true;
+    page.querySelectorAll('.pdf-verse-card[data-key]').forEach(card=>{
+      const k=card.dataset.key, e=ensureEntry(k), p=keyParts(k), layer=card.dataset.layer||currentLayer();
+      const tr=card.querySelector('[data-field="translation"]'); if(tr){const val=cleanEditableHtml(tr.innerHTML,'translation'); if(layer&&!p.isPassage&&typeof ensureTranslation==='function'){const obj=ensureTranslation(layer); if(has(val))obj[k]=val;else delete obj[k];} e.sourceHtml=val;}
+      const src=card.querySelector('[data-field="source"]'); if(src)e.sourceHtml=cleanEditableHtml(src.innerHTML,'source');
+      const com=card.querySelector('[data-field="commentary"]'); if(com)e.commentaryHtml=cleanEditableHtml(com.innerHTML,'commentary');
+      card.querySelectorAll('[data-field="structured"][data-name]').forEach(sf=>{e.structured=e.structured||{};e.structured[sf.dataset.name]=cleanEditableHtml(sf.innerHTML,'commentary');});
+      card.querySelectorAll('[data-field="footnote"][data-note-index]').forEach(fn=>{const i=Number(fn.dataset.noteIndex);e.footnotes=e.footnotes||[];e.footnotes[i]=e.footnotes[i]||{text:''};e.footnotes[i].text=textOf(fn.innerHTML);});
+      card.querySelectorAll('[data-field="citation"][data-note-index]').forEach(ci=>{const i=Number(ci.dataset.noteIndex);e.citations=e.citations||[];e.citations[i]=e.citations[i]||{title:'',url:''};e.citations[i].title=textOf(ci.innerHTML);if(ci.dataset.url)e.citations[i].url=ci.dataset.url;});
+      changed++;
+    });
+    window.pdfInternalSync=false;
+    try{if(typeof loadEntryEditor==='function')loadEntryEditor(); if(typeof renderReader==='function')renderReader(); if(typeof renderChapterCommentaries==='function')renderChapterCommentaries(); if(typeof saveSoon==='function')saveSoon();}catch(err){console.warn('PDF save-back refresh warning',err);}
+    if(!silent&&typeof toast==='function')toast(`Saved ${changed} PDF block${changed===1?'':'s'} back.`);
+  };
+  window.debouncePdfSync=function(){clearTimeout(window.pdfSyncTimer);window.pdfSyncTimer=setTimeout(()=>{if(q('pdfLiveSync')?.checked!==false)syncPdfToEntries(true);},360);};
+  window.openPdfEditor=function(){window.catenaRepairPdfEditor(); q('pdfEditor')?.classList.add('open'); refreshPdfFromWorkspace(true);};
+  window.closePdfEditor=function(){q('pdfEditor')?.classList.remove('open');};
+  window.printPdfClean=function(){try{syncPdfToEntries(true);applyPdfSettings();}catch(_){ } document.body.classList.add('print-pdf-mode'); const clean=()=>document.body.classList.remove('print-pdf-mode'); window.addEventListener('afterprint',clean,{once:true}); setTimeout(()=>{window.print();setTimeout(clean,1400);},80);};
+  window.downloadPdfHTML=function(){
+    try{syncPdfToEntries(true);applyPdfSettings();}catch(_){ }
+    const page=q('pdfPage'); if(!page)return; const clone=page.cloneNode(true); clone.removeAttribute('contenteditable'); clone.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable')); clone.querySelectorAll('button,input,select,textarea,.toolbar,.tb,#pdfToolbar,#pdfSettingsBar,.pdf-head,.pdf-control-wrap,.pdf-actions,#pdfPresetStrip,#pdfAdvancedTools').forEach(el=>el.remove());
+    const css='body{font-family:Georgia,serif;background:#fff;color:#111;margin:0;padding:.55in;line-height:1.55}h1,h2,h3{font-family:Georgia,serif}.pdf-export-subtitle{font-size:10pt;color:#555}.pdf-ref{font-size:9pt;letter-spacing:.08em;text-transform:uppercase;color:#8a6a1f;margin:0 0 6px}.pdf-field-label{display:block;font-size:8pt;letter-spacing:.08em;text-transform:uppercase;color:#555;margin:0 0 3px}.pdf-verse-card{break-inside:avoid;margin:0 0 16px;padding:0 0 12px;border-bottom:1px solid #ddd}.pdf-translation{border-left:2px solid #9a7a2e;padding:6px 10px;background:#f8f1dc;margin:4px 0 8px}.pdf-commentary,.pdf-source,.pdf-structured-field{padding:4px 0}.pdf-note-line,.pdf-endnote-item{font-size:.92em;line-height:1.45;margin:5px 0}.pdf-endnotes{margin-top:30px;border-top:1px solid #999;padding-top:14px}blockquote{margin:8px 0;padding:7px 11px;border-left:3px solid #9a7a2e;background:#f7f1df;border-radius:0 8px 8px 0}a{color:#785515;text-decoration:underline}.pdf-page-break{break-after:page;page-break-after:always}@media print{.pdf-verse-card{break-inside:avoid;page-break-inside:avoid}}';
+    const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Catena PDF Export</title><style>'+css+'</style></head><body>'+clone.innerHTML+'</body></html>';
+    if(typeof dlBlob==='function')dlBlob(html,'text/html','catena-pdf-export.html');
+  };
+
+  const oldRenderChapterCommentaries=window.renderChapterCommentaries;
+  window.renderChapterCommentaries=function(){
+    const list=q('commentaryList'), div=q('commentaryDivider'); if(!list||!window.state){return oldRenderChapterCommentaries&&oldRenderChapterCommentaries.apply(this,arguments);}
+    list.innerHTML=''; const prefix=`${state.active.book}|${state.active.chapter}|`;
+    const entries=Object.entries(state.entries||{}).filter(([k,e])=>k.startsWith(prefix)&&(e.commentaryHtml||e.sourceHtml));
+    if(!entries.length){if(div)div.style.display='none';return;} if(div)div.style.display='flex';
+    entries.sort(([a],[b])=>typeof catenaCompareKeys==='function'?catenaCompareKeys(a,b):String(a).localeCompare(String(b)));
+    entries.forEach(([k,e])=>{if(!has(e.commentaryHtml))return;const p=keyParts(k), item=document.createElement('div');item.className='catena-item';const author=e.structured?.['Father / Source']||e.mode||'Commentary';const notes=noteLines(e,k,false);item.innerHTML=`<div class="catena-header"><span class="catena-author">${esc(textOf(author)||'Commentary')}</span><span class="catena-on">on ${esc(formatKey(k))}</span>${e.status&&e.status!=='Draft'?`<span class="catena-date">${esc(e.status)}</span>`:''}</div><div class="catena-body">${prepareRichHtml(e.commentaryHtml,k)}</div>${notes?`<div class="catena-inline-notes">${notes}</div>`:''}`; item.onclick=ev=>{if(ev.target.closest('a'))return; if(typeof selectVerse==='function')selectVerse(Number(p.verse||p.firstVerse||1));}; list.appendChild(item);});
+  };
+
+  function boot(){
+    installToolbar(); styleGoldBlockquotes(document); try{window.catenaRepairPdfEditor();}catch(err){console.warn('PDF repair init warning',err);} try{window.renderChapterCommentaries();}catch(_){ }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else setTimeout(boot,0);
+  setTimeout(boot,350);
+})();
+</script>
+
+
+<style id="catena-final-user-regression-fix-css">
+  /* Remove text color and highlight controls everywhere, including any toolbar rebuilt later. */
+  .tg[data-label="Color"],
+  #mainToolbar .tg[data-label="Color"],
+  [data-label="Color"] details,
+  button[onclick^="setColor("],
+  details:has(button[onclick^="setColor("]){display:none!important;}
+
+  /* Compact single gold quote styling, while restoring editor-side resizing from the original build. */
+  #commentaryEditor blockquote,
+  #sourceEditor blockquote,
+  .editor blockquote,
+  #commentaryList .catena-live-editable blockquote,
+  blockquote.catena-gold-quote{
+    margin:8px 0!important;
+    padding:7px 11px!important;
+    border-left:3px solid var(--gold,#c9a84c)!important;
+    border-top:0!important;
+    border-right:0!important;
+    border-bottom:0!important;
+    border-radius:0 9px 9px 0!important;
+    background:rgba(201,168,76,.075)!important;
+    color:inherit!important;
+    font-style:normal!important;
+    line-height:1.48!important;
+    box-shadow:none!important;
+    resize:both!important;
+    overflow:auto!important;
+    display:block!important;
+    min-height:38px!important;
+    min-width:35%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #commentaryList .catena-body blockquote,
+  #pdfPage blockquote,
+  .pdf-page blockquote,
+  .export-doc blockquote{
+    resize:none!important;
+    overflow-wrap:anywhere!important;
+  }
+</style>
+<script id="catena-final-user-regression-fix-js">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const plain=html=>{const d=document.createElement('div');d.innerHTML=String(html||'');return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  const has=html=>plain(html).length>0;
+  function call(name,...args){try{if(typeof window[name]==='function')return window[name](...args);}catch(e){console.warn(name,e);} }
+  function ensureUi(){
+    window.state=window.state||{};
+    state.entries=state.entries||{};
+    state.active=state.active||{book:'Matthew',chapter:1,verse:1};
+    state.ui=state.ui||{};
+    if(typeof state.ui.showAllChapterCommentaries!=='boolean') state.ui.showAllChapterCommentaries=false;
+  }
+  function removeColorControls(){
+    document.querySelectorAll('.tg[data-label="Color"], #mainToolbar .tg[data-label="Color"]').forEach(n=>n.remove());
+    document.querySelectorAll('details').forEach(d=>{if(d.querySelector('button[onclick^="setColor("]'))d.remove();});
+    document.querySelectorAll('button[onclick^="setColor("]').forEach(b=>b.remove());
+  }
+  function activeKey(){try{return typeof currentKey==='function'?currentKey():`${state.active.book}|${state.active.chapter}|${state.active.verse||1}`;}catch(e){return `${state.active.book}|${state.active.chapter}|${state.active.verse||1}`;}}
+  function defaultEntry(k){return {key:k,commentaryHtml:'',sourceHtml:'',mode:'Verse Commentary',status:'Draft',tags:'',structured:{},footnotes:[],citations:[],subentries:[]};}
+  function entryFor(k){ensureUi(); if(!state.entries[k]) state.entries[k]=(typeof window.defaultEntry==='function'?window.defaultEntry(k):defaultEntry(k)); return state.entries[k];}
+  function keyPartsLocal(k){
+    const parts=String(k||'').split('|');
+    return {book:parts[0]||'',chapter:Number(parts[1])||1,spec:parts[2]||'1'};
+  }
+  function refFor(k){try{return typeof catenaFormatKeyRef==='function'?catenaFormatKeyRef(k):(typeof formatKey==='function'?formatKey(k):String(k).replace(/\|/g,' '));}catch(e){return String(k||'').replace(/\|/g,' ');}}
+  function sortRows(rows){
+    return rows.sort(([a],[b])=>{try{return typeof catenaCompareKeys==='function'?catenaCompareKeys(a,b):String(a).localeCompare(String(b),undefined,{numeric:true});}catch(e){return String(a).localeCompare(String(b),undefined,{numeric:true});}});
+  }
+  function entryVisible(e){
+    try{if(typeof catenaEntryHasVisibleCommentary==='function')return catenaEntryHasVisibleCommentary(e);}catch(err){}
+    if(!e)return false;
+    if(has(e.commentaryHtml))return true;
+    if(Object.values(e.structured||{}).some(has))return true;
+    if((e.footnotes||[]).some(n=>plain(n.text)))return true;
+    if((e.citations||[]).some(c=>plain(c.title||c.text||c.url)))return true;
+    return false;
+  }
+  function rangeContains(k,verse){
+    try{if(typeof catenaRangeContainsVerse==='function')return catenaRangeContainsVerse(k,verse);}catch(e){}
+    const spec=keyPartsLocal(k).spec;
+    return String(spec).split(',').some(part=>{
+      const m=part.trim().match(/^(\d+)(?:\s*[-–—]\s*(\d+))?$/);
+      if(!m)return Number(spec)===Number(verse);
+      const a=Number(m[1]), b=Number(m[2]||m[1]);
+      return Number(verse)>=Math.min(a,b)&&Number(verse)<=Math.max(a,b);
+    });
+  }
+  function selectedRows(){
+    ensureUi(); const prefix=`${state.active.book}|${Number(state.active.chapter)||1}|`;
+    const all=Object.entries(state.entries||{}).filter(([k,e])=>k.startsWith(prefix)&&entryVisible(e));
+    if(state.ui.showAllChapterCommentaries)return sortRows(all);
+    const ck=activeKey(); const verse=Number(state.active.verse)||1;
+    return sortRows(all.filter(([k])=>k===ck || (state.active.commentaryScope!=='passage' && rangeContains(k,verse))));
+  }
+  function structuredHtml(e){try{return typeof catenaEntryStructuredHtml==='function'?(catenaEntryStructuredHtml(e)||''):'';}catch(e){return '';}}
+  function notesHtml(e,k){try{return typeof catenaEntryNotesHtml==='function'?(catenaEntryNotesHtml(e,{key:k})||''):'';}catch(err){return '';}}
+  function authorText(e){return plain((e&&e.structured&&e.structured['Father / Source'])||e?.mode||'Commentary')||'Commentary';}
+  function prepared(html,k){try{return typeof catenaPrepareRichHtml==='function'?catenaPrepareRichHtml(html,k):html;}catch(e){return html||'';}}
+  function setEntryHtml(k,html,sourceNode){
+    const e=entryFor(k); e.commentaryHtml=html||'';
+    const right=$('commentaryEditor'); if(right&&k===activeKey()&&document.activeElement!==right&&sourceNode!==right) right.innerHTML=e.commentaryHtml;
+    try{if(typeof saveSoon==='function')saveSoon();}catch(e){}
+    try{if(typeof catenaFinalQueuePdfSync==='function')catenaFinalQueuePdfSync(k,120);else if(typeof catenaRefreshPdfIfOpen==='function')catenaRefreshPdfIfOpen();}catch(e){}
+  }
+  window.toggleChapterCommentaryView=function(){ensureUi(); state.ui.showAllChapterCommentaries=!state.ui.showAllChapterCommentaries; window.renderChapterCommentaries(); try{if(typeof saveSoon==='function')saveSoon();}catch(e){};};
+  window.renderChapterCommentaries=function(){
+    ensureUi(); removeColorControls();
+    const list=$('commentaryList'), div=$('commentaryDivider'); if(!list||!div)return;
+    list.innerHTML='';
+    const prefix=`${state.active.book}|${Number(state.active.chapter)||1}|`;
+    const allForChapter=Object.entries(state.entries||{}).filter(([k,e])=>k.startsWith(prefix)&&entryVisible(e));
+    if(!allForChapter.length){div.style.display='none';return;}
+    div.style.display='flex'; div.className='commentary-divider catena-toggle-divider';
+    const showAll=!!state.ui.showAllChapterCommentaries;
+    div.innerHTML='<span class="divider-title">Commentaries</span><span class="commentary-toggle-actions"><button class="sm" type="button" onclick="toggleChapterCommentaryView()">'+(showAll?'Show Only Selected Commentary':'Show All Commentaries on This Chapter')+'</button></span>';
+    const rows=selectedRows();
+    if(!rows.length){
+      const empty=document.createElement('div'); empty.className='commentary-empty-note';
+      empty.textContent='No commentary is attached to the selected target yet. Use the Commentary Target control, or click “Show All Commentaries on This Chapter.”';
+      list.appendChild(empty); return;
+    }
+    rows.forEach(([k,e])=>{
+      const item=document.createElement('article'); item.className='catena-item'+(k===activeKey()?' live-updated':''); item.dataset.key=k;
+      const editableHtml=prepared(e.commentaryHtml||'',k);
+      const empty=!has(editableHtml); const struct=structuredHtml(e); const notes=notesHtml(e,k);
+      item.innerHTML='<div class="catena-header"><span class="catena-author">'+esc(authorText(e))+'</span><span class="catena-on">on <span class="range-ref">'+esc(refFor(k))+'</span></span>'+(e.status&&e.status!=='Draft'?'<span class="catena-date">'+esc(e.status)+'</span>':'')+'<span class="catena-edit-hint">click the body below to edit live</span></div><div class="catena-body catena-live-editable" contenteditable="true" spellcheck="true" data-key="'+esc(k)+'" data-empty="'+(empty?'true':'false')+'" data-placeholder="Write commentary here. Lists, line breaks, footnotes, and PDF preview update live.">'+(empty?'':editableHtml)+'</div>'+(struct?'<div class="catena-structured-readonly">'+struct+'</div>':'')+notes;
+      item.addEventListener('click',ev=>{if(ev.target.closest('.catena-live-editable,.catena-notes,.catena-structured-readonly,a,button,input,textarea,select'))return; try{if(typeof loadPassageCommentaryFromKey==='function')loadPassageCommentaryFromKey(k); else {const p=keyPartsLocal(k); if(typeof selectVerse==='function')selectVerse(Number(String(p.spec).match(/\d+/)?.[0]||1));}}catch(e){}});
+      const body=item.querySelector('.catena-live-editable');
+      if(body){
+        body.addEventListener('click',ev=>ev.stopPropagation());
+        body.addEventListener('keydown',ev=>{try{quoteEscapeKeydown(ev); if(!ev.defaultPrevented&&typeof editorKeydown==='function')editorKeydown(ev);}catch(e){}});
+        body.addEventListener('input',()=>{body.dataset.empty=has(body.innerHTML)?'false':'true'; setEntryHtml(k,body.innerHTML,body);});
+        body.addEventListener('blur',()=>{if(!has(body.innerHTML))body.innerHTML=''; body.dataset.empty=has(body.innerHTML)?'false':'true'; setEntryHtml(k,body.innerHTML,body);});
+      }
+      list.appendChild(item);
+    });
+  };
+
+  function editorFromNode(node){const el=node&&node.nodeType===1?node:node?.parentElement; return el?.closest?.('#commentaryEditor,#sourceEditor,#commentaryList .catena-live-editable,#pdfPage,[contenteditable="true"]')||null;}
+  function closestQuote(node,root){let n=node&&node.nodeType===1?node:node?.parentNode; while(n&&n!==root&&n.nodeType===1){if(n.tagName==='BLOCKQUOTE')return n;n=n.parentNode;} return n&&n.tagName==='BLOCKQUOTE'?n:null;}
+  function placeCaret(node,atEnd=true){
+    const sel=window.getSelection(); if(!sel)return;
+    const r=document.createRange();
+    if(node.nodeType===3){r.setStart(node,atEnd?node.nodeValue.length:0);} else {r.selectNodeContents(node); r.collapse(!atEnd);}
+    sel.removeAllRanges(); sel.addRange(r);
+  }
+  function quoteIsEmpty(bq){return !plain(bq.innerHTML.replace(/<br\s*\/?>(\s*)/gi,''));}
+  function caretAtEndOfQuote(range,bq){
+    if(!range||!range.collapsed)return false;
+    const after=range.cloneRange(); after.selectNodeContents(bq); after.setStart(range.endContainer,range.endOffset);
+    const frag=after.cloneContents();
+    if((frag.textContent||'').replace(/[\s\u200b]/g,''))return false;
+    return !frag.querySelector || !frag.querySelector('img,video,audio,table,hr');
+  }
+  function leaveQuote(bq){
+    const p=document.createElement('p'); p.innerHTML='<br>';
+    bq.parentNode.insertBefore(p,bq.nextSibling);
+    placeCaret(p,false);
+    const editor=editorFromNode(p); if(editor) editor.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  function quoteEscapeKeydown(ev){
+    if(ev.key!=='Enter'||ev.shiftKey||ev.ctrlKey||ev.altKey||ev.metaKey)return;
+    const sel=window.getSelection(); if(!sel||!sel.rangeCount)return;
+    const editor=editorFromNode(sel.anchorNode); if(!editor)return;
+    const bq=closestQuote(sel.anchorNode,editor); if(!bq)return;
+    const r=sel.getRangeAt(0);
+    if(quoteIsEmpty(bq)||caretAtEndOfQuote(r,bq)){
+      ev.preventDefault(); leaveQuote(bq);
+    }
+  }
+  window.exitBlockquote=function(){
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(e){}
+    const sel=window.getSelection(); if(!sel||!sel.rangeCount)return;
+    const editor=editorFromNode(sel.anchorNode); const bq=closestQuote(sel.anchorNode,editor); if(!bq)return;
+    leaveQuote(bq);
+  };
+  function applyGoldQuote(bq){
+    if(!bq)return; bq.classList.add('catena-gold-quote');
+    bq.style.borderLeft='3px solid var(--gold,#c9a84c)';
+    bq.style.background='rgba(201,168,76,.075)';
+    bq.style.padding='7px 11px';
+    bq.style.margin='8px 0';
+    bq.style.borderRadius='0 9px 9px 0';
+    bq.style.fontStyle='normal';
+    bq.style.resize='both';
+    bq.style.overflow='auto';
+    bq.style.minHeight='38px';
+    bq.style.minWidth='35%';
+    bq.style.maxWidth='100%';
+  }
+  window.makeBlockquote=function(){
+    try{if(typeof restoreSelRange==='function')restoreSelRange();}catch(e){}
+    const sel=window.getSelection(); let editor=sel&&sel.rangeCount?editorFromNode(sel.anchorNode):null;
+    if(!editor) editor=$('commentaryEditor')||$('sourceEditor');
+    if(!editor)return; editor.focus();
+    let r=sel&&sel.rangeCount?sel.getRangeAt(0):null;
+    if(!r||!editor.contains(r.commonAncestorContainer)){r=document.createRange(); r.selectNodeContents(editor); r.collapse(false); sel.removeAllRanges(); sel.addRange(r);}
+    const existing=closestQuote(sel.anchorNode,editor);
+    if(existing&&sel.isCollapsed){leaveQuote(existing); return;}
+    const bq=document.createElement('blockquote'); applyGoldQuote(bq);
+    if(!sel.isCollapsed){bq.appendChild(r.extractContents()); if(!plain(bq.innerHTML))bq.innerHTML='<br>'; r.insertNode(bq); const after=document.createElement('p'); after.innerHTML='<br>'; bq.parentNode.insertBefore(after,bq.nextSibling); placeCaret(after,false);}
+    else {bq.innerHTML='<p><br></p>'; r.insertNode(bq); const after=document.createElement('p'); after.innerHTML='<br>'; bq.parentNode.insertBefore(after,bq.nextSibling); placeCaret(bq,false);}
+    editor.dispatchEvent(new Event('input',{bubbles:true}));
+    try{if(editor.id==='sourceEditor'&&typeof updateSource==='function')updateSource();else if(typeof updateCommentary==='function')updateCommentary();}catch(e){}
+  };
+  window.styleBlockquote=function(){return window.makeBlockquote();};
+
+  document.addEventListener('keydown',quoteEscapeKeydown,true);
+  function boot(){removeColorControls(); document.querySelectorAll('blockquote').forEach(applyGoldQuote); try{window.renderChapterCommentaries();}catch(e){}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else setTimeout(boot,0);
+  setTimeout(boot,400);
 })();
 </script>
