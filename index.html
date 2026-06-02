@@ -889,6 +889,69 @@ hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 #pdfPage{outline:none}.pdf-page.pdf-style-dark{background:#141e30;color:#f0ead8}.pdf-page.pdf-style-paper{background:#f9f3e4;color:#2a1f0f;border-color:#c9b99a}.pdf-page.pdf-style-plain{background:#fff;color:#111;border-color:#ddd}.pdf-document-title{margin:0 0 20px!important}.pdf-linked-entry{break-inside:avoid;border-top:1px solid rgba(139,159,195,.22);padding:14px 0 12px;margin:0}.pdf-linked-entry:first-of-type{border-top:0}.pdf-ref{font-family:var(--ui);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin:0 0 8px}.pdf-source{font-style:italic;opacity:.88;margin:0 0 10px;padding:8px 10px;border-left:2px solid rgba(201,168,76,.45);background:rgba(201,168,76,.055);border-radius:0 8px 8px 0}.pdf-commentary{min-height:24px}.pdf-commentary:empty::before,.pdf-source:empty::before{content:attr(data-placeholder);color:rgba(139,159,195,.62);font-style:italic}.pdf-empty-hidden .pdf-linked-entry:not(:has(.pdf-commentary:not(:empty))) .pdf-commentary{display:none}.pdf-hide-source .pdf-source{display:none}.pdf-page blockquote{margin:12px 0;padding:10px 14px;border-left:3px solid var(--gold);background:rgba(201,168,76,.08);border-radius:0 8px 8px 0}.pdf-page .pdf-citation{font-size:.88em;color:inherit;opacity:.76;border-left:2px solid rgba(139,159,195,.45);padding-left:10px}.pdf-page.pdf-two-column{column-count:2;column-gap:38px}.pdf-page.pdf-two-column .pdf-linked-entry{break-inside:avoid-column}.pdf-page-break{break-after:page;page-break-after:always;border-top:1px dashed rgba(139,159,195,.45);height:1px;margin:28px 0}
 @media print{body.print-pdf-mode .pdf-head,body.print-pdf-mode .pdf-control-wrap,body.print-pdf-mode #pdfToolbar,body.print-pdf-mode #pdfSettingsBar{display:none!important}body.print-pdf-mode #pdfPage [contenteditable]{outline:0!important}body.print-pdf-mode #pdfPage .pdf-commentary:empty,body.print-pdf-mode #pdfPage .pdf-source:empty{display:none!important}}
 
+
+/* ── ONLINE FETCH LIBRARY ─────────────────────────────────────── */
+.quick-fetch-panel{
+  border:1px solid rgba(201,168,76,.4);border-radius:14px;
+  background:linear-gradient(160deg,rgba(201,168,76,.09),rgba(255,255,255,.02));
+  padding:14px;margin-bottom:12px;
+}
+.quick-fetch-panel h3{
+  font-family:var(--title);font-size:16px;letter-spacing:.06em;color:var(--gold3);
+  margin:0 0 6px;
+}
+.quick-fetch-panel .hint{font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.45}
+.fetch-btn-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:6px;margin-bottom:10px;
+}
+.fetch-btn-grid button{
+  padding:9px 8px;font-size:13px;font-weight:600;
+  border-radius:10px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.fetch-btn-grid button .ftag{
+  font-size:16px;font-family:var(--title);letter-spacing:.06em;color:var(--gold2);
+}
+.fetch-btn-grid button .fname{
+  font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;
+}
+.fetch-btn-grid button.fetching{
+  border-color:var(--gold)!important;color:var(--gold3)!important;
+  background:rgba(201,168,76,.1)!important;
+}
+.fetch-progress{
+  font-size:12px;color:var(--gold2);font-family:var(--ui);min-height:18px;
+  margin:2px 0;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,.18);
+}
+.fetch-progress.ok{color:var(--green)!important;background:rgba(123,201,160,.08)!important;}
+.fetch-progress.error{color:var(--red)!important;background:rgba(224,112,112,.08)!important;}
+#wholeBibleReport.fetch-progress{display:block;margin-top:6px;}
+/* ── INTERLINEAR WIZARD ─────────────────────────────────────────── */
+.il-wizard{
+  border:1px solid rgba(109,163,240,.32);border-radius:14px;
+  background:linear-gradient(160deg,rgba(109,163,240,.06),rgba(255,255,255,.02));
+  padding:14px;margin-bottom:10px;
+}
+.il-wizard h3{font-family:var(--title);font-size:15px;letter-spacing:.06em;color:#9eceff;margin:0 0 5px}
+.il-wizard .hint{font-size:13px;color:var(--muted);margin:0 0 8px;line-height:1.45}
+.il-preset-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.il-preset-row button{padding:6px 11px;font-size:12px;border-radius:9px}
+.il-preset-row button .il-tag{font-weight:700;color:var(--blue)}
+.il-lang-row{display:flex;flex-wrap:wrap;gap:7px;align-items:flex-end;margin-bottom:8px}
+.il-lang-row label{flex:1 1 140px;min-width:0;font-size:13px}
+.il-lang-row button{height:36px;border-radius:9px;padding:0 12px;white-space:nowrap}
+.il-mode-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.il-mode-row button{font-size:12px;padding:5px 10px;border-radius:8px}
+.il-mode-row button.active{background:rgba(201,168,76,.14);border-color:rgba(201,168,76,.5);color:var(--gold3)}
+.refresh-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.24);
+  border-radius:10px;padding:7px 11px;margin-bottom:10px;
+  font-size:13px;color:var(--ink2);font-family:var(--ui);
+}
+.refresh-banner button{font-size:12px;padding:4px 10px;border-radius:7px;height:auto}
+
 </style>
 </head>
 <body>
@@ -2693,12 +2756,12 @@ function importOSIS(text){const name=targetLayerName();let obj=applyImportAction
 function readerPastePanel(reason){
   const b=state.active.book, c=state.active.chapter;
   const suggested=(state.active.translation&&state.active.translation!=='Concordant Literal Version'&&state.active.translation!=='NRSVUE Deuterocanonical')?state.active.translation:'My Translation';
-  return `<div class="reader-paste-panel"><h3>Paste your translation for ${esc(b)} ${c}</h3><p class="hint">${esc(reason||'No text is in the selected layer yet.')} Paste numbered verse lines here and the app will format them into the reader. Add commentary under a verse with <code>Commentary:</code> or a line beginning with <code>&gt;</code>.</p><div class="reader-quick-grid"><label>Layer Name<input id="readerQuickLayer" value="${esc(suggested)}"></label><label>Book<input id="readerQuickBook" value="${esc(b)}"></label><label>Chapter<input id="readerQuickChapter" type="number" min="1" value="${Number(c)}"></label></div><textarea id="readerQuickPaste" placeholder="# ${esc(b)} ${Number(c)}:1
+  return `<div class="reader-paste-panel"><h3>Paste your translation for ${esc(b)} ${c}</h3><p class="hint">${esc(reason||'No text is in the selected layer yet.')} Paste numbered verse lines here and the app will format them into the reader. Add commentary under a verse with <code>Commentary:</code> or a line beginning with <code>&gt;</code>.</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px"><b style="color:var(--muted);font-size:12px;width:100%;font-family:var(--ui)">Or fetch a public-domain whole Bible (no pasting needed):</b><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('kjv','KJV')">KJV</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('ylt','YLT')">YLT</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('asv','ASV')">ASV</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('web','WEB')">WEB</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('webc','WEB-C')">WEB-C</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('bsb','BSB')">BSB</button><button style="font-size:12px;padding:4px 10px" onclick="catenaFetchPublicDomainBible('dra','DRA')">DRA</button><button style="font-size:12px;padding:4px 10px" onclick="catenaOpenSourceVersion('NKJV')">NKJV page</button><button style="font-size:12px;padding:4px 10px;color:var(--gold)" onclick="openModal('translationModal')">More…</button></div><div class="reader-quick-grid"><label>Layer Name<input id="readerQuickLayer" value="${esc(suggested)}"></label><label>Book<input id="readerQuickBook" value="${esc(b)}"></label><label>Chapter<input id="readerQuickChapter" type="number" min="1" value="${Number(c)}"></label></div><textarea id="readerQuickPaste" placeholder="# ${esc(b)} ${Number(c)}:1
 Text: Your translation of verse 1.
 Commentary: Optional note for verse 1.
 
 2 Your translation of verse 2.
-&gt; Optional commentary on verse 2."></textarea><div class="simple-actions"><button class="gold" onclick="importReaderQuickTranslation()">Format/import this chapter</button><button onclick="openModal('translationModal')">More import options</button><button onclick="openSelectedSourcePage()">Open source page</button></div></div>`;
+&gt; Optional commentary on verse 2."></textarea><div class="simple-actions"><button class="gold" onclick="importReaderQuickTranslation()">Format/import this chapter</button><button onclick="openModal('translationModal')">More import options</button><button onclick="openSelectedSourcePage()">Open source page</button></div><div id="readerQuickReport"></div></div>`;
 }
 function emptyLayerPrompt(book,chapter){return readerPastePanel(`No active text layer is selected for ${book} ${chapter}. Start by pasting your own translation.`)}
 function parseSmartTranslation(text, fallbackBook, fallbackChapter){
@@ -2857,7 +2920,34 @@ function downloadPdfHTML(){
 
 /* ── LINKED PDF EDITOR + CLEAN TWO-WAY SYNC OVERRIDES ───────── */
 window.pdfInternalSync=false;
-function pdfHtmlClean(x){return (x||'').trim();}
+function pdfHtmlClean(x){
+  const s=String(x||'').trim();
+  if(!s)return '';
+  const t=document.createElement('template');
+  t.innerHTML=s;
+  const ALLOWED=['b','strong','i','em','u','s','strike','del','sup','sub','br','p','blockquote','h1','h2','h3','a','ul','ol','li'];
+  function cleanNode(node){
+    if(node.nodeType===Node.TEXT_NODE)return node.cloneNode();
+    if(node.nodeType!==Node.ELEMENT_NODE)return null;
+    const tag=node.tagName.toLowerCase();
+    if(['script','style','meta','link','head'].includes(tag))return null;
+    const kids=[...node.childNodes].map(cleanNode).filter(Boolean);
+    // span/font/div with only style/bgcolor/color/size attributes → unwrap to children
+    const isStyleWrapper=(tag==='span'||tag==='font'||tag==='div')&&!node.className;
+    if(isStyleWrapper||!ALLOWED.includes(tag)){
+      const frag=document.createDocumentFragment();
+      kids.forEach(k=>frag.appendChild(k));
+      return frag;
+    }
+    const el=document.createElement(tag);
+    if(tag==='a'&&node.getAttribute('href'))el.setAttribute('href',node.getAttribute('href'));
+    kids.forEach(k=>el.appendChild(k));
+    return el;
+  }
+  const out=document.createElement('div');
+  [...t.content.childNodes].forEach(n=>{const c=cleanNode(n);if(c)out.appendChild(c);});
+  return out.innerHTML.replace(/\s{2,}/g,' ').trim();
+}
 function getPdfScope(){return $('pdfSyncScope')?.value||'chapter'}
 function getPdfKeys(scope){
   scope=scope||getPdfScope();
@@ -3074,10 +3164,45 @@ function extractSuperscriptSegments(line){
   }
   return {leading,segments:out};
 }
+function stripBibleGatewayJunk(s){
+  // Remove footnote letter markers like [a] [b] [c] and cross-ref markers
+  s=String(s||'').replace(/\[[a-z]\]/g,'').replace(/\[\+\]/g,'').replace(/\[[\w]+\]/g,'');
+  // Remove "Read full chapter" type artifacts
+  s=s.replace(/Read full chapter/gi,'').replace(/Open in Bible[^\n]*/gi,'');
+  // Collapse spaces
+  return s.replace(/\s+/g,' ').trim();
+}
+function parseBibleGatewayParagraph(text, book, chapter){
+  // Handles BibleGateway reader copy: "1 In the beginning... 2 The earth was... 3 God said..."
+  // Numbers at word boundaries preceded by space (or start) followed by space+letter
+  const verses=[]; const warnings=[];
+  const cleaned=stripBibleGatewayJunk(text);
+  // Try splitting on inline verse numbers: space+digits+space pattern at word breaks
+  const parts=cleaned.split(/(?:^|\s)(\d{1,3})\s+(?=[A-ZΆΒΓΔΕΖΗΘΑ-Ω\u05D0-\u05EA\u2C80-\u2CFF"'"'(])/);
+  // parts will be [before_1, "1", text1, "2", text2, ...]
+  // Rebuild into verse objects
+  let i=0;
+  // Skip any leading preamble before first verse number
+  while(i<parts.length&&(parts[i].trim()===''||!/^\d+$/.test(parts[i])))i++;
+  let found=0;
+  while(i<parts.length-1){
+    const vNum=Number(parts[i]);
+    const vText=(parts[i+1]||'').trim();
+    if(vNum>0&&vNum<200&&vText){
+      verses.push({book,ch:chapter,verse:vNum,text:cleanImportedMarkup(vText)});
+      found++;
+    }
+    i+=2;
+  }
+  if(!found)warnings.push('Could not split paragraph into verses.');
+  return {verses,warnings};
+}
 function parseSmartTranslation(text, fallbackBook, fallbackChapter){
   const verses=[]; const notes=[]; const rejected=[]; const formats=new Set();
   let cur={book:fallbackBook,ch:Number(fallbackChapter)||1,verse:null};
   let pendingText=[]; let pendingNotes=[];
+  // Strip BibleGateway footnote markers globally first
+  text=stripBibleGatewayJunk(text);
   function flush(){
     if(!cur.verse){pendingText=[];pendingNotes=[];return;}
     const textVal=cleanImportedMarkup(pendingText.join(' ').replace(/\s+/g,' ').trim());
@@ -3113,6 +3238,16 @@ function parseSmartTranslation(text, fallbackBook, fallbackChapter){
     if(p&&Number.isFinite(p.ch)&&Number.isFinite(p.verse)&&p.text){flush();cur={book:p.book,ch:p.ch,verse:p.verse};pendingText.push(p.text);formats.add('reference lines');continue;}
     m=line.match(/^\s*(\d+)\s*[.)\-:]?\s+(.+)/);
     if(m){flush();cur={book:fallbackBook,ch:Number(fallbackChapter)||1,verse:Number(m[1])};pendingText.push(m[2].trim());formats.add('numbered lines');continue;}
+    // BibleGateway paragraph mode: a long line that contains inline numbers like "1 text 2 text"
+    // Only attempt this if we haven't already found structured verse markers and line is long
+    if(!cur.verse&&line.length>40&&/^\d+\s+\S/.test(line)&&/\s\d+\s+[A-ZΆΒΓΔΑ-Ω"'"']/.test(line)){
+      const bgParsed=parseBibleGatewayParagraph(line,fallbackBook,Number(fallbackChapter)||1);
+      if(bgParsed.verses.length>1){
+        bgParsed.verses.forEach(v=>{verses.push(v);});
+        formats.add('inline paragraph numbers (BibleGateway style)');
+        continue;
+      }
+    }
     if(cur.verse){pendingText.push(line);}
     else{rejected.push(line);}
   }
@@ -3464,17 +3599,90 @@ function addSimpleLineLayer(){
   normalizeStateShape();
   const type=($('simpleLineType')?.value||'My Translation').trim();
   const name=($('simpleLineName')?.value||type).trim();
+  if(!name){toast('Enter a layer name first.');return;}
   ensureTranslation(name); state.translationMeta=state.translationMeta||{}; state.translationMeta[name]={...(state.translationMeta[name]||{}),lineType:type};
   if(!state.active.translation)state.active.translation=name; else if(state.active.translation!==name&&!state.active.parallelTranslations.includes(name))state.active.parallelTranslations.push(name);
   selectedLayerForMoveName=name; state.settings.displayMode='wordInterlinear'; state.settings.showLayerLabels=true; state.settings.collapseEmptyLayers=false;
-  renderAll(); saveSoon(); toast('Added interlinear layer: '+name);
+  renderAll(); saveSoon();
+  try{renderTranslationList();}catch(e){}
+  try{if(typeof window.renderTranslationList==='function')window.renderTranslationList();}catch(e){}
+  try{if(typeof window.refreshLayerSurfaces==='function')window.refreshLayerSurfaces('add-layer');}catch(e){}
+  // Show a refresh banner in the reader
+  const flow=document.getElementById('verseFlow');
+  if(flow&&!flow.querySelector('.refresh-banner')){
+    const banner=document.createElement('div');
+    banner.className='refresh-banner';
+    banner.innerHTML='<span>Layer <b>'+name+'</b> added — paste text into it below, or import via Layers.</span><button onclick="this.parentElement.remove()">✕</button>';
+    flow.insertAdjacentElement('afterbegin',banner);
+  }
+  toast('Layer added: '+name+' · display → Interlinear Rows');
+}
+function addInterlinearPreset(preset){
+  normalizeStateShape();
+  const presets={
+    'greek-english':[{type:'Greek',name:'Greek NT'},{type:'My Translation',name:'My Translation'}],
+    'hebrew-english':[{type:'Hebrew',name:'Hebrew OT'},{type:'My Translation',name:'My Translation'}],
+    'lxx-english':[{type:'Greek',name:'Septuagint (LXX)'},{type:'My Translation',name:'My Translation'}],
+    'greek-latin':[{type:'Greek',name:'Greek NT'},{type:'Latin',name:'Latin Vulgate'}],
+    'triple':[{type:'Hebrew',name:'Hebrew OT'},{type:'Greek',name:'LXX/Greek'},{type:'My Translation',name:'My Translation'}],
+    'interlinear-gloss':[{type:'My Translation',name:'My Translation'},{type:'Literal Gloss',name:'Literal Gloss'},{type:'Transliteration',name:'Transliteration'}],
+  };
+  const layers=presets[preset]||[];
+  if(!layers.length)return;
+  let first=true;
+  layers.forEach(({type,name})=>{
+    ensureTranslation(name);
+    state.translationMeta=state.translationMeta||{};
+    state.translationMeta[name]={...(state.translationMeta[name]||{}),lineType:type};
+    if(first&&!state.active.translation){state.active.translation=name;first=false;}
+    else if(!state.active.parallelTranslations.includes(name)&&name!==state.active.translation)state.active.parallelTranslations.push(name);
+  });
+  state.settings.displayMode='wordInterlinear';
+  state.settings.showLayerLabels=true;
+  state.settings.collapseEmptyLayers=false;
+  renderAll(); saveSoon();
+  try{if(typeof window.refreshLayerSurfaces==='function')window.refreshLayerSurfaces('preset');}catch(e){}
+  toast('Interlinear preset loaded: '+layers.map(l=>l.name).join(' + '));
+}
+function updateIlModeButtons(){
+  const cur=state.settings?.displayMode||'single';
+  document.querySelectorAll('.il-mode-row button[data-mode]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.mode===cur);
+  });
 }
 function enhanceSimpleInterlinearUI(){
   const left=document.querySelector('#translationModal .g2 > div:first-child'); if(!left||left.querySelector('.simple-interlinear-card'))return;
   const card=document.createElement('div'); card.className='simple-interlinear-card';
-  card.innerHTML=`<h3>Simple Interlinear / Parallel Setup</h3><p>For normal use: create or choose layers, then pick Parallel or Interlinear. Use the advanced controls below only when you need exact ordering, empty-layer behavior, or labels.</p><div class="simple-view-buttons"><button onclick="setSimpleDisplayMode('single')">Single Text</button><button onclick="setSimpleDisplayMode('sideBySide')">Parallel Columns</button><button onclick="setSimpleDisplayMode('stacked')">Stacked Comparison</button><button class="gold" onclick="setSimpleDisplayMode('wordInterlinear')">Interlinear Rows</button><button onclick="setSimpleDisplayMode('compact')">Compact Table</button></div><div class="simple-interlinear-row"><label>Line Type<select id="simpleLineType"><option>Greek</option><option>Hebrew</option><option>Coptic</option><option>Latin</option><option>Transliteration</option><option>Literal Gloss</option><option>My Translation</option><option>Commentary Layer</option></select></label><label>Layer Name<input id="simpleLineName" placeholder="e.g. Greek, Literal Gloss, My Translation"></label><button class="gold" onclick="addSimpleLineLayer()">Add Line Layer</button></div>`;
+  card.innerHTML=`
+  <div class="il-wizard">
+    <h3>Quick-Start Interlinear &amp; Parallel Setup</h3>
+    <p class="hint">Pick a preset to instantly create the right layers, or add a single line layer below. All presets set the display to Interlinear Rows automatically.</p>
+    <div class="il-preset-row">
+      <button onclick="addInterlinearPreset('greek-english')" title="Greek NT + English"><span class="il-tag">GK</span>+EN Greek &amp; English</button>
+      <button onclick="addInterlinearPreset('hebrew-english')" title="Hebrew OT + English"><span class="il-tag">HB</span>+EN Hebrew &amp; English</button>
+      <button onclick="addInterlinearPreset('lxx-english')" title="Septuagint + English"><span class="il-tag">LXX</span>+EN LXX &amp; English</button>
+      <button onclick="addInterlinearPreset('greek-latin')" title="Greek + Latin Vulgate"><span class="il-tag">GK</span>+LA Greek &amp; Latin</button>
+      <button onclick="addInterlinearPreset('triple')" title="Hebrew + Greek + English"><span class="il-tag">3×</span> Hebrew/Greek/EN</button>
+      <button onclick="addInterlinearPreset('interlinear-gloss')" title="Translation + Gloss + Transliteration"><span class="il-tag">GL</span> Gloss Rows</button>
+    </div>
+    <p class="hint" style="margin:0 0 6px">Or add a single line layer:</p>
+    <div class="il-lang-row">
+      <label>Language / Type<select id="simpleLineType"><option>Greek</option><option>Hebrew</option><option>Coptic</option><option>Latin</option><option>Aramaic</option><option>Transliteration</option><option>Literal Gloss</option><option>My Translation</option><option>Commentary Layer</option></select></label>
+      <label>Layer Name<input id="simpleLineName" placeholder="e.g. Greek NT, Vulgate, My Gloss"></label>
+      <button class="gold" onclick="addSimpleLineLayer()">+ Add Layer</button>
+    </div>
+    <p class="hint" style="margin:0 0 6px">Display mode:</p>
+    <div class="il-mode-row">
+      <button data-mode="single" onclick="setSimpleDisplayMode('single');updateIlModeButtons()">Single</button>
+      <button data-mode="sideBySide" onclick="setSimpleDisplayMode('sideBySide');updateIlModeButtons()">Parallel</button>
+      <button data-mode="stacked" onclick="setSimpleDisplayMode('stacked');updateIlModeButtons()">Stacked</button>
+      <button data-mode="wordInterlinear" onclick="setSimpleDisplayMode('wordInterlinear');updateIlModeButtons()">Interlinear</button>
+      <button data-mode="compact" onclick="setSimpleDisplayMode('compact');updateIlModeButtons()">Table</button>
+    </div>
+  </div>`;
   left.insertBefore(card,left.firstChild);
   left.querySelectorAll('.section-head h3').forEach(h=>{if(/Displayed|Advanced layer/i.test(h.textContent))h.textContent='Advanced Layer Controls'; if(/Linear|Advanced display/i.test(h.textContent))h.textContent='Advanced Display Settings';});
+  setTimeout(updateIlModeButtons,50);
 }
 function titleCasePdfLabels(){
   const replacements={'refs/headings':'Refs / Headings','source text':'Source Text','empty notes':'Empty Notes'};
@@ -5539,6 +5747,393 @@ function downloadPdfHTML(){
 })();
 </script>
 
+
+<!-- CATENA PATCH 2026-06-02: resilient sources/imports, formal library UI, PDF save-back sanitizer -->
+<style id="catena-final-source-library-pdf-patch-css">
+  /* Formal library / books surface */
+  #libraryModal .modal-box{max-width:min(1220px,96vw)}
+  #libraryModal .modal-head{border-bottom:1px solid rgba(222,190,115,.22);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0))}
+  #libraryModal .modal-head h2{letter-spacing:.055em;text-transform:uppercase}
+  #libraryModal .modal-body{padding:20px 22px 24px}
+  #libraryModal .lib-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;border-bottom:1px solid rgba(150,170,210,.16);padding-bottom:12px}
+  #libraryModal .lib-tabs button{border-radius:10px;padding:9px 14px;font-family:var(--ui);font-weight:750;letter-spacing:.02em;background:rgba(11,18,32,.76);border:1px solid rgba(130,150,190,.35)}
+  #libraryModal .lib-tabs button.active{background:rgba(205,168,76,.12);border-color:rgba(205,168,76,.75);color:var(--gold)}
+  #libraryModal .lib-pane h3,#libraryModal .section-head h3{font-family:var(--display);letter-spacing:.055em;text-transform:uppercase;color:var(--gold);margin:0 0 12px}
+  #canonTabToggles{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px!important;margin:12px 0 16px!important;align-items:stretch!important}
+  #canonTabToggles label.canon-toggle{display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;gap:12px!important;width:auto!important;min-height:76px;padding:12px 13px!important;margin:0!important;border:1px solid rgba(142,159,199,.32);border-radius:13px;background:rgba(12,18,32,.82);box-shadow:0 1px 0 rgba(255,255,255,.03) inset;color:var(--text);cursor:pointer;text-align:left!important}
+  #canonTabToggles label.canon-toggle input{flex:0 0 auto;margin-top:3px!important;width:16px;height:16px;accent-color:#d2ae52}
+  #canonTabToggles .canon-card-title{display:block;font-family:var(--display);font-weight:800;letter-spacing:.045em;color:#f3d889;text-transform:uppercase;line-height:1.15}
+  #canonTabToggles .canon-card-meta{display:block;margin-top:5px;font-family:var(--ui);font-size:12px;line-height:1.38;color:var(--muted);letter-spacing:.01em;text-transform:none}
+  .formal-lib-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:10px;align-items:end;margin:4px 0 12px;padding:12px;border:1px solid rgba(142,159,199,.22);border-radius:14px;background:rgba(8,14,25,.64)}
+  .formal-lib-toolbar label{margin:0;font-family:var(--ui);font-size:12px;color:var(--muted);font-weight:750;letter-spacing:.025em;text-transform:uppercase}
+  .formal-lib-toolbar input,.formal-lib-toolbar select{margin-top:5px;width:100%;min-height:36px}
+  .formal-book-list{display:grid;gap:8px;max-height:52vh;overflow:auto;padding-right:5px}
+  .formal-book-row{display:grid;grid-template-columns:34px minmax(190px,1.65fr) 90px 154px 82px minmax(220px,auto);gap:8px;align-items:center;padding:9px 10px;border:1px solid rgba(142,159,199,.22);border-radius:13px;background:rgba(12,18,32,.76)}
+  .formal-book-row:hover{border-color:rgba(205,168,76,.42);background:rgba(16,24,40,.9)}
+  .formal-book-row input,.formal-book-row select{min-height:34px;font-size:13px;padding:6px 8px}
+  .formal-book-row .book-visible{text-align:center}
+  .formal-book-row .book-title-input{font-family:var(--display);font-size:15px;font-weight:800;color:var(--text)}
+  .formal-book-row .book-section{font-family:var(--ui);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(150,170,210,.2);border-radius:999px;padding:6px 8px;text-align:center;background:rgba(255,255,255,.025);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .formal-book-row .book-actions{display:flex;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+  .formal-book-row .book-actions button{padding:5px 8px;font-size:12px}
+  .formal-empty{padding:18px;border:1px dashed rgba(150,170,210,.28);border-radius:13px;color:var(--muted);background:rgba(255,255,255,.025)}
+  .library-callout{border:1px solid rgba(205,168,76,.2);background:rgba(205,168,76,.055);border-radius:14px;padding:11px 13px;color:var(--muted);font-family:var(--ui);font-size:13px;line-height:1.45;margin:10px 0 14px}
+  @media(max-width:880px){.formal-lib-toolbar{grid-template-columns:1fr}.formal-book-row{grid-template-columns:28px minmax(120px,1fr) 70px 1fr 70px;}.formal-book-row .book-actions{grid-column:1/-1;justify-content:flex-start}.formal-book-row .book-section{font-size:10px}}
+
+  /* Main text-layer strip: quick mode/source controls */
+  .reader-layer-actions{display:grid!important;grid-template-columns:minmax(260px,1.3fr) minmax(320px,2fr) auto;gap:10px!important;align-items:center!important;padding:10px 12px!important;border-radius:15px!important;border:1px solid rgba(205,168,76,.28)!important;background:rgba(10,16,29,.86)!important}
+  .reader-layer-actions .layer-meta{display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important}
+  .reader-layer-actions .layer-meta b{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+  .reader-layer-actions .layer-quick-controls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center}
+  .reader-layer-actions .layer-quick-controls select{min-height:32px;max-width:170px;font-size:12px;padding:4px 8px;background:rgba(10,17,30,.92)}
+  .reader-layer-actions .layer-quick-controls button,.reader-layer-actions .layer-actions-right button{padding:6px 10px;font-size:12px;white-space:nowrap}
+  .reader-layer-actions .layer-actions-right{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;align-items:center}
+  @media(max-width:930px){.reader-layer-actions{grid-template-columns:1fr}.reader-layer-actions .layer-quick-controls,.reader-layer-actions .layer-actions-right{justify-content:flex-start}}
+
+  .source-palette{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px;padding:9px;border:1px solid rgba(142,159,199,.22);border-radius:13px;background:rgba(8,14,25,.62)}
+  .source-palette b{width:100%;font-family:var(--ui);font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+  .source-palette button{font-size:12px;padding:5px 9px}
+</style>
+<script id="catena-final-source-library-pdf-patch">
+(function(){
+  'use strict';
+  const q=id=>document.getElementById(id);
+  const html=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const strip=s=>String(s||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/gi,' ').replace(/\s+/g,' ').trim();
+  const toastSafe=msg=>{try{typeof toast==='function'?toast(msg):console.log(msg)}catch(_){console.log(msg)}};
+  const callRefresh=reason=>{
+    try{if(typeof refreshLayerSurfaces==='function')refreshLayerSurfaces(reason||'patch-refresh')}catch(_){ }
+    try{if(typeof renderAll==='function')renderAll()}catch(_){ }
+    try{if(typeof saveSoon==='function')saveSoon()}catch(_){ }
+  };
+
+  const SOURCE_VERSIONS=[
+    ['KJV','KJV'],['NKJV','NKJV'],['YLT','YLT'],['ASV','ASV'],['WEB','WEB'],['WEB-C','WEB'],['DRA','DRA'],['RSVCE','RSVCE'],['NRSVUE','NRSVUE'],['NABRE','NABRE'],['ESV','ESV'],['NASB','NASB'],['NASB1995','NASB1995'],['NIV','NIV'],['NLT','NLT'],['CSB','CSB'],['LEB','LEB'],['NET','NET']
+  ];
+  const DEUTEROCANON_SOURCE_VERSIONS=['DRA','RSVCE','NRSVUE','NABRE','CEB','WEB-C'];
+  window.CATENA_SOURCE_VERSIONS=SOURCE_VERSIONS.map(x=>x[0]);
+  window.CATENA_DEUTEROCANON_SOURCE_VERSIONS=DEUTEROCANON_SOURCE_VERSIONS.slice();
+
+  const bhBook={
+    'Genesis':'genesis','Exodus':'exodus','Leviticus':'leviticus','Numbers':'numbers','Deuteronomy':'deuteronomy','Joshua':'joshua','Judges':'judges','Ruth':'ruth','1 Samuel':'1_samuel','2 Samuel':'2_samuel','1 Kings':'1_kings','2 Kings':'2_kings','1 Chronicles':'1_chronicles','2 Chronicles':'2_chronicles','Ezra':'ezra','Nehemiah':'nehemiah','Esther':'esther','Job':'job','Psalms':'psalms','Psalm':'psalms','Proverbs':'proverbs','Ecclesiastes':'ecclesiastes','Song of Songs':'songs','Song of Solomon':'songs','Isaiah':'isaiah','Jeremiah':'jeremiah','Lamentations':'lamentations','Ezekiel':'ezekiel','Daniel':'daniel','Hosea':'hosea','Joel':'joel','Amos':'amos','Obadiah':'obadiah','Jonah':'jonah','Micah':'micah','Nahum':'nahum','Habakkuk':'habakkuk','Zephaniah':'zephaniah','Haggai':'haggai','Zechariah':'zechariah','Malachi':'malachi','Matthew':'matthew','Mark':'mark','Luke':'luke','John':'john','Acts':'acts','Romans':'romans','1 Corinthians':'1_corinthians','2 Corinthians':'2_corinthians','Galatians':'galatians','Ephesians':'ephesians','Philippians':'philippians','Colossians':'colossians','1 Thessalonians':'1_thessalonians','2 Thessalonians':'2_thessalonians','1 Timothy':'1_timothy','2 Timothy':'2_timothy','Titus':'titus','Philemon':'philemon','Hebrews':'hebrews','James':'james','1 Peter':'1_peter','2 Peter':'2_peter','1 John':'1_john','2 John':'2_john','3 John':'3_john','Jude':'jude','Revelation':'revelation'
+  };
+  function refString(){
+    const ref=(q('onlineRef')&&q('onlineRef').value.trim())||`${(window.state&&state.active&&state.active.book)||'Matthew'} ${(window.state&&state.active&&state.active.chapter)||1}`;
+    return ref;
+  }
+  function currentRefParts(){
+    const book=(window.state&&state.active&&state.active.book)||'Matthew';
+    const chapter=Number(window.state&&state.active&&state.active.chapter)||1;
+    return {book,chapter,ref:`${book} ${chapter}`};
+  }
+  window.catenaOpenSourceVersion=function(version,provider){
+    version=String(version||'KJV').trim().toUpperCase();
+    provider=String(provider||q('catenaSourceProvider')?.value||'gateway').trim();
+    const ref=refString();
+    const enc=encodeURIComponent(ref);
+    const p=currentRefParts();
+    let url='';
+    if(provider==='biblehub'){
+      const slug=bhBook[p.book];
+      const vslug={NKJV:'nkjv',KJV:'kjv',YLT:'ylt',ASV:'asv',WEB:'web',ESV:'esv',NASB:'nasb',NIV:'niv',NLT:'nlt',CSB:'csb',LEB:'leb',NET:'net'}[version]||'parallel';
+      url=slug?`https://biblehub.com/${vslug}/${slug}/${p.chapter}.htm`:`https://biblehub.com/search?q=${enc}`;
+    }else if(provider==='studylight'){
+      const map={KJV:'eng_kjv',YLT:'eng_ylt',ASV:'eng_asv',WEB:'eng_web',DRA:'eng_rhe',DARBY:'eng_dby'};
+      url=`https://www.studylight.org/study-desk.html?q1=${enc}${map[version]?`&t1=${encodeURIComponent(map[version])}`:''}`;
+    }else if(provider==='oremus'){
+      url=`https://bible.oremus.org/?passage=${enc}&version=nrsv`;
+    }else if(provider==='search'){
+      url=`https://www.google.com/search?q=${encodeURIComponent(ref+' '+version+' Bible text')}`;
+    }else{
+      url=`https://www.biblegateway.com/passage/?search=${enc}&version=${encodeURIComponent(version)}`;
+    }
+    window.open(url,'_blank','noopener');
+  };
+  window.openSelectedSourcePage=function(){
+    const source=q('onlineSource')?.value||'bible-gateway';
+    const val=(q('onlineProviderValue')?.value||'').trim();
+    if(source==='custom-url'&&val){window.open(val,'_blank','noopener');return;}
+    if(source==='bible-api'){
+      window.open(`https://bible-api.com/${encodeURIComponent(refString())}?translation=${encodeURIComponent(val||'web')}`,'_blank','noopener');return;
+    }
+    if(source==='public-domain'&&val){
+      window.catenaOpenSourceVersion(val,'biblehub');return;
+    }
+    window.catenaOpenSourceVersion(val||'NKJV',q('catenaSourceProvider')?.value||'gateway');
+  };
+
+  function sourcePaletteHtml(){
+    const common=['NKJV','KJV','YLT','ASV','WEB','DRA','RSVCE','NRSVUE'];
+    return `<div class="source-palette"><b>One-click source pages</b>${common.map(v=>`<button type="button" onclick="catenaOpenSourceVersion('${v}')">${v}</button>`).join('')}<button type="button" onclick="catenaOpenSourceVersion('YLT','biblehub')">YLT BibleHub</button><button type="button" onclick="catenaOpenSourceVersion('DRA','gateway')">DRA / Deuterocanon</button><button type="button" onclick="openModal('translationModal');setTimeout(catenaEnhanceWholeBiblePanel,60)">All import options</button></div>`;
+  }
+
+  /* Reader top strip: active layer + interlinear/parallel + source opener in the same place. */
+  window.readerLayerActionBar=function(book,chapter,layers,rows){
+    const active=(state.active&&state.active.translation)||'';
+    const div=document.createElement('div');
+    div.className='reader-layer-actions';
+    const all=(typeof allTransNames==='function'?allTransNames():Object.keys(state.translations||{}));
+    const activeCount=active&&typeof getTransObj==='function'?Object.keys(getTransObj(active)).filter(k=>k.startsWith(book+'|'+chapter+'|')).length:0;
+    const mode=(state.settings&&state.settings.displayMode)||'single';
+    div.innerHTML=`
+      <div class="layer-meta"><b>Text Layer</b><span class="layer-pill">${html(active||'No active layer')}</span><span>${activeCount} verse${activeCount===1?'':'s'} in ${html(book)} ${Number(chapter)}</span>${layers&&layers.length>1?`<span>${Number((rows||[]).length)} aligned row${(rows||[]).length===1?'':'s'}</span>`:''}</div>
+      <div class="layer-quick-controls">
+        <select data-role="active-layer" title="Active text layer"><option value="">No active layer</option>${all.map(n=>`<option value="${html(n)}" ${n===active?'selected':''}>${html(n)}</option>`).join('')}</select>
+        <select data-role="display-mode" title="Reader mode">
+          <option value="single" ${mode==='single'?'selected':''}>Single</option><option value="sideBySide" ${mode==='sideBySide'?'selected':''}>Parallel</option><option value="stacked" ${mode==='stacked'?'selected':''}>Stacked</option><option value="wordInterlinear" ${mode==='wordInterlinear'?'selected':''}>Interlinear</option><option value="compact" ${mode==='compact'?'selected':''}>Table</option>
+        </select>
+        <select id="catenaSourceProvider" title="Source page provider"><option value="gateway">BibleGateway</option><option value="biblehub">BibleHub</option><option value="studylight">StudyLight</option><option value="oremus">Oremus/NRSV</option><option value="search">Web search</option></select>
+        <select data-role="source-version" title="Open source version">${SOURCE_VERSIONS.map(v=>`<option value="${v[0]}" ${v[0]==='NKJV'?'selected':''}>${v[0]}</option>`).join('')}</select>
+        <button type="button" data-role="open-source">Open source</button>
+        <button type="button" data-role="open-ylt">YLT fixed</button>
+      </div>
+      <div class="layer-actions-right"><button type="button" data-role="paste">Paste / Replace Chapter</button><button type="button" data-role="import">Import / Fetch</button><button type="button" class="danger" data-role="clear">Clear Chapter</button><button type="button" class="danger" data-role="delete">Delete Layer</button></div>`;
+    div.querySelector('[data-role="active-layer"]')?.addEventListener('change',ev=>{try{typeof setActiveTranslation==='function'?setActiveTranslation(ev.target.value):(state.active.translation=ev.target.value)}catch(_){state.active.translation=ev.target.value}callRefresh('active-layer-strip')});
+    div.querySelector('[data-role="display-mode"]')?.addEventListener('change',ev=>{try{typeof catenaSetDisplayMode==='function'?catenaSetDisplayMode(ev.target.value):(state.settings.displayMode=ev.target.value)}catch(_){state.settings.displayMode=ev.target.value}callRefresh('reader-mode-strip')});
+    div.querySelector('[data-role="open-source"]')?.addEventListener('click',()=>{const v=div.querySelector('[data-role="source-version"]')?.value||'NKJV';window.catenaOpenSourceVersion(v)});
+    div.querySelector('[data-role="open-ylt"]')?.addEventListener('click',()=>window.catenaOpenSourceVersion('YLT','biblehub'));
+    div.querySelector('[data-role="paste"]')?.addEventListener('click',()=>{try{openReaderReplacePanel()}catch(_){openModal('translationModal')}});
+    div.querySelector('[data-role="import"]')?.addEventListener('click',()=>{try{openModal('translationModal');setTimeout(window.catenaEnhanceWholeBiblePanel,80)}catch(_){ }});
+    div.querySelector('[data-role="clear"]')?.addEventListener('click',()=>{try{clearActiveLayerChapter()}catch(_){ }});
+    div.querySelector('[data-role="delete"]')?.addEventListener('click',()=>{try{deleteActiveTranslation()}catch(_){ }});
+    return div;
+  };
+
+  const oldReaderPaste=window.readerPastePanel;
+  window.readerPastePanel=function(reason){
+    const b=(state.active&&state.active.book)||'Matthew', c=Number(state.active&&state.active.chapter)||1;
+    if(typeof oldReaderPaste==='function'){
+      const base=oldReaderPaste(reason);
+      if(/source-palette/.test(base))return base;
+      return String(base).replace('<div class="reader-quick-grid">',sourcePaletteHtml()+'<div class="reader-quick-grid">');
+    }
+    return `<div class="reader-paste-panel"><h3>Paste or replace ${html(b)} ${c}</h3><p class="hint">${html(reason||'Paste marked verse text below.')}</p>${sourcePaletteHtml()}<textarea id="readerQuickPaste"></textarea></div>`;
+  };
+
+  /* Formal library rendering. */
+  const CAT_DESCRIPTIONS={ot:'Hebrew canon / Old Testament ordering.',nt:'New Testament books.',deut:'Deuterocanonical and extended-canon books.',pseudo:'Pseudepigrapha and related ancient works.',ag:'Agrapha, sayings, and small textual collections.',custom:'Books created by you.'};
+  window.renderCanonToggles=function(){
+    const box=q('canonTabToggles'); if(!box)return;
+    try{typeof normalizeStateShape==='function'&&normalizeStateShape()}catch(_){ }
+    box.innerHTML='';
+    Object.entries(window.CAT_LABELS||{ot:'Old Testament',nt:'New Testament',deut:'Deuterocanon',pseudo:'Pseudepigrapha',ag:'Agrapha',custom:'Custom'}).forEach(([id,label])=>{
+      const count=(typeof booksForCat==='function'?booksForCat(id):(window.BOOK_META||[]).filter(b=>b.cat===id)).length;
+      const lab=document.createElement('label');
+      lab.className='canon-toggle';
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!state.library.visibleTabs[id];
+      cb.addEventListener('change',ev=>{state.library.visibleTabs[id]=ev.target.checked;try{renderTabs()}catch(_){ }try{renderBooks()}catch(_){ }try{renderLibraryBooks()}catch(_){ }try{saveSoon()}catch(_){ }});
+      const span=document.createElement('span');
+      span.innerHTML=`<span class="canon-card-title">${html(label)}</span><span class="canon-card-meta">${count} book${count===1?'':'s'} · ${html(CAT_DESCRIPTIONS[id]||'Library section')}</span>`;
+      lab.appendChild(cb); lab.appendChild(span); box.appendChild(lab);
+    });
+  };
+
+  function makeFormalBookRow(b,idx,context){
+    const row=document.createElement('div'); row.className='formal-book-row'; row.dataset.book=b.book;
+    const hidden=(state.library.hiddenBooks||[]).includes(b.book);
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!hidden; cb.title='Visible in sidebar'; cb.className='book-visible';
+    cb.addEventListener('change',()=>{if(cb.checked)restoreBook(b.book);else hideBook(b.book)});
+    const name=document.createElement('input'); name.value=b.book; name.className='book-title-input'; name.title='Book title';
+    name.addEventListener('change',()=>{const v=name.value.trim(); if(v&&v!==b.book)renameBook(b.book,v)});
+    const ab=document.createElement('input'); ab.value=(state.library.bookAbbr&&state.library.bookAbbr[b.book])||b.abbr||''; ab.placeholder='abbr'; ab.title='Abbreviation';
+    ab.addEventListener('change',()=>{state.library.bookAbbr=state.library.bookAbbr||{};state.library.bookAbbr[b.book]=ab.value.trim();callRefresh('book-abbr')});
+    const sec=document.createElement('div'); sec.className='book-section'; sec.textContent=(window.CAT_LABELS&&CAT_LABELS[b.cat])||b.section||b.cat||'Custom';
+    const ch=document.createElement('input'); ch.type='number'; ch.min='1'; ch.max='999'; ch.value=chapterCount(b.book); ch.title='Chapter count';
+    ch.addEventListener('change',()=>setChapterCount(b.book,ch.value));
+    const actions=document.createElement('div'); actions.className='book-actions';
+    actions.innerHTML=`<button type="button" class="sm ghost" data-a="up">↑</button><button type="button" class="sm ghost" data-a="down">↓</button><button type="button" class="sm ghost" data-a="jump">Open</button>${b.custom?'<button type="button" class="sm ghost danger" data-a="del">Delete</button>':''}`;
+    actions.querySelector('[data-a="up"]')?.addEventListener('click',()=>moveBook(idx,-1));
+    actions.querySelector('[data-a="down"]')?.addEventListener('click',()=>moveBook(idx,1));
+    actions.querySelector('[data-a="jump"]')?.addEventListener('click',()=>{state.active.book=b.book;state.active.chapter=Math.max(1,Number(b.startChapter)||1);state.active.verse=1;closeModal&&closeModal('libraryModal');callRefresh('book-open')});
+    actions.querySelector('[data-a="del"]')?.addEventListener('click',()=>removeCustomBook(b.book));
+    row.append(cb,name,ab,sec,ch,actions);
+    return row;
+  }
+  window.renderLibraryBooks=function(){
+    try{typeof normalizeStateShape==='function'&&normalizeStateShape()}catch(_){ }
+    const visible=q('visibleBookList'), all=q('allBookList'), hidden=q('hiddenBookList'), chap=q('chapterManagerList'), defaults=q('layerDefaultsBox');
+    const terms=(q('catenaLibrarySearch')?.value||'').toLowerCase().trim();
+    const cat=(q('catenaLibraryCategory')?.value||'all');
+    const books=(window.BOOK_META||[]).map((b,idx)=>({...b,__idx:idx})).filter(b=>(!terms||`${b.book} ${b.abbr||''} ${b.section||''}`.toLowerCase().includes(terms))&&(cat==='all'||b.cat===cat));
+    function ensureToolbar(container){
+      if(!container||q('catenaLibraryToolbar'))return;
+      const tb=document.createElement('div'); tb.id='catenaLibraryToolbar'; tb.className='formal-lib-toolbar';
+      tb.innerHTML=`<label>Search books<input id="catenaLibrarySearch" placeholder="Genesis, 1 Esdras, Matthew, custom…" value="${html(terms)}"></label><label>Section<select id="catenaLibraryCategory"><option value="all">All sections</option>${Object.entries(window.CAT_LABELS||{}).map(([id,l])=>`<option value="${id}" ${cat===id?'selected':''}>${html(l)}</option>`).join('')}</select></label><button type="button" onclick="document.getElementById('customBooksPane')?.scrollIntoView({block:'nearest'});">New custom book</button>`;
+      container.parentElement.insertBefore(tb,container);
+      tb.querySelector('#catenaLibrarySearch')?.addEventListener('input',()=>renderLibraryBooks());
+      tb.querySelector('#catenaLibraryCategory')?.addEventListener('change',()=>renderLibraryBooks());
+    }
+    function fill(container,filterHidden){
+      if(!container)return;
+      ensureToolbar(container);
+      container.innerHTML=''; container.classList.add('formal-book-list');
+      const arr=books.filter(b=>filterHidden===null?true:((state.library.hiddenBooks||[]).includes(b.book)===filterHidden));
+      if(!arr.length){const e=document.createElement('div');e.className='formal-empty';e.textContent='No books match this view.';container.appendChild(e);return;}
+      arr.forEach(b=>container.appendChild(makeFormalBookRow(b,b.__idx,filterHidden)));
+    }
+    fill(visible,false); fill(all,null); fill(hidden,true);
+    if(chap){chap.innerHTML='';chap.classList.add('formal-book-list');books.forEach(b=>{const row=makeFormalBookRow(b,b.__idx,'chap');chap.appendChild(row);});}
+    if(defaults){
+      defaults.innerHTML='<div class="library-callout">Set default text layers for sections. A book-level default overrides a section default.</div>';
+      const names=typeof allTransNames==='function'?allTransNames():Object.keys(state.translations||{});
+      Object.entries(window.CAT_LABELS||{}).forEach(([catId,label])=>{const lab=document.createElement('label');lab.textContent=label;const sel=document.createElement('select');sel.innerHTML='<option value="">No category default</option>'+names.map(n=>`<option value="${html(n)}">${html(n)}</option>`).join('');sel.value=(state.active.layerByCategory||{})[catId]||'';sel.addEventListener('change',()=>{state.active.layerByCategory=state.active.layerByCategory||{};state.active.layerByCategory[catId]=sel.value;try{applyRememberedLayerForCurrentBook()}catch(_){ }callRefresh('category-layer-default')});lab.appendChild(sel);defaults.appendChild(lab);});
+    }
+    try{window.renderCanonToggles()}catch(_){ }
+  };
+
+  /* Whole Bible imports: stronger public-domain fallback, including YLT TXT and DRB/DRA. */
+  const oldFetchPublic=window.catenaFetchPublicDomainBible;
+  const TEXT_SOURCE_FALLBACKS={
+    kjv:{label:'KJV',urls:['https://openbible.com/textfiles/kjv.txt']},
+    ylt:{label:'YLT',urls:['https://openbible.com/textfiles/ylt.txt']},
+    asv:{label:'ASV',urls:['https://openbible.com/textfiles/asv.txt']},
+    web:{label:'WEB',urls:['https://openbible.com/textfiles/web.txt']},
+    bbe:{label:'BBE',urls:['https://openbible.com/textfiles/bbe.txt']},
+    darby:{label:'Darby',urls:['https://openbible.com/textfiles/darby.txt']},
+    dra:{label:'DRA / DRB',urls:['https://openbible.com/textfiles/drb.txt']},
+    drb:{label:'DRA / DRB',urls:['https://openbible.com/textfiles/drb.txt']}
+  };
+  function normalizeImportedBibleText(txt){
+    return String(txt||'')
+      .replace(/\bCanticle of Canticles\b/g,'Song of Songs')
+      .replace(/\bCanticles\b/g,'Song of Songs')
+      .replace(/\b1\s+Machabees\b/g,'1 Maccabees')
+      .replace(/\b2\s+Machabees\b/g,'2 Maccabees')
+      .replace(/\bI\s+Machabees\b/g,'1 Maccabees')
+      .replace(/\bII\s+Machabees\b/g,'2 Maccabees')
+      .replace(/\bEcclesiasticus\b/g,'Sirach')
+      .replace(/\bThe Wisdom of Solomon\b/g,'Wisdom')
+      .replace(/\b3\s+Esdras\b/g,'1 Esdras')
+      .replace(/\b4\s+Esdras\b/g,'2 Esdras');
+  }
+  window.catenaFetchPublicDomainBible=async function(directCode,directLayer){
+    const code=String(directCode||q('wholeBiblePublicDomain')?.value||'kjv').trim().toLowerCase();
+    const fallback=TEXT_SOURCE_FALLBACKS[code];
+    if(!fallback&&typeof oldFetchPublic==='function')return oldFetchPublic.apply(this,arguments);
+    const layer=(directLayer||q('wholeBibleLayerName')?.value||fallback?.label||code).trim()||fallback.label;
+    const mode=q('wholeBibleAction')?.value||'replaceLayer';
+    const replace=q('wholeBibleReplace')?.checked!==false;
+    const reportBox=q('wholeBibleReport')||q('importReport')||q('readerQuickReport');
+    const say=(msg,cls)=>{if(reportBox){reportBox.textContent=msg;reportBox.className=cls||'';}else toastSafe(msg)};
+    if(fallback){
+      let lastErr='';
+      for(const url of fallback.urls){
+        try{
+          say(`Fetching ${fallback.label} from public-domain TXT source…`,'fetch-progress warn');
+          const res=await fetch(url,{cache:'no-store'});
+          if(!res.ok)throw new Error('HTTP '+res.status);
+          const txt=normalizeImportedBibleText(await res.text());
+          if(!/\bGenesis\s+1:1\b|\bMatthew\s+1:1\b/i.test(txt.slice(0,200000)))throw new Error('source did not look like reference-line Bible text');
+          const parsed=window.catenaParseWholeBibleText(txt,'txt',url);
+          if(!parsed||!parsed.verses||!parsed.verses.length)throw new Error('parser found 0 verses');
+          const merged=window.catenaMergeParsedBibleVerses(parsed,layer,mode,replace);
+          state.translationMeta=state.translationMeta||{};
+          state.translationMeta[layer]={...(state.translationMeta[layer]||{}),sourceName:fallback.label,sourceUrl:url,sourceFormat:'public-domain TXT',wholeBible:true,lastImport:new Date().toISOString()};
+          say(`Imported ${merged.count} verse${merged.count===1?'':'s'} into “${layer}”${merged.skipped?`; skipped ${merged.skipped} existing verse(s)`:''}.`,'format-ok ok');
+          callRefresh('public-domain-txt-import');
+          return merged;
+        }catch(err){lastErr=err.message||String(err);}
+      }
+      say(`Direct ${fallback.label} import failed: ${lastErr}. Use a local TXT/USFM/OSIS/JSON file or open a source page and paste the chapter.`,'format-error error');
+      if(typeof oldFetchPublic==='function'){
+        try{return await oldFetchPublic.apply(this,arguments)}catch(_){ }
+      }
+      return null;
+    }
+    return oldFetchPublic.apply(this,arguments);
+  };
+
+  window.catenaEnhanceWholeBiblePanel=function(){
+    const pane=q('wholeBibleImportBox');
+    const publicSel=q('wholeBiblePublicDomain');
+    if(publicSel&&!publicSel.dataset.finalEnhanced){
+      publicSel.dataset.finalEnhanced='1';
+      const existing=[...publicSel.options].map(o=>o.value);
+      [['ylt','YLT — Young Literal (TXT fallback)'],['dra','DRA / DRB — Douay-Rheims incl. deuterocanon'],['bbe','BBE'],['darby','Darby']].forEach(([v,t])=>{if(!existing.includes(v)){const o=document.createElement('option');o.value=v;o.textContent=t;publicSel.appendChild(o);}});
+    }
+    if(pane&&!q('catenaOneClickSourceBank')){
+      const bank=document.createElement('div'); bank.id='catenaOneClickSourceBank'; bank.className='source-palette';
+      bank.innerHTML=`<b>Source pages / deuterocanon quick links</b>${SOURCE_VERSIONS.slice(0,14).map(v=>`<button type="button" onclick="catenaOpenSourceVersion('${v[0]}')">${v[0]}</button>`).join('')}${DEUTEROCANON_SOURCE_VERSIONS.map(v=>`<button type="button" onclick="catenaOpenSourceVersion('${v}','gateway')">${v} DC</button>`).join('')}<button type="button" onclick="catenaOpenSourceVersion('YLT','biblehub')">YLT fallback</button>`;
+      pane.insertBefore(bank,pane.firstElementChild?.nextSibling||pane.firstChild);
+    }
+  };
+
+  /* Clean PDF save-back: strip pasted style spans and field labels before storing into entries/layers. */
+  function cleanEditableHtml(input,kind){
+    const tmp=document.createElement('div'); tmp.innerHTML=String(input||'');
+    tmp.querySelectorAll('script,style,meta,link,button,select,input,textarea').forEach(n=>n.remove());
+    tmp.querySelectorAll('.pdf-field-label,.pdf-ref,.pdf-toolbar,.pdf-page-head,.pdf-mini-actions,.cux-nav,.cux-sheet').forEach(n=>n.remove());
+    tmp.querySelectorAll('*').forEach(el=>{
+      const t=(el.textContent||'').replace(/\s+/g,' ').trim();
+      if(t.length<90 && /^(Translation|Source\s*\/\s*Verse\s*Text|Source\s*\/\s*Verse\s*Notes|Commentary|Structured)\b\s*(·|:)?/i.test(t)) el.remove();
+    });
+    const allowed=new Set(['B','STRONG','I','EM','U','S','SUP','SUB','BR','P','DIV','BLOCKQUOTE','UL','OL','LI','A','SPAN']);
+    tmp.querySelectorAll('*').forEach(el=>{
+      [...el.attributes].forEach(a=>{
+        if(el.tagName==='A'&&a.name==='href')return;
+        el.removeAttribute(a.name);
+      });
+      if(!allowed.has(el.tagName)){
+        el.replaceWith(...Array.from(el.childNodes));
+      }
+    });
+    tmp.querySelectorAll('span').forEach(sp=>sp.replaceWith(...Array.from(sp.childNodes)));
+    if(kind==='translation'||kind==='source'){
+      tmp.querySelectorAll('p,div,blockquote,ul,ol,li').forEach(el=>{ if(el.tagName==='LI')el.insertAdjacentText('afterbegin','• '); el.replaceWith(...Array.from(el.childNodes),document.createElement('br')); });
+    }
+    let out=tmp.innerHTML
+      .replace(/(?:\s|&nbsp;)*(?:<br\s*\/?>\s*){3,}/gi,'<br><br>')
+      .replace(/\s*(Translation|Source\s*\/\s*Verse\s*Text|Source\s*\/\s*Verse\s*Notes|Commentary)\s*·\s*[^<\n]{0,50}\s*$/i,'')
+      .replace(/\s+/g,' ')
+      .replace(/\s*<br\s*\/?>\s*/gi,'<br>')
+      .trim();
+    return out;
+  }
+  function hasCleanText(v){return strip(v).length>0;}
+  window.catenaPdfCommitClean=function(){
+    if(window.pdfInternalSync)return;
+    const page=q('pdfPage'), ed=q('pdfEditor');
+    if(!page||!ed||!ed.classList.contains('open')||!window.state)return;
+    if(q('pdfLiveSync')&&q('pdfLiveSync').checked===false)return;
+    window.pdfInternalSync=true;
+    try{
+      page.querySelectorAll('[data-key]').forEach(card=>{
+        const k=card.dataset.key; if(!k)return;
+        const e=state.entries[k]||(state.entries[k]=(typeof defaultEntry==='function'?defaultEntry(k):{id:k,commentaryHtml:'',sourceHtml:'',structured:{},footnotes:[],citations:[]}));
+        const layer=card.dataset.layer||((state.active&&state.active.translation)||'');
+        const isPassage=/[-,]/.test(String((k.split('|')[2]||'')));
+        const tr=card.querySelector('[data-field="translation"]');
+        if(tr){
+          const v=cleanEditableHtml(tr.innerHTML,'translation');
+          if(layer&&!isPassage&&typeof ensureTranslation==='function'){
+            const obj=ensureTranslation(layer); if(hasCleanText(v))obj[k]=v; else delete obj[k];
+          }
+          e.sourceHtml=v;
+        }
+        const src=card.querySelector('[data-field="source"]');
+        if(src){const v=cleanEditableHtml(src.innerHTML,'source'); if(hasCleanText(v))e.sourceHtml=v;}
+        const com=card.querySelector('[data-field="commentary"]');
+        if(com)e.commentaryHtml=cleanEditableHtml(com.innerHTML,'commentary');
+        card.querySelectorAll('[data-field="structured"][data-name]').forEach(sf=>{e.structured=e.structured||{};e.structured[sf.dataset.name]=cleanEditableHtml(sf.innerHTML,'commentary');});
+      });
+    }catch(err){console.warn('Clean PDF commit warning',err);}finally{window.pdfInternalSync=false;}
+    try{const k=typeof currentKey==='function'?currentKey():'';const e=k&&state.entries[k];if(e){const ce=q('commentaryEditor');if(ce&&document.activeElement!==ce)ce.innerHTML=e.commentaryHtml||'';const se=q('sourceEditor');if(se&&document.activeElement!==se)se.innerHTML=e.sourceHtml||'';}}catch(_){ }
+    try{typeof renderReader==='function'&&renderReader()}catch(_){ }
+    try{typeof renderChapterCommentaries==='function'&&renderChapterCommentaries()}catch(_){ }
+    try{typeof cuxUpdateStats==='function'&&cuxUpdateStats()}catch(_){ }
+    try{typeof saveSoon==='function'&&saveSoon()}catch(_){ }
+  };
+  window.debouncePdfSync=function(){clearTimeout(window.pdfSyncTimer);window.pdfSyncTimer=setTimeout(window.catenaPdfCommitClean,220);};
+
+  function finalInit(){
+    try{window.renderCanonToggles&&window.renderCanonToggles()}catch(_){ }
+    try{window.renderLibraryBooks&&window.renderLibraryBooks()}catch(_){ }
+    try{window.catenaEnhanceWholeBiblePanel&&window.catenaEnhanceWholeBiblePanel()}catch(_){ }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',finalInit);else finalInit();
+})();
+</script>
+
 </body>
 </html>
 
@@ -6181,5 +6776,1987 @@ function downloadPdfHTML(){
   }
   document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{installOriginalLanguageUi();try{window.renderChapterCommentaries();}catch(e){}},80);});
   setTimeout(()=>{installOriginalLanguageUi();try{window.renderChapterCommentaries();}catch(e){}},250);
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CATENA · ADAPTIVE UX LAYER  (responsive + themes + tools)
+     Final, last-loaded. Phone / tablet / desktop auto-layout,
+     PDF↔editor sync repair, theme switcher, global search, shortcuts.
+═════════════════════════════════════════════════════════════════ -->
+<style id="catena-adaptive-ux-css">
+:root{
+  --cux-top:56px;            /* top bar height            */
+  --cux-bottom:0px;          /* bottom nav height (phone) */
+  --cux-side:300px;          /* desktop sidebar width     */
+  --cux-edit:400px;          /* desktop editor width      */
+}
+
+/* ── THEME VARIANTS (all dark-family, safe over existing colors) ── */
+:root[data-theme="sepia"]{
+  --bg:#13100a;--bg2:#19150d;--panel:#1f1a10;--panel2:#272014;--panel3:#2f2616;
+  --card:#221c11;--border:#3a2f18;--border2:#4b3c20;--ink:#efe6d2;--ink2:#d9ccb1;
+  --muted:#a99a7c;--dim:#6f6450;--shadow:0 24px 60px rgba(20,12,0,.55);
+}
+:root[data-theme="slate"]{
+  --bg:#080b11;--bg2:#0c1018;--panel:#10151f;--panel2:#161d29;--panel3:#1d2536;
+  --card:#131925;--border:#232d3d;--border2:#2d384c;--ink:#e7e9ee;--ink2:#c3c8d2;
+  --muted:#8b93a4;--dim:#545d70;--shadow:0 24px 60px rgba(0,0,0,.6);
+}
+:root[data-theme="ink"]{
+  --bg:#000000;--bg2:#050608;--panel:#0a0c11;--panel2:#0f1218;--panel3:#161b24;
+  --card:#0c0f15;--border:#1c222d;--border2:#272e3a;--ink:#f1ede4;--ink2:#d0cabe;
+  --muted:#8b909b;--dim:#565c68;--shadow:0 24px 60px rgba(0,0,0,.75);
+}
+
+/* ── DESKTOP : flexible 3-pane grid (overrides the rigid 270/1fr/400) ── */
+@media (min-width:1181px){
+  #layout{
+    grid-template-columns:
+      minmax(232px, var(--cux-side))
+      minmax(0, 1fr)
+      minmax(340px, var(--cux-edit));
+  }
+}
+
+/* shared collapsible-chrome injected controls (hidden on desktop) */
+#cuxHamb,#cuxTopRight,#cuxNav,#cuxSheet,#cuxBackdrop,#cuxFocusExit{display:none}
+#cuxHamb{
+  border:1px solid var(--border2);background:var(--panel2);color:var(--ink2);
+  width:38px;height:38px;border-radius:10px;font-size:18px;align-items:center;
+  justify-content:center;flex:0 0 auto;cursor:pointer;padding:0;
+}
+#cuxHamb:hover{border-color:var(--gold);color:var(--gold3)}
+#cuxTopRight{align-items:center;gap:6px;margin-left:auto}
+#cuxTopRight .cux-ico{
+  width:38px;height:38px;padding:0;justify-content:center;font-size:16px;border-radius:10px;
+}
+#cuxLiveDot{font-size:11px;color:var(--dim);letter-spacing:.02em;white-space:nowrap}
+
+/* ════════════ TABLET (821–1180): reader + editor, sidebar = drawer ════════════ */
+@media (max-width:1180px){
+  #cuxHamb{display:inline-flex}
+  #cuxTopRight{display:inline-flex}
+  #topbar .topbar-group{display:none!important}
+  #topbar .topspacer{display:none!important}
+  #topbar{gap:8px;padding:0 12px}
+
+  /* re-enable the editor that the old CSS hid below 1100px */
+  #rightPanel{display:flex!important}
+
+  /* sidebar becomes an off-canvas drawer under the top bar
+     (display:flex!important overrides a legacy `#sidebar{display:none}` patch) */
+  #sidebar{
+    display:flex!important;flex-direction:column!important;
+    position:fixed;top:var(--cux-top);left:0;bottom:0;height:auto!important;max-height:none!important;
+    width:min(86vw,330px);z-index:96;border-right:1px solid var(--border);
+    transform:translateX(-104%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    will-change:transform;
+  }
+  /* keep the drawer's own book-list scrollable now that it isn't capped at 300px */
+  #sidebar #bookList{flex:1 1 auto;min-height:0;max-height:none}
+  body.cux-drawer #sidebar{transform:none;box-shadow:14px 0 50px rgba(0,0,0,.55)}
+
+  #cuxBackdrop{
+    display:block;position:fixed;inset:0;z-index:95;background:rgba(3,5,9,.58);
+    backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:.24s;
+  }
+  body.cux-drawer #cuxBackdrop,body.cux-sheet #cuxBackdrop{opacity:1;visibility:visible}
+}
+
+@media (min-width:821px) and (max-width:1180px){
+  #layout{grid-template-columns:minmax(0,1fr) clamp(320px,37vw,400px)!important}
+}
+
+/* ════════════ PHONE (≤820): single pane, drawer + bottom nav ════════════ */
+@media (max-width:820px){
+  html,body{height:100%!important;overflow:hidden!important}
+  body{--cux-bottom:calc(58px + env(safe-area-inset-bottom,0px))}
+
+  #layout{
+    display:grid!important;grid-template-columns:1fr!important;
+    height:calc(100dvh - var(--cux-top) - var(--cux-bottom))!important;
+    height:calc(100vh - var(--cux-top) - var(--cux-bottom));
+  }
+  #reader,#rightPanel{grid-column:1!important;grid-row:1!important;display:none!important}
+  body[data-pane="read"]  #reader     {display:flex!important}
+  body[data-pane="write"] #rightPanel {display:flex!important}
+
+  #reader{padding:22px 16px 40px!important}
+  .chapter-title{font-size:clamp(28px,8vw,40px)!important}
+  #activePill{margin-bottom:18px!important}
+  #panelBody{padding:12px 12px 40px!important}
+
+  /* bottom navigation */
+  #cuxNav{
+    display:grid;position:fixed;left:0;right:0;bottom:0;z-index:90;
+    grid-template-columns:repeat(4,1fr);
+    background:rgba(8,13,23,.985);border-top:1px solid var(--border);
+    backdrop-filter:blur(16px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    box-shadow:0 -8px 26px rgba(0,0,0,.4);
+  }
+  :root[data-theme="ink"] #cuxNav{background:rgba(2,3,5,.99)}
+  .cux-nav-btn{
+    border:0;background:transparent;color:var(--muted);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:9px 0 8px;font-family:var(--ui);font-size:10px;letter-spacing:.06em;
+    text-transform:uppercase;position:relative;transition:.15s;
+  }
+  .cux-nav-btn .ic{font-size:19px;line-height:1}
+  .cux-nav-btn[aria-current="true"]{color:var(--gold2)}
+  .cux-nav-btn[aria-current="true"]::before{
+    content:"";position:absolute;top:0;left:24%;right:24%;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .cux-nav-btn .cux-badge{
+    position:absolute;top:5px;right:calc(50% - 20px);width:7px;height:7px;border-radius:50%;
+    background:var(--gold2);opacity:0;transition:.2s;box-shadow:0 0 0 2px var(--panel)}
+  body.cux-has-verse .cux-nav-btn[data-pane="write"] .cux-badge{opacity:1}
+
+  /* full-screen modals on phone */
+  .modal-overlay{padding:0!important}
+  .modal-box,.modal-box.narrow,.modal-box.wide{
+    width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;
+    height:100vh;border-radius:0!important}
+  .modal-head{padding:13px 14px!important}
+  .modal-head h2{font-size:19px!important}
+  .modal-body{padding:14px!important}
+  .settings-layout{grid-template-columns:1fr!important}
+  .g2,.g3{grid-template-columns:1fr!important}
+  .import-grid,.book-form-grid,.fetch-grid{grid-template-columns:1fr!important}
+
+  /* PDF studio fits the phone */
+  #pdfEditor .pdf-shell{padding:10px!important}
+  #pdfEditor #pdfPage{max-width:100%!important;padding:20px 16px!important;border-radius:6px!important}
+  #pdfEditor .pdf-preset-cards{grid-template-columns:1fr 1fr!important}
+  #pdfEditor .pdf-studio-actions{flex-wrap:wrap!important;gap:6px!important}
+  #pdfEditor .pdf-studio-actions label,#pdfEditor .pdf-studio-actions select{font-size:12px!important}
+
+  /* bigger touch targets */
+  button.sm{padding:8px 12px!important}
+  .ch-btn{padding:11px 0!important;font-size:14px!important}
+  .tb{min-width:36px!important;height:34px!important}
+  .book-row{padding:12px 11px!important;font-size:17px!important}
+  .rp-tab{padding:10px 12px!important}
+  .verse-num{font-size:12px!important}
+  .verse-flow{line-height:1.85!important}
+}
+@media (max-width:480px){#pdfEditor .pdf-preset-cards{grid-template-columns:1fr!important}}
+
+/* keep the chapter nav clear of the bottom bar inside its own scroll */
+@media (max-width:820px){.chapter-nav{margin-bottom:8px}}
+
+/* ════════════ FOCUS / DISTRACTION-FREE MODE ════════════ */
+body.cux-focus.is-desktop #layout{grid-template-columns:0 minmax(0,1fr) 0!important}
+body.cux-focus.is-desktop #sidebar,
+body.cux-focus.is-desktop #rightPanel{display:none!important}
+body.cux-focus.is-tablet #sidebar,
+body.cux-focus.is-tablet #rightPanel{display:none!important}
+body.cux-focus.is-tablet #layout{grid-template-columns:1fr!important}
+body.cux-focus #cuxNav{display:none!important}
+body.cux-focus.is-phone #layout{height:calc(100dvh - var(--cux-top))!important}
+body.cux-focus.is-phone #rightPanel{display:none!important}
+body.cux-focus.is-phone[data-pane="write"] #reader{display:flex!important}
+body.cux-focus #reader{padding-left:max(18px,8vw)!important;padding-right:max(18px,8vw)!important}
+#cuxFocusExit{
+  position:fixed;top:calc(var(--cux-top) + 10px);right:14px;z-index:215;
+  border:1px solid var(--border2);background:var(--panel2);color:var(--gold3);
+  border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;
+  box-shadow:var(--shadow);align-items:center;gap:6px}
+body.cux-focus #cuxFocusExit{display:inline-flex}
+
+/* ════════════ "MORE" SHEET ════════════ */
+#cuxSheet{
+  position:fixed;z-index:97;background:var(--panel2);border:1px solid var(--border2);
+  box-shadow:var(--shadow);padding:7px;display:none;flex-direction:column;gap:2px;
+}
+body.cux-sheet #cuxSheet{display:flex}
+.cux-sheet-row{
+  display:flex;align-items:center;gap:11px;width:100%;text-align:left;justify-content:flex-start;
+  background:transparent;border:1px solid transparent;border-radius:10px;color:var(--ink2);
+  padding:11px 12px;font-size:15px;cursor:pointer;font-family:var(--serif)}
+.cux-sheet-row:hover{background:var(--panel3);border-color:var(--border);color:var(--gold3)}
+.cux-sheet-row .ic{font-size:17px;width:22px;text-align:center;flex:0 0 auto}
+.cux-sheet-sep{height:1px;background:var(--border);margin:5px 6px}
+.cux-sheet-label{font-family:var(--ui);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:6px 10px 3px}
+@media (min-width:821px){#cuxSheet{top:60px;right:10px;width:284px;border-radius:14px;max-height:78vh;overflow:auto}}
+@media (max-width:820px){
+  #cuxSheet{left:0;right:0;bottom:0;width:auto;border-radius:20px 20px 0 0;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:80dvh;overflow:auto;
+    border-bottom:0;animation:cuxSheetUp .26s cubic-bezier(.2,.7,.3,1)}
+  @keyframes cuxSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+}
+.cux-theme-swatches{display:flex;gap:8px;padding:4px 10px 8px}
+.cux-sw{flex:1;height:34px;border-radius:9px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden}
+.cux-sw[aria-current="true"]{border-color:var(--gold2)}
+.cux-sw span{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;color:#d8d0c4;font-family:var(--ui);letter-spacing:.06em}
+
+/* ════════════ GLOBAL SEARCH / JUMP PALETTE ════════════ */
+#cuxSearch{
+  position:fixed;inset:0;z-index:300;display:none;flex-direction:column;align-items:center;
+  background:rgba(3,5,9,.62);backdrop-filter:blur(4px);padding:14vh 14px 14px;
+}
+body.cux-search #cuxSearch{display:flex}
+@media (max-width:820px){#cuxSearch{padding:0}}
+.cux-search-box{
+  width:min(660px,100%);background:var(--panel);border:1px solid var(--border2);
+  border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;max-height:74vh}
+@media (max-width:820px){.cux-search-box{max-height:100dvh;height:100dvh;border-radius:0;width:100%}}
+.cux-search-head{display:flex;align-items:center;gap:10px;padding:13px 15px;border-bottom:1px solid var(--border)}
+.cux-search-head .sic{font-size:18px;color:var(--gold2)}
+#cuxSearchInput{border:0;background:transparent;font-size:18px;padding:4px 0;font-family:var(--serif)}
+#cuxSearchInput:focus{box-shadow:none}
+.cux-search-hint{font-size:11px;color:var(--dim);font-family:var(--ui);letter-spacing:.04em;white-space:nowrap}
+.cux-search-results{overflow:auto;padding:6px}
+.cux-res-group{font-family:var(--ui);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:.7;padding:11px 12px 4px}
+.cux-res{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.cux-res:hover,.cux-res.cux-active{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.28)}
+.cux-res-ref{font-family:var(--title);font-size:13px;color:var(--gold2);letter-spacing:.04em}
+.cux-res-snip{font-family:var(--serif);font-size:14px;color:var(--ink2);line-height:1.5;opacity:.9;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cux-res-snip mark{background:rgba(201,168,76,.32);color:var(--gold3);border-radius:3px;padding:0 1px}
+.cux-search-empty{padding:26px 16px;color:var(--dim);font-style:italic;font-family:var(--serif);text-align:center}
+
+/* word-count chip under the commentary editor */
+#cuxStats{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 2px;
+  font-family:var(--ui);font-size:11px;letter-spacing:.05em;color:var(--dim)}
+#cuxStats b{color:var(--gold2);font-weight:600}
+#cuxStats .cux-prog{flex:1;min-width:80px;height:4px;border-radius:3px;background:var(--panel3);overflow:hidden;max-width:160px}
+#cuxStats .cux-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width .3s}
+
+/* save flash (reuse if app lacks it) */
+@keyframes cuxSaveFlash{0%{box-shadow:0 0 0 0 rgba(201,168,76,.5)}100%{box-shadow:0 0 0 12px rgba(201,168,76,0)}}
+.cux-saved{animation:cuxSaveFlash .6s ease-out}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion:reduce){
+  #sidebar,#cuxBackdrop,#cuxSheet,#layout{transition:none!important;animation:none!important}
+}
+</style>
+<script id="catena-adaptive-ux-js">
+(function(){
+  'use strict';
+  if(window.__catenaAdaptiveUX) return; window.__catenaAdaptiveUX=true;
+  // The app declares `state` with `let`, so it is NOT on window. Some earlier
+  // patches set window.state to a stray {}. Point it at the real object.
+  try{ if(typeof state!=='undefined' && state) window.state=state; }catch(_){}
+  const $=id=>document.getElementById(id);
+  const E=s=>{try{return typeof esc==='function'?esc(s):String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}catch(_){return String(s??'');}};
+  const isEditing=()=>{const a=document.activeElement;return a&&(a.isContentEditable||/^(input|textarea|select)$/i.test(a.tagName));};
+  const strip=html=>{const d=document.createElement('div');d.innerHTML=html||'';return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  const hasText=html=>strip(html).length>0;
+
+  /* ── THEME ──────────────────────────────────────────────── */
+  const THEMES=['twilight','sepia','slate','ink'];
+  const TLABEL={twilight:'Twilight',sepia:'Sepia',slate:'Slate',ink:'Ink'};
+  function applyTheme(name){
+    name=THEMES.includes(name)?name:'twilight';
+    if(name==='twilight') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme',name);
+    try{localStorage.setItem('catena:theme',name);}catch(_){}
+    document.querySelectorAll('.cux-sw').forEach(s=>s.setAttribute('aria-current',s.dataset.theme===name?'true':'false'));
+  }
+  function currentTheme(){try{return localStorage.getItem('catena:theme')||'twilight';}catch(_){return 'twilight';}}
+  function cycleTheme(){const i=THEMES.indexOf(currentTheme());const n=THEMES[(i+1)%THEMES.length];applyTheme(n);try{toast&&toast('Theme · '+TLABEL[n]);}catch(_){}}
+  applyTheme(currentTheme()); // apply ASAP to limit flash
+
+  /* ── OVERLAY STATE ──────────────────────────────────────── */
+  function openDrawer(){document.body.classList.add('cux-drawer');closeSheet();}
+  function closeDrawer(){document.body.classList.remove('cux-drawer');}
+  function toggleDrawer(){document.body.classList.toggle('cux-drawer');if(document.body.classList.contains('cux-drawer'))closeSheet();}
+  function openSheet(){document.body.classList.add('cux-sheet');closeDrawer();}
+  function closeSheet(){document.body.classList.remove('cux-sheet');}
+  function toggleSheet(){document.body.classList.toggle('cux-sheet');if(document.body.classList.contains('cux-sheet'))closeDrawer();}
+  function setPane(p){
+    if(!document.body.classList.contains('is-phone'))return;
+    document.body.setAttribute('data-pane',p);
+    document.querySelectorAll('.cux-nav-btn[data-pane]').forEach(b=>b.setAttribute('aria-current',b.dataset.pane===p?'true':'false'));
+  }
+
+  /* ── RESPONSIVE MODE ────────────────────────────────────── */
+  const mqPhone=matchMedia('(max-width:820px)');
+  const mqTablet=matchMedia('(min-width:821px) and (max-width:1180px)');
+  function applyMode(){
+    const phone=mqPhone.matches, tablet=mqTablet.matches, desktop=!phone&&!tablet;
+    document.body.classList.toggle('is-phone',phone);
+    document.body.classList.toggle('is-tablet',tablet);
+    document.body.classList.toggle('is-desktop',desktop);
+    const L=$('layout');
+    if(L && !document.body.classList.contains('cux-focus')) L.style.gridTemplateColumns='';
+    if(desktop){closeDrawer();closeSheet();document.body.removeAttribute('data-pane');}
+    else if(tablet){document.body.removeAttribute('data-pane');}
+    else if(phone && !document.body.getAttribute('data-pane')) setPane('read');
+  }
+  (mqPhone.addEventListener?mqPhone.addEventListener('change',applyMode):mqPhone.addListener(applyMode));
+  (mqTablet.addEventListener?mqTablet.addEventListener('change',applyMode):mqTablet.addListener(applyMode));
+
+  /* ── FOCUS MODE (replaces the inline-grid version) ──────── */
+  window.toggleFocus=function(){
+    document.body.classList.toggle('cux-focus');
+    const L=$('layout'); if(L) L.style.gridTemplateColumns='';
+    if(document.body.classList.contains('cux-focus') && document.body.classList.contains('is-phone')) setPane('read');
+    applyMode();
+  };
+
+  /* ── GLOBAL SEARCH / JUMP ───────────────────────────────── */
+  let cuxItems=[], cuxActive=-1;
+  function cuxPush(o){cuxItems.push(o);return cuxItems.length-1;}
+  function cuxResolveBook(name){
+    if(!name)return null; const nl=name.trim().replace(/\.+$/,'').toLowerCase();
+    const meta=(typeof BOOK_META!=='undefined')?BOOK_META:[];
+    let h=meta.find(m=>m.book.toLowerCase()===nl); if(h)return h.book;
+    try{for(const ab in BOOK_ABBR){if(ab.toLowerCase()===nl)return BOOK_ABBR[ab];}}catch(_){}
+    h=meta.find(m=>m.book.toLowerCase().startsWith(nl)); if(h)return h.book;
+    const c=nl.replace(/\s+/g,''); h=meta.find(m=>m.book.toLowerCase().replace(/\s+/g,'').startsWith(c)); if(h)return h.book;
+    return null;
+  }
+  function cuxParseRef(q){
+    const m=/^\s*([1-4]?\s*[A-Za-z][A-Za-z.\s]*?)\s+(\d+)(?::\s*(\d+))?\s*$/.exec(q); if(!m)return null;
+    const book=cuxResolveBook(m[1]); if(!book)return null;
+    let ch=Math.max(1,+m[2]||1); try{ch=Math.min(ch,chapterCount(book));}catch(_){}
+    return {book,chapter:ch,verse:m[3]?Math.max(1,+m[3]):1};
+  }
+  function cuxSnippet(text,at,q){
+    if(at<0)at=0; const s=Math.max(0,at-42), e=Math.min(text.length,at+q.length+92);
+    return (s>0?'… ':'')+E(text.slice(s,at))+'<mark>'+E(text.slice(at,at+q.length))+'</mark>'+E(text.slice(at+q.length,e))+(e<text.length?' …':'');
+  }
+  function cuxResHtml(i,ref,snip,snipHtml){
+    return `<div class="cux-res" data-i="${i}"><span class="cux-res-ref">${E(ref)}</span><span class="cux-res-snip">${snipHtml?snip:E(snip)}</span></div>`;
+  }
+  function cuxRenderSearch(q){
+    const wrap=$('cuxSearchResults'); if(!wrap)return;
+    cuxItems=[]; cuxActive=-1; q=(q||'').trim(); const ql=q.toLowerCase();
+    if(!q){wrap.innerHTML='<div class="cux-search-empty">Type a reference like <b>John 3:16</b>, a book name, or any words from your commentary or scripture text.</div>';return;}
+    let html='';
+    const ref=cuxParseRef(q);
+    if(ref){const id=cuxPush({book:ref.book,ch:ref.chapter,v:ref.verse,kind:'ref'});
+      html+='<div class="cux-res-group">Go to reference</div>'+cuxResHtml(id,`${ref.book} ${ref.chapter}:${ref.verse}`,'Open this verse');}
+    const books=((typeof BOOK_META!=='undefined')?BOOK_META:[]).filter(m=>m.book.toLowerCase().includes(ql)).slice(0,8);
+    if(books.length){html+='<div class="cux-res-group">Books</div>';
+      books.forEach(m=>{const id=cuxPush({book:m.book,ch:1,v:1,kind:'book'});html+=cuxResHtml(id,m.book,(m.section||'Book')+' · '+m.chapters+' ch.');});}
+    try{
+      const eHits=[]; const ent=(window.state&&state.entries)||{};
+      for(const k in ent){ if(eHits.length>=60)break; const e=ent[k]; if(!e)continue;
+        const blob=strip(e.commentaryHtml)+' '+strip(e.sourceHtml)+' '+(e.tags||'')+' '+Object.values(e.structured||{}).map(strip).join(' ');
+        const at=blob.toLowerCase().indexOf(ql);
+        if(at>=0){const p=k.split('|');eHits.push({book:p[0],ch:+p[1],v:+p[2],snip:cuxSnippet(blob,at,q)});}
+      }
+      if(eHits.length){html+='<div class="cux-res-group">In your commentary</div>';
+        eHits.slice(0,30).forEach(h=>{const id=cuxPush({book:h.book,ch:h.ch,v:h.v,kind:'commentary'});html+=cuxResHtml(id,`${h.book} ${h.ch}:${h.v}`,h.snip,true);});}
+    }catch(_){}
+    try{
+      const layer=window.state&&state.active&&state.active.translation; const obj=(layer&&state.translations[layer])||null;
+      if(obj){const sHits=[]; for(const k in obj){ if(sHits.length>=20)break; const t=String(obj[k]||''); const at=t.toLowerCase().indexOf(ql);
+        if(at>=0){const p=k.split('|');sHits.push({book:p[0],ch:+p[1],v:+p[2],snip:cuxSnippet(t,at,q)});}}
+        if(sHits.length){html+=`<div class="cux-res-group">In ${E(layer)}</div>`;
+          sHits.forEach(h=>{const id=cuxPush({book:h.book,ch:h.ch,v:h.v,kind:'ref'});html+=cuxResHtml(id,`${h.book} ${h.ch}:${h.v}`,h.snip,true);});}}
+    }catch(_){}
+    wrap.innerHTML=html||'<div class="cux-search-empty">No matches found.</div>';
+    wrap.querySelectorAll('.cux-res').forEach(el=>el.onclick=()=>cuxGo(+el.dataset.i));
+  }
+  function cuxMove(d){
+    const els=[...document.querySelectorAll('#cuxSearchResults .cux-res')]; if(!els.length)return;
+    cuxActive=(cuxActive+d+els.length)%els.length;
+    els.forEach((el,i)=>el.classList.toggle('cux-active',i===cuxActive));
+    els[cuxActive].scrollIntoView({block:'nearest'});
+  }
+  function cuxJumpTo(book,ch,v){
+    try{
+      const meta=((typeof BOOK_META!=='undefined')?BOOK_META:[]).find(m=>m.book===book);
+      if(meta&&window.state&&state.active) state.active.tab=meta.cat;
+      state.active.book=book;
+      let mx=ch||1; try{mx=Math.min(mx,chapterCount(book));}catch(_){}
+      state.active.chapter=Math.max(1,mx); state.active.verse=Math.max(1,v||1);
+      if(typeof renderAll==='function') renderAll();
+      if(typeof saveSoon==='function') saveSoon();
+    }catch(e){console.warn('Catena jump failed',e);}
+  }
+  function cuxGo(i){
+    const it=cuxItems[i]; if(!it)return;
+    cuxJumpTo(it.book,it.ch,it.v); closeSearch();
+    if(document.body.classList.contains('is-phone')) setPane(it.kind==='commentary'?'write':'read');
+  }
+  function openSearch(){document.body.classList.add('cux-search');closeSheet();closeDrawer();const i=$('cuxSearchInput');if(i){i.value='';cuxRenderSearch('');setTimeout(()=>i.focus(),30);}}
+  function closeSearch(){document.body.classList.remove('cux-search');}
+  function toggleSearch(){document.body.classList.contains('cux-search')?closeSearch():openSearch();}
+
+  /* ── PDF ↔ EDITOR : robust save-back (fixes broken live sync) ── */
+  function cuxActiveLayer(){try{return typeof catenaActiveLayerOrBlank==='function'?catenaActiveLayerOrBlank():(window.state&&state.active&&state.active.translation)||'';}catch(_){return '';}}
+  function cuxPdfCommit(){
+    if(window.pdfInternalSync) return;
+    const page=$('pdfPage'); const ed=$('pdfEditor');
+    if(!page||!ed||!ed.classList.contains('open')||!window.state) return;
+    if($('pdfLiveSync') && $('pdfLiveSync').checked===false) return;
+    window.pdfInternalSync=true;
+    try{
+      page.querySelectorAll('[data-key]').forEach(card=>{   // matches .pdf-verse-card OR .pdf-linked-entry
+        const k=card.dataset.key; if(!k)return;
+        const e=state.entries[k]||(state.entries[k]=(typeof defaultEntry==='function'?defaultEntry(k):{id:k,commentaryHtml:'',sourceHtml:'',structured:{},footnotes:[],citations:[]}));
+        const layer=card.dataset.layer||cuxActiveLayer();
+        const isPassage=/[-,]/.test(String(k.split('|')[2]||''));
+        const tr=card.querySelector('[data-field="translation"]');
+        if(tr){const v=tr.innerHTML.trim(); if(layer&&!isPassage&&typeof ensureTranslation==='function'){const obj=ensureTranslation(layer); if(hasText(v))obj[k]=v; else delete obj[k];} e.sourceHtml=v;}
+        const src=card.querySelector('[data-field="source"]'); if(src&&hasText(src.innerHTML))e.sourceHtml=src.innerHTML.trim();
+        const com=card.querySelector('[data-field="commentary"]'); if(com)e.commentaryHtml=com.innerHTML.trim();
+        card.querySelectorAll('[data-field="structured"][data-name]').forEach(sf=>{e.structured=e.structured||{};e.structured[sf.dataset.name]=sf.innerHTML.trim();});
+      });
+    }catch(err){console.warn('PDF commit warning',err);}
+    window.pdfInternalSync=false;
+    // mirror into the normal editor + reader without stealing the user's caret
+    try{
+      const k=typeof currentKey==='function'?currentKey():'';
+      const e=k&&state.entries[k];
+      if(e){
+        const ce=$('commentaryEditor'); if(ce&&document.activeElement!==ce) ce.innerHTML=e.commentaryHtml||'';
+        const se=$('sourceEditor'); if(se&&document.activeElement!==se) se.innerHTML=e.sourceHtml||'';
+      }
+    }catch(_){}
+    try{typeof renderReader==='function'&&renderReader();}catch(_){}
+    try{typeof renderChapterCommentaries==='function'&&renderChapterCommentaries();}catch(_){}
+    try{typeof cuxUpdateStats==='function'&&cuxUpdateStats();}catch(_){}
+    try{typeof saveSoon==='function'&&saveSoon();}catch(_){}
+  }
+  window.debouncePdfSync=function(){clearTimeout(window.pdfSyncTimer);window.pdfSyncTimer=setTimeout(cuxPdfCommit,300);};
+  // opening the PDF studio should also dismiss mobile chrome
+  const _openPdf=window.openPdfEditor;
+  window.openPdfEditor=function(){closeDrawer();closeSheet();closeSearch();try{if(typeof _openPdf==='function')return _openPdf.apply(this,arguments);}catch(e){console.warn(e);}$('pdfEditor')&&$('pdfEditor').classList.add('open');};
+
+  /* ── LIVE STATS / WORD COUNT ────────────────────────────── */
+  window.cuxUpdateStats=function(){
+    const chip=$('cuxStats'); if(!chip)return;
+    let e=null; try{e=typeof currentEntry==='function'?currentEntry():null;}catch(_){}
+    const txt=e?strip(e.commentaryHtml):''; const words=txt?txt.split(/\s+/).filter(Boolean).length:0;
+    let total=0,done=0; const book=(window.state&&state.active&&state.active.book)||'';
+    try{const ent=state.entries||{};for(const k in ent){if(k.split('|')[0]===book){if(strip(ent[k].commentaryHtml).length){total++;if((ent[k].status||'')==='Complete')done++;}}}}catch(_){}
+    const pct=total?Math.round(done/total*100):0;
+    const set=(sel,val)=>{const n=chip.querySelector(sel);if(n)n.textContent=val;};
+    set('[data-w]',words); set('[data-c]',txt.length); set('[data-b]',book); set('[data-d]',done); set('[data-t]',total);
+    const bar=chip.querySelector('.cux-prog i'); if(bar)bar.style.width=pct+'%';
+    document.body.classList.toggle('cux-has-verse',!!txt);
+  };
+  // refresh stats whenever the editor reloads
+  const _loadEntry=window.loadEntryEditor;
+  window.loadEntryEditor=function(){const r=(typeof _loadEntry==='function')?_loadEntry.apply(this,arguments):undefined;try{window.cuxUpdateStats();}catch(_){}return r;};
+
+  /* ── UI INJECTION ───────────────────────────────────────── */
+  function buildUI(){
+    if($('cuxNav')) return; // once
+    const tb=$('topbar');
+    if(tb){
+      const hb=document.createElement('button');
+      hb.id='cuxHamb'; hb.type='button'; hb.title='Books & navigation (menu)'; hb.setAttribute('aria-label','Open navigation'); hb.textContent='☰';
+      hb.onclick=toggleDrawer; tb.insertBefore(hb,tb.firstChild);
+
+      const right=document.createElement('div');
+      right.id='cuxTopRight';
+      right.innerHTML=`
+        <button class="sm cux-ico" id="cuxSearchBtn" title="Search / jump (Ctrl-K)" aria-label="Search">🔍</button>
+        <button class="sm gold cux-ico" id="cuxSaveBtn" title="Save (Ctrl-S)" aria-label="Save">💾</button>
+        <button class="sm cux-ico" id="cuxMoreBtn" title="More" aria-label="More options">⋯</button>`;
+      tb.appendChild(right);
+      $('cuxSearchBtn').onclick=toggleSearch;
+      $('cuxSaveBtn').onclick=()=>{try{typeof manualSave==='function'?manualSave():null;}catch(_){}};
+      $('cuxMoreBtn').onclick=toggleSheet;
+    }
+
+    const backdrop=document.createElement('div'); backdrop.id='cuxBackdrop';
+    backdrop.onclick=()=>{closeDrawer();closeSheet();};
+    document.body.appendChild(backdrop);
+
+    // bottom nav (phone)
+    const nav=document.createElement('nav'); nav.id='cuxNav'; nav.setAttribute('aria-label','Primary');
+    nav.innerHTML=`
+      <button class="cux-nav-btn" data-act="books"><span class="ic">📚</span>Books</button>
+      <button class="cux-nav-btn" data-pane="read"><span class="ic">📖</span>Read</button>
+      <button class="cux-nav-btn" data-pane="write"><span class="ic">✍️</span><span class="cux-badge"></span>Write</button>
+      <button class="cux-nav-btn" data-act="pdf"><span class="ic">🖨️</span>PDF</button>`;
+    document.body.appendChild(nav);
+    nav.querySelector('[data-act="books"]').onclick=openDrawer;
+    nav.querySelector('[data-pane="read"]').onclick=()=>setPane('read');
+    nav.querySelector('[data-pane="write"]').onclick=()=>setPane('write');
+    nav.querySelector('[data-act="pdf"]').onclick=()=>window.openPdfEditor();
+
+    // "more" sheet
+    const sheet=document.createElement('div'); sheet.id='cuxSheet';
+    sheet.innerHTML=`
+      <div class="cux-sheet-label">Workspace</div>
+      <button class="cux-sheet-row" data-act="library"><span class="ic">📚</span>Library — books & canon</button>
+      <button class="cux-sheet-row" data-act="trans"><span class="ic">⚙</span>Translations & layers</button>
+      <button class="cux-sheet-row" data-act="toml"><span class="ic">⬆</span>Import TOML</button>
+      <button class="cux-sheet-row" data-act="export"><span class="ic">📄</span>Export</button>
+      <button class="cux-sheet-row" data-act="pdf"><span class="ic">🖨️</span>PDF studio</button>
+      <div class="cux-sheet-sep"></div>
+      <div class="cux-sheet-label">View &amp; tools</div>
+      <button class="cux-sheet-row" data-act="search"><span class="ic">🔍</span>Search &amp; jump to verse</button>
+      <button class="cux-sheet-row" data-act="focus"><span class="ic">🧘</span>Focus / reading mode</button>
+      <div class="cux-sheet-label" style="padding-top:2px">Theme</div>
+      <div class="cux-theme-swatches">
+        <div class="cux-sw" data-theme="twilight" style="background:linear-gradient(135deg,#0b1120,#141d35)" title="Twilight"><span>Twilight</span></div>
+        <div class="cux-sw" data-theme="sepia" style="background:linear-gradient(135deg,#1f1a10,#2f2616)" title="Sepia"><span>Sepia</span></div>
+        <div class="cux-sw" data-theme="slate" style="background:linear-gradient(135deg,#10151f,#1d2536)" title="Slate"><span>Slate</span></div>
+        <div class="cux-sw" data-theme="ink" style="background:linear-gradient(135deg,#0a0c11,#161b24)" title="Ink"><span>Ink</span></div>
+      </div>
+      <div class="cux-sheet-sep"></div>
+      <button class="cux-sheet-row" data-act="settings"><span class="ic">⚙</span>Settings</button>
+      <button class="cux-sheet-row" data-act="save"><span class="ic">💾</span>Save now</button>
+      <button class="cux-sheet-row" data-act="backup"><span class="ic">💿</span>Download backup (.json)</button>`;
+    document.body.appendChild(sheet);
+    const acts={
+      library:()=>openModal('libraryModal'), trans:()=>openModal('translationModal'),
+      toml:()=>openModal('tomlModal'), export:()=>openModal('exportModal'),
+      pdf:()=>window.openPdfEditor(), settings:()=>openModal('settingsModal'),
+      search:()=>toggleSearch(), focus:()=>window.toggleFocus(), theme:()=>cycleTheme(),
+      save:()=>{try{typeof manualSave==='function'&&manualSave();}catch(_){}},
+      backup:()=>{try{typeof exportBackup==='function'?exportBackup():(typeof toast==='function'&&toast('Backup unavailable'));}catch(_){}}
+    };
+    sheet.addEventListener('click',ev=>{
+      const sw=ev.target.closest('.cux-sw'); if(sw){applyTheme(sw.dataset.theme);return;}
+      const row=ev.target.closest('.cux-sheet-row'); if(!row)return;
+      closeSheet(); const fn=acts[row.dataset.act]; if(fn) setTimeout(fn,10);
+    });
+
+    // focus exit
+    const fx=document.createElement('button'); fx.id='cuxFocusExit'; fx.type='button'; fx.innerHTML='✕ Exit focus';
+    fx.onclick=()=>window.toggleFocus(); document.body.appendChild(fx);
+
+    // search palette
+    const sp=document.createElement('div'); sp.id='cuxSearch';
+    sp.innerHTML=`
+      <div class="cux-search-box">
+        <div class="cux-search-head">
+          <span class="sic">🔍</span>
+          <input id="cuxSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="Search references, books, commentary…">
+          <span class="cux-search-hint">↵ open · esc close</span>
+        </div>
+        <div class="cux-search-results" id="cuxSearchResults"></div>
+      </div>`;
+    document.body.appendChild(sp);
+    sp.addEventListener('mousedown',ev=>{if(ev.target===sp)closeSearch();});
+    const si=$('cuxSearchInput');
+    si.addEventListener('input',()=>cuxRenderSearch(si.value));
+    si.addEventListener('keydown',ev=>{
+      if(ev.key==='ArrowDown'){ev.preventDefault();cuxMove(1);}
+      else if(ev.key==='ArrowUp'){ev.preventDefault();cuxMove(-1);}
+      else if(ev.key==='Enter'){ev.preventDefault();cuxGo(cuxActive>=0?cuxActive:0);}
+      else if(ev.key==='Escape'){ev.preventDefault();closeSearch();}
+    });
+
+    // word-count chip under the commentary editor
+    const ce=$('commentaryEditor');
+    if(ce && !$('cuxStats')){
+      const chip=document.createElement('div'); chip.id='cuxStats';
+      chip.innerHTML=`<span><b data-w>0</b> words</span><span><b data-c>0</b> chars</span>
+        <span class="cux-prog"><i></i></span>
+        <span><b data-d>0</b>/<b data-t>0</b> complete in <b data-b></b></span>`;
+      ce.insertAdjacentElement('afterend',chip);
+      ce.addEventListener('input',()=>window.cuxUpdateStats());
+    }
+
+    applyTheme(currentTheme()); // re-sync swatch highlight now that they exist
+  }
+
+  /* ── DELEGATED INTERACTIONS (capture phase: the app's chapter buttons
+        call stopPropagation, so a bubble listener would never see them) ── */
+  document.addEventListener('click',ev=>{
+    const t=ev.target; if(!t||!t.closest)return;
+    // picking a chapter (or a single-chapter book) in the drawer → show the reader
+    if(t.closest('#sidebar') && t.closest('.ch-btn')){
+      setTimeout(()=>{closeDrawer(); setPane('read');},0); return;
+    }
+    // tapping a verse in the reader on phone → jump to its editor
+    if(document.body.classList.contains('is-phone') && t.closest('#reader') &&
+       t.closest('.verse-span,.verse-para,.pt-num,.il-vnum,.stacked-head')){
+      setTimeout(()=>setPane('write'),0);
+    }
+  },true);
+
+  /* ── KEYBOARD SHORTCUTS ─────────────────────────────────── */
+  document.addEventListener('keydown',e=>{
+    const mod=e.ctrlKey||e.metaKey;
+    if(mod && (e.key==='k'||e.key==='K')){e.preventDefault();toggleSearch();return;}
+    if(mod && (e.key==='s'||e.key==='S')){e.preventDefault();try{typeof manualSave==='function'&&manualSave();}catch(_){}return;}
+    if(e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && !isEditing()){
+      e.preventDefault();
+      if(e.key==='ArrowLeft'){typeof prevChapter==='function'&&prevChapter();}
+      else{typeof nextChapter==='function'&&nextChapter();}
+      return;
+    }
+    if(e.key==='Escape'){
+      if(document.body.classList.contains('cux-search'))closeSearch();
+      else if(document.body.classList.contains('cux-sheet'))closeSheet();
+      else if(document.body.classList.contains('cux-drawer'))closeDrawer();
+    }
+  });
+
+  /* ── BOOT ───────────────────────────────────────────────── */
+  function boot(){ buildUI(); applyMode(); try{window.cuxUpdateStats();}catch(_){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else setTimeout(boot,0);
+  // safety re-run in case the app re-rendered chrome after us
+  setTimeout(()=>{buildUI();applyMode();try{window.cuxUpdateStats();}catch(_){}},400);
+})();
+</script>
+
+<!-- Final patch: whole-Bible import + dynamic layer manager -->
+<style id="catena-whole-bible-layer-manager-css">
+  .whole-bible-import{
+    display:grid!important;
+    gap:12px!important;
+    margin:0 0 14px!important;
+    padding:14px!important;
+    border:1px solid rgba(201,168,76,.30)!important;
+    border-radius:14px!important;
+    background:linear-gradient(180deg,rgba(201,168,76,.075),rgba(139,159,195,.035))!important;
+  }
+  .whole-bible-import h3{
+    margin:0!important;
+    color:var(--gold3)!important;
+    font:700 16px/1.2 var(--title)!important;
+    letter-spacing:.06em!important;
+  }
+  .whole-bible-import p{
+    margin:3px 0 0!important;
+    color:var(--muted)!important;
+    font:13px/1.45 var(--ui)!important;
+  }
+  .whole-bible-grid{
+    display:grid!important;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;
+    gap:8px!important;
+    align-items:end!important;
+  }
+  .whole-bible-import label{
+    margin:0!important;
+    min-width:0!important;
+  }
+  .whole-bible-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:8px!important;
+    align-items:center!important;
+  }
+  .whole-bible-actions input[type=file]{
+    flex:1 1 280px!important;
+    min-width:220px!important;
+  }
+  #wholeBibleReport{
+    min-height:18px!important;
+    color:var(--muted)!important;
+    font:12px/1.45 var(--ui)!important;
+  }
+  #wholeBibleReport.ok{
+    color:#d8f3c3!important;
+  }
+  #wholeBibleReport.warn{
+    color:#ffd89b!important;
+  }
+  #wholeBibleReport.error{
+    color:#ffb1a6!important;
+  }
+
+  .fetch-btn-grid.source-links{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))!important;margin-top:6px!important;}
+  .fetch-btn-grid button.link-only .ftag{font-size:14px!important;}
+  .fetch-btn-grid button.link-only .fname{font-size:9px!important;}
+  .online-source-tools{display:grid!important;gap:8px!important;margin-top:10px!important;padding-top:10px!important;border-top:1px solid rgba(139,159,195,.18)!important;}
+  .online-source-row{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important;gap:8px!important;align-items:end!important;}
+  .online-source-row button{justify-content:center!important;}
+  .online-source-tools .tiny-note{font:12px/1.35 var(--ui)!important;color:var(--muted)!important;}
+
+  #translationList.layer-manager{
+    display:grid!important;
+    gap:10px!important;
+  }
+  .layer-manager-panel{
+    display:grid!important;
+    gap:10px!important;
+  }
+  .layer-manager-toolbar{
+    display:grid!important;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;
+    gap:8px!important;
+    align-items:end!important;
+    padding:10px!important;
+    border:1px solid rgba(139,159,195,.20)!important;
+    border-radius:14px!important;
+    background:rgba(139,159,195,.045)!important;
+  }
+  .layer-mode-chips,.layer-toolbar-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+    align-items:center!important;
+  }
+  .layer-mode-chips button,.layer-toolbar-actions button{
+    height:31px!important;
+    border-radius:999px!important;
+    padding:0 11px!important;
+    font-size:12px!important;
+    white-space:nowrap!important;
+  }
+  .layer-mode-chips button.active{
+    color:#fff7df!important;
+    border-color:rgba(201,168,76,.60)!important;
+    background:rgba(201,168,76,.16)!important;
+  }
+  .layer-card{
+    display:grid!important;
+    grid-template-columns:minmax(150px,1.35fr) minmax(108px,.7fr) auto!important;
+    gap:8px!important;
+    align-items:center!important;
+    padding:10px!important;
+    border:1px solid rgba(139,159,195,.20)!important;
+    border-radius:14px!important;
+    background:rgba(255,255,255,.025)!important;
+  }
+  .layer-card.active{
+    border-color:rgba(201,168,76,.52)!important;
+    background:rgba(201,168,76,.075)!important;
+  }
+  .layer-main{
+    display:grid!important;
+    gap:5px!important;
+    min-width:0!important;
+  }
+  .layer-name-line{
+    display:flex!important;
+    gap:7px!important;
+    align-items:center!important;
+    min-width:0!important;
+  }
+  .layer-name-line input[type=text]{
+    min-width:0!important;
+    height:32px!important;
+    padding:5px 8px!important;
+    font-size:13px!important;
+  }
+  .layer-flags{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+    color:var(--muted)!important;
+    font:12px/1.35 var(--ui)!important;
+  }
+  .layer-flags label{
+    display:inline-flex!important;
+    gap:5px!important;
+    align-items:center!important;
+    margin:0!important;
+  }
+  .layer-meta-select{
+    min-width:0!important;
+  }
+  .layer-card-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    justify-content:flex-end!important;
+    gap:6px!important;
+  }
+  .layer-card-actions button{
+    height:30px!important;
+    min-width:32px!important;
+    border-radius:9px!important;
+    padding:0 9px!important;
+    font-size:12px!important;
+  }
+  .layer-card-actions .danger{
+    color:#ffc0b8!important;
+    border-color:rgba(255,112,96,.36)!important;
+    background:rgba(255,112,96,.055)!important;
+  }
+  .layer-manager-empty{
+    padding:14px!important;
+    border:1px dashed rgba(139,159,195,.24)!important;
+    border-radius:14px!important;
+    color:var(--muted)!important;
+    font:13px/1.45 var(--ui)!important;
+  }
+  .layer-advanced-summary{
+    margin-top:2px!important;
+    border:1px solid rgba(139,159,195,.18)!important;
+    border-radius:12px!important;
+    background:rgba(7,12,22,.28)!important;
+  }
+  .layer-advanced-summary summary{
+    cursor:pointer!important;
+    padding:9px 11px!important;
+    color:var(--blue2)!important;
+    font:700 11px/1 var(--ui)!important;
+    letter-spacing:.10em!important;
+    text-transform:uppercase!important;
+  }
+  .layer-advanced-body{
+    display:grid!important;
+    gap:8px!important;
+    padding:0 11px 11px!important;
+  }
+  @media(max-width:760px){
+    .layer-card{grid-template-columns:1fr!important}
+    .layer-card-actions{justify-content:flex-start!important}
+    .layer-card-actions button{flex:1 1 82px!important}
+    .whole-bible-actions input[type=file]{flex-basis:100%!important;min-width:0!important}
+  }
+</style>
+<script id="catena-whole-bible-layer-manager-patch">
+(function(){
+  if(window.catenaWholeBibleLayerManagerPatch)return;
+  window.catenaWholeBibleLayerManagerPatch=true;
+
+  const q=id=>document.getElementById(id);
+  const localEsc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const cleanText=s=>String(s??'').replace(/\s+/g,' ').trim();
+  const report=(msg,kind='')=>{
+    const el=q('wholeBibleReport')||q('importReport');
+    if(el){el.textContent=msg;el.className=kind;}
+    try{if(kind!=='')toast(msg.slice(0,180));}catch(e){}
+  };
+  const safeBookMeta=()=>Array.isArray(window.BOOK_META)?window.BOOK_META:[];
+  const safeAllNames=()=>typeof allTransNames==='function'?allTransNames():Object.keys(state.translations||{});
+  const safeGetObj=name=>typeof getTransObj==='function'?getTransObj(name):(state.translations?.[name]||{});
+  const safeEnsure=name=>typeof ensureTranslation==='function'?ensureTranslation(name):(state.translations[name]||(state.translations[name]={}));
+
+  const BOOK_ALIASES={
+    gen:'Genesis',ge:'Genesis',gn:'Genesis',genesis:'Genesis',
+    ex:'Exodus',exo:'Exodus',exod:'Exodus',exodus:'Exodus',
+    lev:'Leviticus',le:'Leviticus',lv:'Leviticus',leviticus:'Leviticus',
+    num:'Numbers',nu:'Numbers',nm:'Numbers',numbers:'Numbers',
+    deut:'Deuteronomy',deu:'Deuteronomy',dt:'Deuteronomy',deuteronomy:'Deuteronomy',
+    josh:'Joshua',jos:'Joshua',joshua:'Joshua',
+    judg:'Judges',jdg:'Judges',jg:'Judges',judges:'Judges',
+    ruth:'Ruth',rut:'Ruth',ru:'Ruth',
+    '1sam':'1 Samuel','1sa':'1 Samuel','1sm':'1 Samuel','1 samuel':'1 Samuel','i samuel':'1 Samuel',
+    '2sam':'2 Samuel','2sa':'2 Samuel','2sm':'2 Samuel','2 samuel':'2 Samuel','ii samuel':'2 Samuel',
+    '1kgs':'1 Kings','1ki':'1 Kings','1 kgs':'1 Kings','1 kings':'1 Kings','i kings':'1 Kings',
+    '2kgs':'2 Kings','2ki':'2 Kings','2 kgs':'2 Kings','2 kings':'2 Kings','ii kings':'2 Kings',
+    '1chr':'1 Chronicles','1ch':'1 Chronicles','1 chronicles':'1 Chronicles','i chronicles':'1 Chronicles',
+    '2chr':'2 Chronicles','2ch':'2 Chronicles','2 chronicles':'2 Chronicles','ii chronicles':'2 Chronicles',
+    ezra:'Ezra',ezr:'Ezra',neh:'Nehemiah',ne:'Nehemiah',nehemiah:'Nehemiah',
+    esth:'Esther',est:'Esther',esther:'Esther',
+    job:'Job',ps:'Psalms',psa:'Psalms',psalm:'Psalms',psalms:'Psalms',
+    prov:'Proverbs',pro:'Proverbs',pr:'Proverbs',proverbs:'Proverbs',
+    eccl:'Ecclesiastes',ecc:'Ecclesiastes',qoheleth:'Ecclesiastes',ecclesiastes:'Ecclesiastes',
+    song:'Song of Songs','song of songs':'Song of Songs','song of solomon':'Song of Songs',sos:'Song of Songs',sg:'Song of Songs','ss':'Song of Songs','sol':'Song of Songs','song of sol':'Song of Songs','cant':'Song of Songs','canticles':'Song of Songs',
+    isa:'Isaiah',is:'Isaiah',isaiah:'Isaiah',
+    jer:'Jeremiah',je:'Jeremiah',jeremiah:'Jeremiah',
+    lam:'Lamentations',la:'Lamentations',lamentations:'Lamentations',
+    ezek:'Ezekiel',eze:'Ezekiel',ezekiel:'Ezekiel',
+    dan:'Daniel',da:'Daniel',daniel:'Daniel',
+    hos:'Hosea',hosea:'Hosea',joel:'Joel',amos:'Amos',
+    obad:'Obadiah',ob:'Obadiah',obadiah:'Obadiah',
+    jonah:'Jonah',jon:'Jonah',mic:'Micah',micah:'Micah',
+    nah:'Nahum',nahum:'Nahum',hab:'Habakkuk',habakkuk:'Habakkuk',
+    zeph:'Zephaniah',zep:'Zephaniah',zephaniah:'Zephaniah',
+    hag:'Haggai',haggai:'Haggai',zech:'Zechariah',zec:'Zechariah',zechariah:'Zechariah',
+    mal:'Malachi',malachi:'Malachi',
+    matt:'Matthew',mat:'Matthew',mt:'Matthew',matthew:'Matthew',
+    mark:'Mark',mrk:'Mark',mk:'Mark',
+    luke:'Luke',luk:'Luke',lk:'Luke',
+    john:'John',jhn:'John',jn:'John',
+    acts:'Acts',act:'Acts',
+    rom:'Romans',ro:'Romans',romans:'Romans',
+    '1cor':'1 Corinthians','1co':'1 Corinthians','1 corinthians':'1 Corinthians','i corinthians':'1 Corinthians',
+    '2cor':'2 Corinthians','2co':'2 Corinthians','2 corinthians':'2 Corinthians','ii corinthians':'2 Corinthians',
+    gal:'Galatians',ga:'Galatians',galatians:'Galatians',
+    eph:'Ephesians',ephesians:'Ephesians',
+    phil:'Philippians',php:'Philippians',philippians:'Philippians',
+    col:'Colossians',colossians:'Colossians',
+    '1thess':'1 Thessalonians','1th':'1 Thessalonians','1 thessalonians':'1 Thessalonians','i thessalonians':'1 Thessalonians',
+    '2thess':'2 Thessalonians','2th':'2 Thessalonians','2 thessalonians':'2 Thessalonians','ii thessalonians':'2 Thessalonians',
+    '1tim':'1 Timothy','1ti':'1 Timothy','1 timothy':'1 Timothy','i timothy':'1 Timothy',
+    '2tim':'2 Timothy','2ti':'2 Timothy','2 timothy':'2 Timothy','ii timothy':'2 Timothy',
+    titus:'Titus',tit:'Titus',phlm:'Philemon',phm:'Philemon',phi:'Philemon',philemon:'Philemon',
+    heb:'Hebrews',hebrews:'Hebrews',
+    jas:'James',jam:'James',jm:'James',james:'James',
+    '1pet':'1 Peter','1pe':'1 Peter','1 peter':'1 Peter','i peter':'1 Peter',
+    '2pet':'2 Peter','2pe':'2 Peter','2 peter':'2 Peter','ii peter':'2 Peter',
+    '1john':'1 John','1jn':'1 John','1 john':'1 John','i john':'1 John',
+    '2john':'2 John','2jn':'2 John','2 john':'2 John','ii john':'2 John',
+    '3john':'3 John','3jn':'3 John','3 john':'3 John','iii john':'3 John',
+    jude:'Jude',jud:'Jude',
+    rev:'Revelation','re':'Revelation',revelation:'Revelation',apoc:'Revelation',
+    tob:'Tobit',tobit:'Tobit',jdt:'Judith',judith:'Judith',
+    wis:'Wisdom of Solomon','wisdom':'Wisdom of Solomon','wisdom of solomon':'Wisdom of Solomon',
+    sir:'Sirach','sirach':'Sirach','ecclesiasticus':'Sirach',
+    bar:'Baruch',baruch:'Baruch',
+    '1macc':'1 Maccabees','1 ma':'1 Maccabees','1 maccabees':'1 Maccabees','i maccabees':'1 Maccabees','1mac':'1 Maccabees','1 macc':'1 Maccabees',
+    '2macc':'2 Maccabees','2 ma':'2 Maccabees','2 maccabees':'2 Maccabees','ii maccabees':'2 Maccabees','2mac':'2 Maccabees','2 macc':'2 Maccabees',
+    '1esd':'1 Esdras','1 esdras':'1 Esdras','i esdras':'1 Esdras','3 ezra':'1 Esdras','3ezra':'1 Esdras',
+    '2esd':'2 Esdras','2 esdras':'2 Esdras','ii esdras':'2 Esdras','4 ezra':'2 Esdras','4ezra':'2 Esdras',
+    '3macc':'3 Maccabees','3 maccabees':'3 Maccabees','iii maccabees':'3 Maccabees','3 ma':'3 Maccabees',
+    '4macc':'4 Maccabees','4 maccabees':'4 Maccabees','iv maccabees':'4 Maccabees','4 ma':'4 Maccabees',
+    'prman':'Prayer of Manasseh','prayer of manasseh':'Prayer of Manasseh','manasseh':'Prayer of Manasseh',
+    'epjer':'Letter of Jeremiah','epistle of jeremiah':'Letter of Jeremiah','letter of jeremiah':'Letter of Jeremiah',
+    'ps151':'Psalm 151','psalm 151':'Psalm 151'
+  };
+  const USFM_IDS={
+    GEN:'Genesis',EXO:'Exodus',LEV:'Leviticus',NUM:'Numbers',DEU:'Deuteronomy',JOS:'Joshua',JDG:'Judges',RUT:'Ruth',
+    '1SA':'1 Samuel','2SA':'2 Samuel','1KI':'1 Kings','2KI':'2 Kings','1CH':'1 Chronicles','2CH':'2 Chronicles',
+    EZR:'Ezra',NEH:'Nehemiah',EST:'Esther',JOB:'Job',PSA:'Psalms',PRO:'Proverbs',ECC:'Ecclesiastes',
+    SNG:'Song of Songs',SOL:'Song of Songs',CAN:'Song of Songs',
+    ISA:'Isaiah',JER:'Jeremiah',LAM:'Lamentations',
+    EZK:'Ezekiel',EZE:'Ezekiel',
+    DAN:'Daniel',HOS:'Hosea',JOL:'Joel',AMO:'Amos',
+    OBA:'Obadiah',JON:'Jonah',MIC:'Micah',NAM:'Nahum',HAB:'Habakkuk',ZEP:'Zephaniah',HAG:'Haggai',ZEC:'Zechariah',MAL:'Malachi',
+    MAT:'Matthew',MRK:'Mark',LUK:'Luke',JHN:'John',ACT:'Acts',ROM:'Romans','1CO':'1 Corinthians','2CO':'2 Corinthians',
+    GAL:'Galatians',EPH:'Ephesians',PHP:'Philippians',COL:'Colossians','1TH':'1 Thessalonians','2TH':'2 Thessalonians',
+    '1TI':'1 Timothy','2TI':'2 Timothy',TIT:'Titus',PHM:'Philemon',HEB:'Hebrews',JAS:'James','1PE':'1 Peter','2PE':'2 Peter',
+    '1JN':'1 John','2JN':'2 John','3JN':'3 John',JUD:'Jude',REV:'Revelation',
+    // Deuterocanon / Apocrypha
+    TOB:'Tobit',JDT:'Judith',WIS:'Wisdom of Solomon',SIR:'Sirach',BAR:'Baruch',
+    '1MA':'1 Maccabees','2MA':'2 Maccabees','3MA':'3 Maccabees','4MA':'4 Maccabees',
+    '1ES':'1 Esdras','2ES':'2 Esdras',
+    MAN:'Prayer of Manasseh',LJE:'Letter of Jeremiah',PS2:'Psalm 151',
+    // Additional variant codes used by some publishers
+    ESG:'Esther (Greek)',DNT:'Daniel (Greek additions)',
+    S3Y:'Song of the Three Young Men',SUS:'Susanna',BEL:'Bel and the Dragon'
+  };
+  const CANON_66=[
+    'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings',
+    '1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Songs','Isaiah',
+    'Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah',
+    'Haggai','Zechariah','Malachi','Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians',
+    'Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon',
+    'Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
+  ];
+
+  function normKey(s){
+    return String(s||'').toLowerCase().replace(/\./g,'').replace(/\s+/g,' ').trim();
+  }
+  function normalizeBookName(raw){
+    if(!raw)return '';
+    let s=String(raw).replace(/^book\s+/i,'').replace(/^\s*#\s*/,'').replace(/\s+/g,' ').trim();
+    s=s.replace(/^([123])\s*([A-Za-z])/,'$1 $2');
+    const exact=safeBookMeta().find(b=>b.book.toLowerCase()===s.toLowerCase());
+    if(exact)return exact.book;
+    const key=normKey(s);
+    if(BOOK_ALIASES[key])return BOOK_ALIASES[key];
+    const compact=key.replace(/\s+/g,'');
+    if(BOOK_ALIASES[compact])return BOOK_ALIASES[compact];
+    if(USFM_IDS[String(s).trim().toUpperCase()])return USFM_IDS[String(s).trim().toUpperCase()];
+    return '';
+  }
+  function stripBibleMarkup(text){
+    let s=String(text||'');
+    s=s.replace(/\\f[\s\S]*?\\f\*/g,' ');
+    s=s.replace(/\\x[\s\S]*?\\x\*/g,' ');
+    s=s.replace(/\\w\s+([^|\\]+)(?:\|[^\\]*)?\\w\*/g,'$1');
+    s=s.replace(/\\add\s+([^\\]+)\\add\*/g,'$1');
+    s=s.replace(/\\[a-z0-9*]+(?:\s+)?/gi,' ');
+    s=s.replace(/<note[\s\S]*?<\/note>/gi,' ');
+    s=s.replace(/<[^>]+>/g,' ');
+    return cleanText(s);
+  }
+  function pushVerse(out,book,ch,verse,text,source){
+    book=normalizeBookName(book)||book;
+    ch=Number(ch); verse=Number(verse);
+    text=stripBibleMarkup(text);
+    if(!book||!Number.isFinite(ch)||!Number.isFinite(verse)||!text)return false;
+    out.push({book,ch,verse,text,source:source||''});
+    return true;
+  }
+  function parseVerseRange(v){
+    const m=String(v||'').match(/^(\d+)(?:\s*[-,]\s*(\d+))?/);
+    if(!m)return [];
+    const a=Number(m[1]),b=Number(m[2]||m[1]);
+    const start=Math.min(a,b),end=Math.max(a,b),out=[];
+    for(let n=start;n<=end;n++)out.push(n);
+    return out;
+  }
+  function parseBibleJsonValue(data,source){
+    const verses=[]; const warnings=[];
+    // Handle top-level wrapper: {translation:'KJV', books:[...]} or {name:'KJV', data:[...]}
+    if(data&&typeof data==='object'&&!Array.isArray(data)){
+      const unwrap=data.books||data.verses||data.data||data.items||data.chapters;
+      if(Array.isArray(unwrap)){data=unwrap;}
+    }
+    const visit=(node,ctx={})=>{
+      if(!node)return;
+      if(Array.isArray(node)){node.forEach(x=>visit(x,ctx));return;}
+      if(typeof node!=='object')return;
+      const book=node.book||node.book_name||node.bookName||node.bname||node.name||ctx.book;
+      const ch=node.chapter||node.ch||node.chapter_number||node.chapterNumber||ctx.chapter;
+      const verse=node.verse||node.v||node.verse_number||node.verseNumber||node.number||ctx.verse;
+      const text=node.text||node.content||node.verseText||node.value||node.html;
+      if(book&&ch&&verse&&text){pushVerse(verses,book,ch,verse,text,source);return;}
+      if(node.verses&&!Array.isArray(node.verses)&&typeof node.verses==='object'){
+        const keys=Object.keys(node.verses);
+        if(keys.some(k=>k.split('|').length>=3)){
+          keys.forEach(k=>{const p=k.split('|');pushVerse(verses,p[0],p[1],p[2],node.verses[k],source);});
+          return;
+        }
+      }
+      if(Array.isArray(node.verses)){node.verses.forEach(v=>visit(v,{...ctx,book,chapter:ch}));}
+      if(Array.isArray(node.chapters)){node.chapters.forEach(c=>visit(c,{...ctx,book,chapter:c.number||c.chapter||c.ch}));}
+      if(Array.isArray(node.books)){node.books.forEach(b=>visit(b,{...ctx,book:b.name||b.book||b.bookName}));}
+      // Handle chapters as object (e.g. {"1":{...},"2":{...}})
+      if(node.chapters&&typeof node.chapters==='object'&&!Array.isArray(node.chapters)){
+        Object.entries(node.chapters).forEach(([c,val])=>visit(val,{...ctx,book,chapter:c}));
+        return;
+      }
+      // Handle verses as object (e.g. {"1":"text","2":"text"}) when we have book+chapter context
+      if(ctx.book&&ctx.chapter){
+        const numKeys=Object.keys(node).filter(k=>/^\d+$/.test(k));
+        if(numKeys.length>0&&typeof node[numKeys[0]]==='string'){
+          numKeys.forEach(k=>pushVerse(verses,ctx.book,ctx.chapter,k,node[k],source));
+          return;
+        }
+      }
+      Object.entries(node).forEach(([k,val])=>{
+        if(['books','chapters','verses','metadata','translation','name','book','chapter','verse','text','content','copyright','info','testament'].includes(k))return;
+        const maybeBook=normalizeBookName(k);
+        if(maybeBook)visit(val,{...ctx,book:maybeBook});
+        else if(ctx.book&&/^\d+$/.test(k)&&typeof val==='object')visit(val,{...ctx,chapter:k});
+        else if(ctx.book&&ctx.chapter&&/^\d+$/.test(k))pushVerse(verses,ctx.book,ctx.chapter,k,val,source);
+      });
+    };
+    visit(data);
+    if(!verses.length)warnings.push('No JSON verses found. Expected an array, {verses:[...]}, {books:[...]}, or {Genesis:{1:{1:"..."}}}.');
+    return {verses,warnings,formats:['JSON']};
+  }
+  function parseBibleJson(text,source){
+    try{return parseBibleJsonValue(JSON.parse(text),source);}
+    catch(e){return {verses:[],warnings:['JSON could not be parsed: '+e.message],formats:['JSON']};}
+  }
+  function parseUsfm(text,source){
+    const verses=[]; const warnings=[];
+    let book='',chapter=1,current=null;
+    const flush=()=>{if(current){current.verses.forEach(v=>pushVerse(verses,current.book,current.chapter,v,current.parts.join(' '),source));current=null;}};
+    String(text||'').replace(/\r/g,'').split('\n').forEach(raw=>{
+      let line=raw.trim();
+      if(!line)return;
+      let m=line.match(/^\\id\s+([A-Z0-9]{3})\b/i);
+      if(m){flush();book=USFM_IDS[m[1].toUpperCase()]||normalizeBookName(m[1])||book;return;}
+      m=line.match(/^\\toc[12]\s+(.+)/i);
+      if(m&&!book){const b=normalizeBookName(m[1]);if(b)book=b;return;}
+      m=line.match(/^\\h\s+(.+)/i);
+      if(m&&!book){const b=normalizeBookName(m[1]);if(b)book=b;return;}
+      m=line.match(/^\\c\s+(\d+)/i);
+      if(m){flush();chapter=Number(m[1])||chapter;return;}
+      m=line.match(/^\\v\s+([0-9]+(?:[-,][0-9]+)?)\s*(.*)$/i);
+      if(m){flush();current={book,chapter,verses:parseVerseRange(m[1]),parts:[m[2]||'']};return;}
+      if(current){
+        if(/^\\(p|q\d*|m|s\d*|r|sp)\b/i.test(line))line=line.replace(/^\\[a-z0-9*]+\s*/i,'');
+        current.parts.push(line);
+      }
+    });
+    flush();
+    if(!verses.length)warnings.push('No USFM verses found. Expected markers like \\id MAT, \\c 1, and \\v 1 text.');
+    return {verses,warnings,formats:['USFM']};
+  }
+  function parseOsis(text,source){
+    const verses=[]; const warnings=[];
+    try{
+      const doc=new DOMParser().parseFromString(String(text||''),'text/xml');
+      [...doc.querySelectorAll('verse[osisID]')].forEach(el=>{
+        const id=(el.getAttribute('osisID')||'').split(/\s+/)[0];
+        const parts=id.split('.');
+        if(parts.length>=3)pushVerse(verses,parts.slice(0,-2).join(' '),parts[parts.length-2],parts[parts.length-1],el.textContent||'',source);
+      });
+    }catch(e){}
+    if(!verses.length){
+      [...String(text||'').matchAll(/<verse\b[^>]*osisID=["']([^"']+)["'][^>]*>([\s\S]*?)<\/verse>/gi)].forEach(m=>{
+        const id=m[1].split(/\s+/)[0],parts=id.split('.');
+        if(parts.length>=3)pushVerse(verses,parts.slice(0,-2).join(' '),parts[parts.length-2],parts[parts.length-1],m[2],source);
+      });
+    }
+    if(!verses.length)warnings.push('No OSIS verses found. Expected <verse osisID="Matt.1.1">text</verse>.');
+    return {verses,warnings,formats:['OSIS XML']};
+  }
+  function parsePlainBibleText(text,source){
+    const verses=[]; const warnings=[]; const formats=new Set(['reference text']);
+    let book=state?.active?.book||'Genesis',chapter=Number(state?.active?.chapter)||1;
+    const tryHeading=line=>{
+      const h=String(line||'').replace(/^#+\s*/,'').match(/^(.+?)\s+(\d{1,3})$/);
+      if(!h)return false;
+      const b=normalizeBookName(h[1]);
+      if(!b)return false;
+      book=b; chapter=Number(h[2]); formats.add('book headings'); return true;
+    };
+    const tryFullRef=line=>{
+      const tab=String(line).split('\t');
+      if(tab.length>=4&&normalizeBookName(tab[0])){
+        return pushVerse(verses,tab[0],tab[1],tab[2],tab.slice(3).join('\t'),source);
+      }
+      const m=String(line).match(/^\s*(.+?)\s+(\d{1,3}):(\d{1,3})(?:\s*[-,]\s*\d+)?\s+(.+)$/);
+      if(!m)return false;
+      const b=normalizeBookName(m[1]);
+      if(!b)return false;
+      return pushVerse(verses,b,m[2],m[3],m[4],source);
+    };
+    String(text||'').replace(/\r/g,'').split('\n').forEach(raw=>{
+      const line=raw.trim();
+      if(!line)return;
+      if(tryHeading(line))return;
+      if(tryFullRef(line))return;
+      const sup=(typeof extractSuperscriptSegments==='function'?extractSuperscriptSegments(line):null);
+      if(sup&&sup.segments&&sup.segments.length){
+        if(sup.leading)tryHeading(sup.leading);
+        sup.segments.forEach(seg=>pushVerse(verses,book,chapter,seg.verse,seg.text,source));
+        formats.add('superscript verse numbers');
+        return;
+      }
+      const n=line.match(/^(\d{1,3})\s+[.)\-:]?\s*(.+)$/);
+      if(n){pushVerse(verses,book,chapter,n[1],n[2],source);formats.add('numbered lines');}
+    });
+    if(!verses.length)warnings.push('No plain-text verses found. Use full references, headings plus verse numbers, or superscript verse numbers.');
+    return {verses,warnings,formats:[...formats]};
+  }
+  function parseWholeBibleText(text,format,source){
+    const lower=String(source||'').toLowerCase();
+    const hint=(format||'auto').toLowerCase();
+    if(hint==='json'||lower.endsWith('.json'))return parseBibleJson(text,source);
+    if(hint==='usfm'||/\n\\(id|c|v)\s+/i.test('\n'+text)||/\.(usfm|sfm)$/i.test(lower))return parseUsfm(text,source);
+    if(hint==='osis'||hint==='xml'||/\.osis$|\.xml$/i.test(lower)||/<osis\b|<verse\b[^>]*osisID=/i.test(text))return parseOsis(text,source);
+    // If it looks like a JSON file by content even without .json extension, try it
+    const trimmed=text.trimStart();
+    if(trimmed.startsWith('[')&&(trimmed.includes('"abbrev"')||trimmed.includes('"book_name"')||trimmed.includes('"chapters"')))return parseBibleJson(text,source);
+    if(trimmed.startsWith('{')&&(trimmed.includes('"books"')||trimmed.includes('"verses"')||trimmed.includes('"chapters"')))return parseBibleJson(text,source);
+    return parsePlainBibleText(text,source);
+  }
+  function mergeParsedVerses(parsed,layer,mode,replace){
+    layer=(layer||'Imported Bible').trim()||'Imported Bible';
+    // 'replaceLayer' clears the entire layer first; 'merge' keeps existing verses
+    if(mode==='replaceLayer')state.translations[layer]={};
+    const obj=safeEnsure(layer);
+    let count=0,skipped=0;
+    parsed.verses.forEach(v=>{
+      const k=typeof vKey==='function'?vKey(v.book,v.ch,v.verse):`${v.book}|${v.ch}|${v.verse}`;
+      // replace===false means keep existing; but if mode===replaceLayer we already cleared, so always write
+      if(mode==='replaceLayer'||replace||!obj[k]){
+        obj[k]=typeof verseDisplayHtml==='function'?verseDisplayHtml(v.text):v.text;
+        count++;
+      } else skipped++;
+    });
+    state.translationMeta=state.translationMeta||{};
+    state.translationMeta[layer]={...(state.translationMeta[layer]||{}),lineType:'Translation',wholeBible:true,lastImport:new Date().toISOString()};
+    if(parsed.formats?.length)state.translationMeta[layer].sourceFormat=parsed.formats.join(', ');
+    try{rememberImportedLayer(layer);}catch(e){state.active.translation=layer;}
+    // ── Navigation: stay where we are, just activate the layer.
+    // Only jump to the first verse if there is no active book set at all.
+    const first=parsed.verses[0];
+    if(first){
+      state.active.translation=layer;
+      if(!state.active.book||state.active.book==='Genesis'){
+        // No book open yet — navigate to start of what was imported
+        const m=typeof metaOf==='function'?metaOf(first.book):null;
+        if(m?.cat)state.active.tab=m.cat;
+        state.active.book=first.book; state.active.chapter=first.ch; state.active.verse=1;
+      }
+      // If we already have a book open, just make the layer active without redirecting
+    }
+    refreshLayerSurfaces('whole-bible-import');
+    return {count,skipped};
+  }
+  async function readFileText(file){
+    return await new Promise((resolve,reject)=>{
+      const r=new FileReader();
+      r.onload=()=>resolve(String(r.result||''));
+      r.onerror=()=>reject(r.error||new Error('Could not read '+file.name));
+      r.readAsText(file);
+    });
+  }
+  window.catenaApplyWholeBiblePreset=function(){
+    const preset=q('wholeBiblePreset')?.value||'';
+    if(!preset)return;
+    const layer=q('wholeBibleLayerName');
+    if(layer)layer.value=preset;
+    const main=q('newTransName');
+    if(main)main.value=preset;
+    if(preset==='NKJV')report('NKJV selected. Import a licensed NKJV USFM, OSIS XML, JSON, or reference-text file from your device. This app will not download copyrighted text from public sites.','warn');
+  };
+  window.catenaImportWholeBibleFiles=async function(ev){
+    const input=ev?.target||q('wholeBibleFiles');
+    const files=[...(input?.files||[])];
+    if(!files.length){report('Choose one or more Bible files first.','warn');return;}
+    const layer=(q('wholeBibleLayerName')?.value||q('newTransName')?.value||'Imported Bible').trim();
+    const format=q('wholeBibleFormat')?.value||'auto';
+    const mode=q('wholeBibleAction')?.value||'replaceLayer';
+    const replace=q('wholeBibleReplace')?.checked!==false;
+    report(`Reading ${files.length} file${files.length===1?'':'s'}...`,'warn');
+    const all={verses:[],warnings:[],formats:[]};
+    for(let i=0;i<files.length;i++){
+      const f=files[i];
+      report(`Reading ${i+1}/${files.length}: ${f.name}`,'warn');
+      const text=await readFileText(f);
+      const parsed=parseWholeBibleText(text,format,f.name);
+      all.verses.push(...parsed.verses);
+      all.warnings.push(...(parsed.warnings||[]).map(w=>`${f.name}: ${w}`));
+      all.formats.push(...(parsed.formats||[]));
+    }
+    const seen=new Set();
+    all.verses=all.verses.filter(v=>{const k=`${v.book}|${v.ch}|${v.verse}`;if(seen.has(k))return false;seen.add(k);return true;});
+    if(!all.verses.length){report(all.warnings[0]||'No verses found in the selected file(s).','error');return;}
+    all.formats=[...new Set(all.formats)];
+    const res=mergeParsedVerses(all,layer,mode,replace);
+    const warn=all.warnings.length?` ${all.warnings.length} warning${all.warnings.length===1?'':'s'}; first: ${all.warnings[0]}`:'';
+    report(`Imported ${res.count} verse${res.count===1?'':'s'} into "${layer}" from ${files.length} file${files.length===1?'':'s'}.${res.skipped?` Skipped ${res.skipped} existing verse${res.skipped===1?'':'s'}.`:''}${warn}`,all.warnings.length?'warn':'ok');
+  };
+
+  // ── ONLINE BIBLE SOURCE LIBRARY ───────────────────────────────────────────
+  // Public/free-use imports are handled through either direct single-file JSON,
+  // the Free Use Bible API, or user-supplied licensed files. Copyrighted editions
+  // such as NKJV/ESV/NIV are opened as source pages, not scraped.
+  const CATENA_DIRECT_JSON_SOURCES={
+    kjv:{label:'KJV',full:'King James Version',kind:'json',query:'KJV',urls:[
+      'https://cdn.jsdelivr.net/gh/thiagobodruk/bible/json/en_kjv.json',
+      'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/en_kjv.json',
+      'https://raw.githubusercontent.com/bibleapi/bibleapi-bibles-json/master/kjv.json'
+    ]},
+    asv:{label:'ASV',full:'American Standard Version',kind:'json',query:'ASV',urls:[
+      'https://raw.githubusercontent.com/bibleapi/bibleapi-bibles-json/master/asv.json',
+      'https://cdn.jsdelivr.net/gh/thiagobodruk/bible/json/en_asv.json',
+      'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/en_asv.json'
+    ]},
+    bbe:{label:'BBE',full:'Bible in Basic English',kind:'json',query:'Bible in Basic English BBE',urls:[
+      'https://cdn.jsdelivr.net/gh/thiagobodruk/bible/json/en_bbe.json',
+      'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/en_bbe.json'
+    ]}
+  };
+  const CATENA_AO_BASES=['https://bible.helloao.org/api','https://bible.chandlerswift.com/api'];
+  const CATENA_ONLINE_IMPORTS={
+    kjv:{label:'KJV',full:'King James Version',query:['KJV','King James Version','kjv']},
+    ylt:{label:'YLT',full:"Young's Literal Translation",query:['YLT','Young Literal','Youngs Literal','Young\'s Literal']},
+    asv:{label:'ASV',full:'American Standard Version',query:['ASV','American Standard Version']},
+    web:{label:'WEB',full:'World English Bible',query:['ENGWEBP','World English Bible','WEB']},
+    webbe:{label:'WEBBE',full:'World English Bible, British Edition',query:['ENGWEBBE','World English Bible British','WEBBE']},
+    webc:{label:'WEB-C',full:'World English Bible Catholic / Deuterocanon when available',query:['World English Bible Catholic','Deuterocanon','Apocrypha','WEB Catholic'],preferDeuterocanon:true},
+    bsb:{label:'BSB',full:'Berean Standard Bible',query:['BSB','Berean Standard Bible','berean']},
+    bbe:{label:'BBE',full:'Bible in Basic English',query:['BBE','Bible in Basic English','basic english']},
+    darby:{label:'DARBY',full:'Darby Bible',query:['DARBY','Darby Bible','darby']},
+    dra:{label:'DRA',full:'Douay-Rheims American Edition',query:['DRA','eng_dra','Douay Rheims','Douay-Rheims','douay']},
+    drb:{label:'DRB',full:'Douay-Rheims Bible',query:['DRB','eng_drb','Douay','douay rheims']},
+    wyc:{label:'WYC',full:'Wycliffe Bible',query:['WYC','Wycliffe','wycliffe']},
+    brenton:{label:'BRENTON',full:'Brenton Septuagint / Apocrypha when available',query:['Brenton','Septuagint','LXX','brenton'],preferDeuterocanon:true},
+    vulgate:{label:'VUL',full:'Latin Vulgate',query:['Vulgate','Latin Vulgate','VUL','clementine']},
+    sblgnt:{label:'SBLGNT',full:'SBL Greek New Testament',query:['SBLGNT','SBL Greek','Greek New Testament','sbl']},
+    wlc:{label:'WLC',full:'Westminster Leningrad Codex',query:['WLC','Westminster Leningrad','Hebrew OT']}
+  };
+  const CATENA_SOURCE_LINKS={
+    NKJV:{name:'NKJV',version:'NKJV',site:'BibleGateway'},
+    KJV:{name:'KJV',version:'KJV',site:'BibleGateway'},
+    YLT:{name:'YLT',version:'YLT',site:'BibleGateway'},
+    WEB:{name:'WEB',version:'WEB',site:'BibleGateway'},
+    ASV:{name:'ASV',version:'ASV',site:'BibleGateway'},
+    ESV:{name:'ESV',version:'ESV',site:'BibleGateway'},
+    NIV:{name:'NIV',version:'NIV',site:'BibleGateway'},
+    NLT:{name:'NLT',version:'NLT',site:'BibleGateway'},
+    CSB:{name:'CSB',version:'CSB',site:'BibleGateway'},
+    NASB:{name:'NASB',version:'NASB',site:'BibleGateway'},
+    NASB1995:{name:'NASB95',version:'NASB1995',site:'BibleGateway'},
+    NRSVUE:{name:'NRSVUE',version:'NRSVUE',site:'BibleGateway'},
+    RSVCE:{name:'RSVCE',version:'RSVCE',site:'BibleGateway'},
+    DRA:{name:'DRA',version:'DRA',site:'BibleGateway'},
+    CEB:{name:'CEB',version:'CEB',site:'BibleGateway'},
+    AMP:{name:'AMP',version:'AMP',site:'BibleGateway'},
+    LEB:{name:'LEB',version:'LEB',site:'BibleGateway'},
+    NET:{name:'NET',version:'NET',site:'BibleGateway'}
+  };
+  const CATENA_DEUTEROCANON_PRESETS=['WEB-C','DRA','RSVCE','NRSVUE','BRENTON','LXX','VUL','Orthodox Study Bible'];
+
+  function catenaSourceButtonHtml(code,full){
+    const escCode=localEsc(String(code));
+    return `<button type="button" data-code="${escCode}" onclick="catenaFetchPublicDomainBible('${escCode}','${escCode.toUpperCase()}')"><span class="ftag">${localEsc(String(code).toUpperCase())}</span><span class="fname">${localEsc(full||code)}</span></button>`;
+  }
+  function normalizeLooseName(s){
+    return String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function stringifyFlat(obj){
+    try{return Object.entries(obj||{}).filter(([k,v])=>typeof v!=='object').map(([k,v])=>`${k}:${v}`).join(' ');}catch(e){return String(obj||'');}
+  }
+  function inferTranslationId(item){
+    return String(item?.id||item?.translationId||item?.abbreviation||item?.shortName||item?.identifier||item?.languageCode||item?.name||'').trim();
+  }
+  function translationBlob(item){return normalizeLooseName(stringifyFlat(item));}
+  function looksDeuterocanonical(item){
+    const b=translationBlob(item);
+    const books=Number(item?.numberOfBooks||item?.numBooks||item?.bookCount||item?.books||0);
+    return books>66||/apocrypha|deuterocanon|deuterocanonical|catholic|septuagint|lxx|orthodox/.test(b);
+  }
+  async function fetchJsonWithFallback(urls){
+    let lastErr=null;
+    for(const url of urls){
+      try{
+        const r=await fetch(url,{cache:'default'});
+        if(!r.ok)throw new Error('HTTP '+r.status+' at '+url);
+        return await r.json();
+      }catch(e){lastErr=e;}
+    }
+    throw lastErr||new Error('All source URLs failed');
+  }
+  async function fetchAoJson(path){
+    // path may be "TRANSLATIONID/complete.json" — only encode the ID segment, not the slash
+    const clean=String(path||'').replace(/^\/+/, '');
+    const parts=clean.split('/');
+    const encodedPath=parts.map((p,i)=>i===0?encodeURIComponent(decodeURIComponent(p)):p).join('/');
+    return await fetchJsonWithFallback(CATENA_AO_BASES.map(base=>`${base}/${encodedPath}`));
+  }
+  function unpackTranslationList(data){
+    if(Array.isArray(data))return data;
+    if(Array.isArray(data?.translations))return data.translations;
+    if(Array.isArray(data?.data))return data.data;
+    if(Array.isArray(data?.items))return data.items;
+    return Object.values(data||{}).filter(x=>x&&typeof x==='object');
+  }
+  let catenaAoTranslationCache=null;
+  async function loadAoTranslations(force){
+    if(catenaAoTranslationCache&&!force)return catenaAoTranslationCache;
+    const raw=await fetchAoJson('available_translations.json');
+    catenaAoTranslationCache=unpackTranslationList(raw).filter(x=>inferTranslationId(x));
+    return catenaAoTranslationCache;
+  }
+  function scoreAoTranslation(item,queries,preferDeuterocanon){
+    const id=normalizeLooseName(inferTranslationId(item));
+    const blob=translationBlob(item);
+    const qs=(Array.isArray(queries)?queries:[queries]).map(normalizeLooseName).filter(Boolean);
+    let score=0;
+    for(const q of qs){
+      if(!q)continue;
+      const words=q.split(/\s+/).filter(Boolean);
+      if(id===q)score+=120;
+      if(blob.includes('abbreviation '+q)||blob.includes('shortname '+q))score+=80;
+      if(blob.includes(q))score+=50;
+      if(words.length&&words.every(w=>blob.includes(w)))score+=30+words.length*4;
+      if(words.length&&words.some(w=>id===w))score+=25;
+    }
+    if(preferDeuterocanon&&looksDeuterocanonical(item))score+=45;
+    return score;
+  }
+  async function resolveAoTranslation(query,opts={}){
+    const list=await loadAoTranslations(false);
+    const ranked=list.map(item=>({item,score:scoreAoTranslation(item,query,opts.preferDeuterocanon)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+    if(!ranked.length)throw new Error(`No free-use API translation matched "${Array.isArray(query)?query.join(' / '):query}"`);
+    return ranked[0].item;
+  }
+  function cleanBibleText(s){
+    return String(s||'').replace(/\s+/g,' ').replace(/\s+([,.;:?!])/g,'$1').trim();
+  }
+  function textFromContent(node){
+    if(node==null)return '';
+    if(typeof node==='string'||typeof node==='number')return String(node);
+    if(Array.isArray(node))return node.map(textFromContent).join(' ');
+    if(typeof node==='object'){
+      if(node.type&&/note|footnote|crossreference|xref|reference|heading|label/i.test(node.type))return '';
+      const parts=[];
+      ['text','content','children','items','value'].forEach(k=>{if(node[k]!=null)parts.push(textFromContent(node[k]));});
+      if(!parts.length){
+        Object.keys(node).forEach(k=>{if(!/^(type|number|verse|verseNumber|chapter|id|sid|eid|style|tag)$/i.test(k))parts.push(textFromContent(node[k]));});
+      }
+      return parts.join(' ');
+    }
+    return '';
+  }
+  function normalizeOnlineBookName(name,idx){
+    const raw=String(name||'').trim();
+    const normalized=normalizeBookName(raw);
+    if(normalized)return normalized;
+    const id=raw.toUpperCase().replace(/[^1-4A-Z]/g,'');
+    // Reuse the shared USFM_IDS table (extended with all deuterocanon/apocrypha codes)
+    if(USFM_IDS[id])return USFM_IDS[id];
+    return CANON_66[idx]||raw;
+  }
+  function parseAoComplete(data,sourceLabel){
+    const verses=[],warnings=[];
+    const books=Array.isArray(data?.books)?data.books:Array.isArray(data)?data:[];
+    books.forEach((book,bIdx)=>{
+      const bookName=normalizeOnlineBookName(book.commonName||book.name||book.title||book.bookName||book.id||book.abbreviation,bIdx);
+      // chapters may be an array OR an object keyed by chapter number
+      let chaptersRaw=book.chapters||book.chaptersObj||book.content||[];
+      const chaptersArr=Array.isArray(chaptersRaw)?chaptersRaw:Object.entries(chaptersRaw).map(([k,v])=>({...v,number:Number(k)||v?.number}));
+      if(!bookName||!chaptersArr.length)return;
+      chaptersArr.forEach((chapter,cIdx)=>{
+        const ch=Number(chapter.number||chapter.chapterNumber||chapter.chapter||chapter.ch||cIdx+1)||cIdx+1;
+        const found=[];
+        function visit(node){
+          if(node==null)return;
+          if(Array.isArray(node)){node.forEach(visit);return;}
+          if(typeof node!=='object')return;
+          const typ=String(node.type||'').toLowerCase();
+          const n=node.number??node.verseNumber??node.verse??node.v;
+          if(typ==='verse'||node.verseNumber!=null||node.verse!=null){
+            const v=Number(n);
+            const txt=cleanBibleText(textFromContent(node.content??node.text??node.children??node.items??node.value));
+            if(v&&txt)found.push({book:bookName,ch,verse:v,text:txt});
+            return;
+          }
+          if(node.content!=null)visit(node.content);
+          if(node.children!=null)visit(node.children);
+          if(node.items!=null)visit(node.items);
+        }
+        visit(chapter.content??chapter.verses??chapter.children??chapter.items??chapter);
+        if(!found.length&&Array.isArray(chapter.verses)){
+          chapter.verses.forEach((vObj,vIdx)=>{
+            const v=Number(vObj.number||vObj.verse||vObj.v||vIdx+1);
+            const txt=cleanBibleText(textFromContent(vObj.text??vObj.content??vObj));
+            if(v&&txt)found.push({book:bookName,ch,verse:v,text:txt});
+          });
+        }
+        // Handle verses as a plain object keyed by verse number
+        if(!found.length&&chapter.verses&&typeof chapter.verses==='object'&&!Array.isArray(chapter.verses)){
+          Object.entries(chapter.verses).forEach(([vNum,vVal])=>{
+            const v=Number(vNum);
+            const txt=cleanBibleText(typeof vVal==='string'?vVal:textFromContent(vVal));
+            if(v&&txt)found.push({book:bookName,ch,verse:v,text:txt});
+          });
+        }
+        verses.push(...found);
+      });
+    });
+    if(!verses.length)warnings.push(`No verse objects found in ${sourceLabel||'online API'} response.`);
+    return {verses,warnings,formats:[sourceLabel||'Free Use Bible API complete.json']};
+  }
+  function parseBibleArrayToParsed(data,sourceLabel){
+    const verses=[],warnings=[];
+    if(Array.isArray(data)&&data.length&&(data[0]?.chapters||data[0]?.abbrev)){
+      // Format: [{abbrev:'gen', name:'Genesis', chapters:[['verse1','verse2',...],...]},...]
+      data.forEach((book,bookIdx)=>{
+        const bookName=normalizeOnlineBookName(book.name||book.book||book.bookName||book.abbrev,bookIdx);
+        const chaps=book.chapters||book.chapter||[];
+        (Array.isArray(chaps)?chaps:Object.values(chaps)).forEach((chapterArr,chIdx)=>{
+          const arr=Array.isArray(chapterArr)?chapterArr:Object.values(chapterArr||{});
+          arr.forEach((text,vIdx)=>{const t=cleanBibleText(text);if(t)verses.push({book:bookName,ch:chIdx+1,verse:vIdx+1,text:t});});
+        });
+      });
+    }else if(Array.isArray(data)&&data.length&&data[0]?.book_name){
+      data.forEach(row=>{
+        const book=normalizeOnlineBookName(row.book_name||row.book||row.name);
+        const ch=Number(row.chapter||row.chapter_number||row.ch);
+        const verse=Number(row.verse||row.verse_number||row.v);
+        const t=cleanBibleText(row.text||row.verse_text||row.content);
+        if(book&&ch&&verse&&t)verses.push({book,ch,verse,text:t});
+      });
+    }else{
+      // Generic JSON fallback — don't lose sourceLabel context
+      const parsed=parseBibleJsonValue(data,sourceLabel||'JSON');
+      return parsed;
+    }
+    if(!verses.length)warnings.push(`No verses found in ${sourceLabel||'JSON source'}.`);
+    return {verses,warnings,formats:[sourceLabel||'JSON']};
+  }
+  async function fetchDirectJsonParsed(code,info){
+    const data=await fetchJsonWithFallback(info.urls);
+    return parseBibleArrayToParsed(data,`${info.label} JSON`);
+  }
+  async function fetchAoParsed(info){
+    const resolved=await resolveAoTranslation(info.query||info.label,{preferDeuterocanon:info.preferDeuterocanon});
+    const id=inferTranslationId(resolved);
+    if(!id)throw new Error('Resolved translation had no usable ID.');
+    const data=await fetchAoJson(`${encodeURIComponent(id)}/complete.json`);
+    const parsed=parseAoComplete(data,`${info.label} / Free Use API (${id})`);
+    parsed.translationInfo=resolved;
+    parsed.translationId=id;
+    return parsed;
+  }
+  async function fetchOnlineParsed(code){
+    const c=String(code||'').toLowerCase();
+    const direct=CATENA_DIRECT_JSON_SOURCES[c];
+    if(direct){
+      try{return await fetchDirectJsonParsed(c,direct);}catch(e){
+        const ao=CATENA_ONLINE_IMPORTS[c]||direct;
+        const parsed=await fetchAoParsed(ao);
+        parsed.warnings=[`Direct JSON failed (${e.message}); imported through the Free Use API instead.`,...(parsed.warnings||[])];
+        return parsed;
+      }
+    }
+    const info=CATENA_ONLINE_IMPORTS[c];
+    if(!info)throw new Error('Unknown online import source: '+code);
+    return await fetchAoParsed(info);
+  }
+  window.catenaFetchPublicDomainBible=async function(directCode,directLayer){
+    const code=String(directCode||q('wholeBiblePublicDomain')?.value||'kjv').trim().toLowerCase();
+    if(code==='nkjv'||code==='niv'||code==='esv'||code==='nasb'){
+      report(`${code.toUpperCase()} is licensed/copyrighted. Use “Open source page” for reading, or import a licensed file from your device.`,'warn');
+      return;
+    }
+    const info=CATENA_ONLINE_IMPORTS[code]||CATENA_DIRECT_JSON_SOURCES[code];
+    if(!info){report('Unknown online import source: '+code,'error');return;}
+    const label=info.label||code.toUpperCase();
+    const layer=(directLayer||q('wholeBibleLayerName')?.value||label).trim()||label;
+    const btn=document.querySelector(`.fetch-btn-grid button[data-code="${CSS.escape(code)}"]`);
+    if(btn)btn.classList.add('fetching');
+    report(`Fetching ${info.full||label}. If the direct source is unavailable, the app will try the Free Use API automatically…`,'warn');
+    try{
+      const parsed=await fetchOnlineParsed(code);
+      parsed.formats=parsed.formats||[];
+      if(parsed.translationId)parsed.formats.push(`API id: ${parsed.translationId}`);
+      if(!parsed.verses?.length)throw new Error(parsed.warnings?.[0]||'Parsed 0 verses.');
+      const mode=q('wholeBibleAction')?.value||'replaceLayer';
+      const replace=q('wholeBibleReplace')?.checked!==false;
+      const res=mergeParsedVerses(parsed,layer,mode,replace);
+      state.translationMeta=state.translationMeta||{};
+      state.translationMeta[layer]={...(state.translationMeta[layer]||{}),sourceName:info.full||label,sourceFormat:[...new Set(parsed.formats||[])].join(', '),wholeBible:true,lastImport:new Date().toISOString()};
+      try{rememberImportedLayer(layer);}catch(e){state.active.translation=layer;}
+      state.active.translation=layer;
+      try{if(typeof saveSoon==='function')saveSoon();}catch(e){}
+      refreshLayerSurfaces('online-bible-fetch');
+      const warn=(parsed.warnings||[]).length?` First warning: ${parsed.warnings[0]}`:'';
+      report(`✓ ${label} ready — ${res.count.toLocaleString()} verse${res.count===1?'':'s'} imported into layer "${layer}".${res.skipped?` Skipped ${res.skipped.toLocaleString()} existing verse${res.skipped===1?'':'s'}.`:''}${warn}`,(parsed.warnings||[]).length?'warn':'ok');
+    }catch(err){
+      report(`✗ ${label} import failed: ${err.message}. Use another public source, open a source page, or import a licensed/local file.`,'error');
+    }finally{
+      if(btn)btn.classList.remove('fetching');
+    }
+  };
+  window.catenaLoadFreeUseTranslations=async function(force){
+    const sel=q('aoTranslationSelect');
+    const filter=normalizeLooseName(q('aoTranslationFilter')?.value||'');
+    const canon=q('aoCanonFilter')?.value||'all';
+    const btn=q('aoLoadBtn');
+    if(btn)btn.disabled=true;
+    report('Loading free-use translation index…','warn');
+    try{
+      const list=await loadAoTranslations(!!force);
+      let filtered=list;
+      if(filter){filtered=filtered.filter(t=>translationBlob(t).includes(filter)||normalizeLooseName(inferTranslationId(t)).includes(filter));}
+      if(canon==='deut')filtered=filtered.filter(looksDeuterocanonical);
+      if(canon==='english')filtered=filtered.filter(t=>/english|\beng\b|\ben\b/.test(translationBlob(t)+normalizeLooseName(inferTranslationId(t))));
+      filtered=filtered.slice(0,500);
+      if(sel){
+        sel.innerHTML=filtered.map(t=>{
+          const id=inferTranslationId(t);
+          const name=t.englishName||t.name||t.title||t.description||id;
+          const tag=looksDeuterocanonical(t)?' • deut/apoc?':'';
+          return `<option value="${esc(id)}">${esc(id)} — ${esc(name)}${tag}</option>`;
+        }).join('')||'<option value="">No matches</option>';
+      }
+      report(`Loaded ${filtered.length.toLocaleString()} matching free-use translation option${filtered.length===1?'':'s'}.`,'ok');
+    }catch(err){
+      report('Could not load translation index: '+err.message,'error');
+    }finally{
+      if(btn)btn.disabled=false;
+    }
+  };
+  window.catenaImportSelectedAoTranslation=async function(){
+    const id=(q('aoTranslationSelect')?.value||'').trim();
+    if(!id){report('Select a free-use API translation first.','warn');return;}
+    const label=(q('wholeBibleLayerName')?.value||id).trim()||id;
+    report(`Fetching ${id} complete text…`,'warn');
+    try{
+      const data=await fetchAoJson(`${encodeURIComponent(id)}/complete.json`);
+      const parsed=parseAoComplete(data,`Free Use API (${id})`);
+      if(!parsed.verses.length)throw new Error(parsed.warnings?.[0]||'No verses found.');
+      const mode=q('wholeBibleAction')?.value||'replaceLayer';
+      const replace=q('wholeBibleReplace')?.checked!==false;
+      const res=mergeParsedVerses(parsed,label,mode,replace);
+      state.translationMeta=state.translationMeta||{};
+      state.translationMeta[label]={...(state.translationMeta[label]||{}),sourceName:id,sourceFormat:`Free Use API complete.json (${id})`,wholeBible:true,lastImport:new Date().toISOString()};
+      state.active.translation=label;refreshLayerSurfaces('selected-api-import');saveSoon();
+      report(`✓ Imported ${res.count.toLocaleString()} verse${res.count===1?'':'s'} into "${label}" from ${id}.`,'ok');
+    }catch(err){report('Selected API import failed: '+err.message,'error');}
+  };
+  function currentPassageForSource(){
+    const b=state.active.book||'Matthew';
+    const c=Number(state.active.chapter)||1;
+    return {book:b,chapter:c,ref:`${b} ${c}`};
+  }
+  function buildBibleGatewayUrl(version){
+    const p=currentPassageForSource();
+    return `https://www.biblegateway.com/passage/?search=${encodeURIComponent(p.ref)}&version=${encodeURIComponent(version||'NKJV')}`;
+  }
+  function buildCustomSourceUrl(template,version){
+    const p=currentPassageForSource();
+    const enc=x=>encodeURIComponent(String(x||''));
+    return String(template||'').replace(/\{ref\}/g,enc(p.ref)).replace(/\{book\}/g,enc(p.book)).replace(/\{chapter\}/g,enc(p.chapter)).replace(/\{version\}/g,enc(version||''));
+  }
+  window.catenaOpenSourceVersion=function(version){
+    const v=String(version||q('sourceVersionSelect')?.value||'NKJV').trim();
+    const template=(q('customSourceTemplate')?.value||'').trim();
+    const url=template?buildCustomSourceUrl(template,v):buildBibleGatewayUrl(v);
+    window.open(url,'_blank','noopener');
+  };
+  window.openSelectedSourcePage=function(){
+    const v=(q('sourceVersionSelect')?.value||'NKJV').trim();
+    window.catenaOpenSourceVersion(v);
+  };
+  window.catenaImportBgPaste=function(){
+    const txt=(q('bgPasteText')?.value||'').trim();
+    const rep=q('bgPasteReport')||q('wholeBibleReport');
+    const say=(msg,cls)=>{if(rep){rep.textContent=msg;rep.className=cls||''}};
+    if(!txt){say('Paste some text first.','warn');return;}
+    const layer=(q('bgPasteLayerName')?.value||q('wholeBibleLayerName')?.value||q('newTransName')?.value||'Pasted Layer').trim()||'Pasted Layer';
+    const book=(q('bgPasteBook')?.value||state.active.book||'Genesis').trim();
+    const chapter=Number(q('bgPasteChapter')?.value)||Number(state.active.chapter)||1;
+    say(`Parsing ${layer} for ${book} ${chapter}…`,'warn');
+    try{
+      // Use the smart parser which now handles BG inline format + footnote stripping
+      const parsed=typeof parseSmartTranslation==='function'?parseSmartTranslation(txt,book,chapter):{verses:[],notes:[],rejected:[],formats:[]};
+      const valid=typeof validateSmartImport==='function'?validateSmartImport(parsed):{ok:parsed.verses.length>0,msg:parsed.verses.length?`${parsed.verses.length} verses`:'No verses found.'};
+      if(!valid.ok||!parsed.verses.length){
+        // Fallback: try the whole-bible plain-text parser
+        const parsed2=typeof window.catenaParsePlainBibleText==='function'?window.catenaParsePlainBibleText(txt,layer):null;
+        if(parsed2&&parsed2.verses.length){
+          const mode=q('wholeBibleAction')?.value||'replaceLayer';
+          const replace=q('wholeBibleReplace')?.checked!==false;
+          const res=mergeParsedVerses(parsed2,layer,mode,replace);
+          say(`✓ Imported ${res.count} verse${res.count===1?'':'s'} into "${layer}" (plain-text format).`,'ok');
+          if(q('bgPasteText'))q('bgPasteText').value='';
+          return;
+        }
+        say('⚠ '+valid.msg,'error');return;
+      }
+      const obj=safeEnsure(layer);
+      const replace=q('wholeBibleReplace')?.checked!==false;
+      let count=0;
+      parsed.verses.forEach(v=>{
+        const k=typeof vKey==='function'?vKey(v.book,v.ch,v.verse):`${v.book}|${v.ch}|${v.verse}`;
+        if(replace||!obj[k]){obj[k]=typeof verseDisplayHtml==='function'?verseDisplayHtml(v.text):v.text;count++;}
+      });
+      parsed.notes.forEach(n=>{
+        const k=typeof vKey==='function'?vKey(n.book,n.ch,n.verse):`${n.book}|${n.ch}|${n.verse}`;
+        const e=state.entries[k]||(state.entries[k]={commentaryHtml:'',sourceHtml:'',structured:{}});
+        e.commentaryHtml=(e.commentaryHtml||'')+n.text;
+      });
+      state.translationMeta=state.translationMeta||{};
+      state.translationMeta[layer]={...(state.translationMeta[layer]||{}),lineType:'Translation',lastImport:new Date().toISOString()};
+      try{rememberImportedLayer(layer);}catch(e){state.active.translation=layer;}
+      state.active.translation=layer;
+      refreshLayerSurfaces('bg-paste-import');
+      try{if(typeof saveSoon==='function')saveSoon();}catch(e){}
+      say(`✓ ${count} verse${count===1?'':'s'} imported into "${layer}" (${book} ${chapter}). ${valid.msg}`,'ok');
+      if(q('bgPasteText'))q('bgPasteText').value='';
+    }catch(err){say('Import failed: '+err.message,'error');}
+  };
+  window.catenaApplyWholeBiblePreset=function(){
+    const preset=q('wholeBiblePreset')?.value||'';
+    if(!preset)return;
+    const layer=q('wholeBibleLayerName');
+    if(layer)layer.value=preset;
+    const main=q('newTransName');
+    if(main)main.value=preset;
+    if(/^NKJV|ESV|NIV|NASB|NRSVUE|RSVCE|OSB|Orthodox Study Bible$/i.test(preset))report(`${preset} selected. For copyrighted/licensed editions, import a lawful local file or use the source-page buttons; the app will not scrape the text.`,'warn');
+  };
+
+  function installWholeBibleUi(){
+    const pane=document.querySelector('.simple-import-pane');
+    if(!pane||q('wholeBibleImportBox'))return;
+    const firstHead=pane.querySelector('.section-head');
+    const box=document.createElement('div');
+    box.id='wholeBibleImportBox';
+    box.className='whole-bible-import';
+    const importBtns=[
+      ['kjv','King James'],['ylt','Young Literal'],['asv','American Std.'],['web','World English'],['webbe','WEB British'],['webc','WEB Catholic'],['bsb','Berean'],['bbe','Basic English'],['darby','Darby'],['dra','Douay-Rheims'],['drb','DRB'],['wyc','Wycliffe'],['brenton','Brenton/LXX'],['vulgate','Latin Vulgate'],['sblgnt','Greek NT'],['wlc','Hebrew OT']
+    ].map(([code,name])=>catenaSourceButtonHtml(code,name)).join('');
+    const sourceBtns=Object.entries(CATENA_SOURCE_LINKS).map(([code,info])=>`<button type="button" class="link-only" onclick="catenaOpenSourceVersion('${localEsc(info.version)}')"><span class="ftag">${localEsc(info.name)}</span><span class="fname">${localEsc(info.site)}</span></button>`).join('');
+    box.innerHTML=`
+      <div class="quick-fetch-panel">
+        <h3>⚡ Online Bible Library</h3>
+        <p class="hint">Import public/free-use texts into real app layers, or open licensed editions such as NKJV without scraping them. If a direct JSON source fails, the app falls back to the Free Use Bible API automatically.</p>
+        <div class="fetch-btn-grid">${importBtns}</div>
+        <div class="fetch-progress" id="wholeBibleReport">Select an import source above, open a source page below, or use local-file import for licensed translations.</div>
+        <div class="online-source-tools">
+          <div class="tiny-note"><b>Licensed/source-page one-clicks:</b> these open the active chapter in a legal reading page. They do not copy text into your database.</div>
+          <div class="fetch-btn-grid source-links">${sourceBtns}</div>
+          <div class="online-source-row">
+            <label>Source-page version
+              <select id="sourceVersionSelect">
+                ${Object.values(CATENA_SOURCE_LINKS).map(i=>`<option value="${localEsc(i.version)}">${localEsc(i.name)} / ${localEsc(i.version)}</option>`).join('')}
+              </select>
+            </label>
+            <label>Custom URL template
+              <input id="customSourceTemplate" placeholder="Optional: https://site/?q={ref}&version={version}">
+            </label>
+            <button type="button" onclick="catenaOpenSourceVersion()">Open active chapter</button>
+          </div>
+          <div class="tiny-note" style="margin-top:10px"><b>📋 Paste from BibleGateway, BibleHub, or any site:</b> copy a chapter and paste below. Inline verse numbers (1 text 2 text) and footnote markers [a][b] are handled automatically.</div>
+          <div class="online-source-row" style="align-items:end;margin-top:4px">
+            <label>Layer name<input id="bgPasteLayerName" placeholder="NKJV, ESV, NRSVUE…"></label>
+            <label>Book<input id="bgPasteBook" placeholder="e.g. Genesis"></label>
+            <label>Chapter<input id="bgPasteChapter" type="number" min="1" value="1"></label>
+          </div>
+          <textarea id="bgPasteText" placeholder="Paste chapter text here. Works with:&#10;• Inline numbers: 1 In the beginning God created… 2 The earth was…&#10;• Separate lines: each line starting with a number&#10;• Superscripts: ¹ In the beginning… ² The earth…&#10;• Footnote markers [a][b][c] are removed automatically" style="min-height:100px;margin-top:6px"></textarea>
+          <div class="whole-bible-actions" style="margin-top:6px">
+            <button type="button" class="gold" onclick="catenaImportBgPaste()">⬆ Import pasted text</button>
+            <button type="button" onclick="(function(){var v=document.getElementById('bgPasteLayerName')?.value||'NKJV';catenaOpenSourceVersion(v);})()">Open source page for this version</button>
+          </div>
+          <div id="bgPasteReport" style="min-height:16px;font-size:12px;color:var(--muted);margin-top:4px"></div>
+        </div>
+      </div>
+      <details style="margin-bottom:10px" open>
+        <summary style="cursor:pointer;color:var(--gold2);font-family:var(--ui);font-size:13px;letter-spacing:.04em;padding:6px 0">▾ File import, deuterocanon, and advanced online options</summary>
+        <div style="padding:10px 0;display:grid;gap:8px">
+          <div class="whole-bible-grid">
+            <label>Translation preset
+              <select id="wholeBiblePreset" onchange="catenaApplyWholeBiblePreset()">
+                <option value="">Custom / from file</option>
+                <optgroup label="Common English / public or free-use">
+                  <option value="KJV">KJV</option><option value="YLT">YLT</option><option value="ASV">ASV</option><option value="WEB">WEB</option><option value="WEBBE">WEBBE</option><option value="BSB">BSB</option><option value="BBE">BBE</option><option value="DARBY">DARBY</option><option value="WYC">WYC</option>
+                </optgroup>
+                <optgroup label="Licensed / source-page or local file">
+                  <option value="NKJV">NKJV</option><option value="ESV">ESV</option><option value="NIV">NIV</option><option value="NASB">NASB</option><option value="NRSVUE">NRSVUE</option><option value="RSVCE">RSVCE</option><option value="Orthodox Study Bible">Orthodox Study Bible</option>
+                </optgroup>
+                <optgroup label="Deuterocanon / Apocrypha / ancient">
+                  ${CATENA_DEUTEROCANON_PRESETS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}
+                  <option value="Brenton LXX">Brenton LXX</option><option value="Latin Vulgate">Latin Vulgate</option><option value="Greek Septuagint">Greek Septuagint</option>
+                </optgroup>
+                <option value="My Translation">My Translation</option>
+              </select>
+            </label>
+            <label>Layer name<input id="wholeBibleLayerName" placeholder="KJV, YLT, WEB-C, NKJV file, etc."></label>
+            <label>File format
+              <select id="wholeBibleFormat">
+                <option value="auto">Auto-detect</option><option value="usfm">USFM / SFM</option><option value="osis">OSIS XML</option><option value="json">JSON</option><option value="plain">TXT / Markdown refs</option>
+              </select>
+            </label>
+            <label>Save mode
+              <select id="wholeBibleAction"><option value="replaceLayer">Replace whole layer</option><option value="merge">Merge into layer</option></select>
+            </label>
+            <label>Fetch by dropdown
+              <select id="wholeBiblePublicDomain">
+                ${Object.entries(CATENA_ONLINE_IMPORTS).map(([code,info])=>`<option value="${esc(code)}">${esc(info.label)} — ${esc(info.full)}</option>`).join('')}
+              </select>
+            </label>
+          </div>
+          <label><input id="wholeBibleReplace" type="checkbox" checked> Replace matching verses during import</label>
+          <div class="whole-bible-actions">
+            <input id="wholeBibleFiles" type="file" multiple accept=".usfm,.sfm,.xml,.osis,.json,.txt,.md,.markdown,.csv" onchange="catenaImportWholeBibleFiles(event)">
+            <button type="button" class="gold" onclick="catenaImportWholeBibleFiles()">Import selected file(s)</button>
+            <button type="button" onclick="catenaFetchPublicDomainBible()">Fetch dropdown source</button>
+          </div>
+          <div class="online-source-tools">
+            <div class="tiny-note"><b>Free-use translation browser:</b> use this when a text is not one of the fixed buttons, especially deuterocanon/apocrypha sources, ancient-language texts, or alternate English editions.</div>
+            <div class="online-source-row">
+              <label>Search/filter<input id="aoTranslationFilter" placeholder="YLT, Douay, apocrypha, Septuagint, Syriac, Coptic..."></label>
+              <label>Canon/language filter<select id="aoCanonFilter"><option value="all">All available</option><option value="english">Likely English</option><option value="deut">Likely deuterocanon/apocrypha</option></select></label>
+              <button id="aoLoadBtn" type="button" onclick="catenaLoadFreeUseTranslations(false)">Load/search index</button>
+            </div>
+            <div class="online-source-row">
+              <label>Available translation<select id="aoTranslationSelect"><option value="">Load the index first</option></select></label>
+              <button type="button" class="gold" onclick="catenaImportSelectedAoTranslation()">Import selected free-use text</button>
+              <button type="button" onclick="catenaLoadFreeUseTranslations(true)">Refresh index</button>
+            </div>
+          </div>
+        </div>
+      </details>
+    `;
+    if(firstHead)firstHead.insertAdjacentElement('afterend',box);
+    else pane.insertAdjacentElement('afterbegin',box);
+  }
+
+  window.catenaParseWholeBibleText=parseWholeBibleText;
+  window.catenaMergeParsedBibleVerses=mergeParsedVerses;
+  window.catenaParsePlainBibleText=parsePlainBibleText;
+
+  function chapterVerseCount(layer,book,chapter){
+    const prefix=`${book}|${chapter}|`;
+    return Object.keys(safeGetObj(layer)).filter(k=>k.startsWith(prefix)).length;
+  }
+  window.catenaRenameTranslation=function(oldName,newName){
+    oldName=String(oldName||'').trim(); newName=String(newName||'').trim();
+    if(!oldName||!newName||oldName===newName)return refreshLayerSurfaces('rename-noop');
+    if(state.translations[newName]){alert('A layer named "'+newName+'" already exists.');return refreshLayerSurfaces('rename-duplicate');}
+    state.translations[newName]=state.translations[oldName]||{};
+    delete state.translations[oldName];
+    state.translationMeta=state.translationMeta||{};
+    state.translationMeta[newName]=state.translationMeta[oldName]||{};
+    delete state.translationMeta[oldName];
+    if(state.active.translation===oldName)state.active.translation=newName;
+    state.active.parallelTranslations=(state.active.parallelTranslations||[]).map(n=>n===oldName?newName:n);
+    Object.keys(state.active.layerByBook||{}).forEach(k=>{if(state.active.layerByBook[k]===oldName)state.active.layerByBook[k]=newName;});
+    Object.keys(state.active.layerByCategory||{}).forEach(k=>{if(state.active.layerByCategory[k]===oldName)state.active.layerByCategory[k]=newName;});
+    refreshLayerSurfaces('rename-layer'); saveSoon();
+  };
+  window.catenaSetLayerType=function(name,type){
+    state.translationMeta=state.translationMeta||{};
+    state.translationMeta[name]={...(state.translationMeta[name]||{}),lineType:type};
+    refreshLayerSurfaces('layer-type'); saveSoon();
+  };
+  window.catenaCreateLayerFromManager=function(){
+    const name=(q('layerManagerNewName')?.value||'').trim();
+    if(!name){try{toast('Enter a layer name first.');}catch(e){}return;}
+    safeEnsure(name);
+    state.active.translation=name;
+    if(q('layerManagerNewName'))q('layerManagerNewName').value='';
+    try{if(typeof saveSoon==='function')saveSoon();}catch(e){}
+    refreshLayerSurfaces('create-layer');
+    try{
+      const flow=document.getElementById('verseFlow');
+      if(flow){
+        const existing=flow.querySelector('.refresh-banner');
+        if(existing)existing.remove();
+        const banner=document.createElement('div');
+        banner.className='refresh-banner';
+        banner.innerHTML='<span>Layer <b>'+name+'</b> created and set as active. Paste text into it using the panel below, or import via the Translations dialog.</span><button onclick="this.parentElement.remove()">✕</button>';
+        flow.insertAdjacentElement('afterbegin',banner);
+      }
+    }catch(e){}
+    try{toast('Layer "'+name+'" created and set active.');}catch(e){}
+  };
+  window.catenaSetDisplayMode=function(mode){
+    state.settings=state.settings||{};
+    state.settings.displayMode=mode;
+    const sel=q('displayMode'); if(sel)sel.value=mode;
+    refreshLayerSurfaces('display-mode'); saveSoon();
+  };
+  window.catenaMoveLayerCard=function(name,dir){
+    state.active.parallelTranslations=state.active.parallelTranslations||[];
+    const arr=state.active.parallelTranslations;
+    const i=arr.indexOf(name);
+    if(i<0){if(name!==state.active.translation)arr.push(name);refreshLayerSurfaces('move-add');saveSoon();return;}
+    const j=i+dir;
+    if(j<0||j>=arr.length)return;
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+    refreshLayerSurfaces('move-layer'); saveSoon();
+  };
+
+  window.renderTranslationList=function(){
+    const box=q('translationList'); if(!box)return;
+    try{if(typeof normalizeStateShape==='function')normalizeStateShape();}catch(e){}
+    box.className='layer-manager';
+    const names=safeAllNames();
+    const filter=(q('layerManagerSearch')?.value||'').toLowerCase().trim();
+    const mode=state.settings?.displayMode||'single';
+    const active=state.active?.translation||'';
+    const currentBook=state.active?.book||'';
+    const currentChapter=Number(state.active?.chapter)||1;
+    box.innerHTML='';
+    const panel=document.createElement('div');
+    panel.className='layer-manager-panel';
+    const toolbar=document.createElement('div');
+    toolbar.className='layer-manager-toolbar';
+    toolbar.innerHTML=`
+      <label>Find layer<input id="layerManagerSearch" value="${localEsc(filter)}" placeholder="Search translations"></label>
+      <label>Active layer
+        <select id="layerManagerActiveSelect">
+          <option value="">No active layer</option>
+          ${names.map(n=>`<option value="${localEsc(n)}" ${n===active?'selected':''}>${localEsc(n)}</option>`).join('')}
+        </select>
+      </label>
+      <label>New layer<input id="layerManagerNewName" placeholder="e.g. NKJV, Greek Text"></label>
+      <div class="layer-toolbar-actions">
+        <button type="button" class="gold" id="layerManagerAddBtn">+ Add Layer</button>
+        <button type="button" id="layerManagerRefreshBtn" title="Refresh reader and all layer surfaces now">↺ Refresh</button>
+      </div>
+      <div class="layer-mode-chips">
+        <button type="button" data-mode="single">Single</button>
+        <button type="button" data-mode="sideBySide">Parallel</button>
+        <button type="button" data-mode="stacked">Stacked</button>
+        <button type="button" data-mode="wordInterlinear">Interlinear</button>
+        <button type="button" data-mode="compact">Table</button>
+      </div>
+    `;
+    panel.appendChild(toolbar);
+    box.appendChild(panel);
+    q('layerManagerSearch')?.addEventListener('input',()=>renderTranslationList());
+    q('layerManagerActiveSelect')?.addEventListener('change',ev=>{if(typeof setActiveTranslation==='function')setActiveTranslation(ev.target.value);else state.active.translation=ev.target.value;refreshLayerSurfaces('active-select');});
+    q('layerManagerAddBtn')?.addEventListener('click',catenaCreateLayerFromManager);
+    q('layerManagerRefreshBtn')?.addEventListener('click',()=>{
+      try{if(typeof window.refreshLayerSurfaces==='function')window.refreshLayerSurfaces('manual-refresh');}catch(e){}
+      try{if(typeof renderAll==='function')renderAll();}catch(e){}
+      try{toast('Reader refreshed.');}catch(e){}
+    });
+    toolbar.querySelectorAll('[data-mode]').forEach(btn=>{btn.classList.toggle('active',btn.dataset.mode===mode);btn.addEventListener('click',()=>catenaSetDisplayMode(btn.dataset.mode));});
+    const visible=names.filter(n=>!filter||n.toLowerCase().includes(filter));
+    if(!visible.length){
+      const empty=document.createElement('div');
+      empty.className='layer-manager-empty';
+      empty.textContent=names.length?'No matching layers.':'No layers yet. Add a layer, import a whole Bible file, or paste a chapter.';
+      panel.appendChild(empty);
+    }
+    visible.forEach(name=>{
+      const obj=safeGetObj(name);
+      const isActive=name===active;
+      const isParallel=(state.active.parallelTranslations||[]).includes(name);
+      const meta=state.translationMeta?.[name]||{};
+      const total=Object.keys(obj).length;
+      const inChapter=chapterVerseCount(name,currentBook,currentChapter);
+      const card=document.createElement('div');
+      card.className='layer-card'+(isActive?' active':'');
+      card.innerHTML=`
+        <div class="layer-main">
+          <div class="layer-name-line">
+            <input type="radio" name="layerActiveRadio" ${isActive?'checked':''} title="Set active">
+            <input type="text" value="${localEsc(name)}" aria-label="Layer name">
+          </div>
+          <div class="layer-flags">
+            <label><input type="checkbox" class="layer-compare" ${isParallel||isActive?'checked':''} ${isActive?'disabled':''}> Show in comparison</label>
+            <span>${total} total verse${total===1?'':'s'}</span>
+            <span>${inChapter} in ${localEsc(currentBook)} ${currentChapter}</span>
+          </div>
+        </div>
+        <select class="layer-meta-select" aria-label="Layer type">
+          ${['Translation','Greek','Hebrew','Coptic','Latin','Transliteration','Literal Gloss','Commentary Layer'].map(t=>`<option ${((meta.lineType||'Translation')===t)?'selected':''}>${t}</option>`).join('')}
+        </select>
+        <div class="layer-card-actions">
+          <button type="button" class="layer-up" title="Move up">Up</button>
+          <button type="button" class="layer-down" title="Move down">Down</button>
+          <button type="button" class="layer-export" title="Export JSON">Export</button>
+          <button type="button" class="danger layer-delete" title="Delete layer">Delete</button>
+        </div>
+      `;
+      const radio=card.querySelector('input[type=radio]');
+      const nameInput=card.querySelector('input[type=text]');
+      const compare=card.querySelector('.layer-compare');
+      const type=card.querySelector('.layer-meta-select');
+      radio.addEventListener('change',()=>{if(typeof setActiveTranslation==='function')setActiveTranslation(name);else state.active.translation=name;refreshLayerSurfaces('active-radio');});
+      nameInput.addEventListener('change',()=>catenaRenameTranslation(name,nameInput.value));
+      compare.addEventListener('change',()=>{if(typeof toggleParallel==='function')toggleParallel(name,compare.checked);else{state.active.parallelTranslations=state.active.parallelTranslations||[];if(compare.checked&&!state.active.parallelTranslations.includes(name))state.active.parallelTranslations.push(name);if(!compare.checked)state.active.parallelTranslations=state.active.parallelTranslations.filter(n=>n!==name);}refreshLayerSurfaces('compare-toggle');});
+      type.addEventListener('change',()=>catenaSetLayerType(name,type.value));
+      card.querySelector('.layer-up').addEventListener('click',()=>catenaMoveLayerCard(name,-1));
+      card.querySelector('.layer-down').addEventListener('click',()=>catenaMoveLayerCard(name,1));
+      card.querySelector('.layer-export').addEventListener('click',()=>{state.active.translation=name;if(typeof exportTranslationJSON==='function')exportTranslationJSON();});
+      card.querySelector('.layer-delete').addEventListener('click',()=>{if(typeof deleteTranslationNamed==='function')deleteTranslationNamed(name,true);else{if(confirm('Delete text layer "'+name+'"?')){delete state.translations[name];refreshLayerSurfaces('delete-layer');saveSoon();}}});
+      panel.appendChild(card);
+    });
+    const details=document.createElement('details');
+    details.className='layer-advanced-summary';
+    details.innerHTML=`
+      <summary>Advanced Display Controls</summary>
+      <div class="layer-advanced-body">
+        <label><input type="checkbox" id="lmLabels"> Show layer labels</label>
+        <label><input type="checkbox" id="lmVerseNums"> Show verse numbers</label>
+        <label><input type="checkbox" id="lmCollapse"> Collapse empty layers</label>
+        <label><input type="checkbox" id="lmActiveOnly"> Show only active verse</label>
+        <label><input type="checkbox" id="lmSyncScroll"> Sync scrolling</label>
+      </div>
+    `;
+    panel.appendChild(details);
+    const bindCheck=(id,key,defaultValue,rerender=true)=>{
+      const el=q(id); if(!el)return;
+      el.checked=state.settings?.[key]!==undefined?!!state.settings[key]:defaultValue;
+      el.addEventListener('change',()=>{state.settings[key]=el.checked;if(rerender)refreshLayerSurfaces('advanced-'+key);saveSoon();});
+    };
+    bindCheck('lmLabels','showLayerLabels',true);
+    bindCheck('lmVerseNums','showVerseNumbers',true);
+    bindCheck('lmCollapse','collapseEmptyLayers',true);
+    bindCheck('lmActiveOnly','activeVerseOnly',false);
+    bindCheck('lmSyncScroll','syncScroll',true,false);
+    try{if(typeof syncLayerControls==='function')syncLayerControls();}catch(e){}
+  };
+
+  window.refreshLayerSurfaces=function(reason){
+    if(window.catenaRefreshingLayerSurfaces)return;
+    window.catenaRefreshingLayerSurfaces=true;
+    try{if(typeof normalizeStateShape==='function')normalizeStateShape();}catch(e){}
+    try{if(typeof renderTranslationSelect==='function')renderTranslationSelect();}catch(e){}
+    try{if(q('translationModal')?.classList.contains('show')||q('translationList'))window.renderTranslationList();}catch(e){}
+    try{if(typeof renderReader==='function')renderReader();}catch(e){}
+    try{if(typeof loadEntryEditor==='function')loadEntryEditor();}catch(e){}
+    try{if(typeof renderChapterCommentaries==='function')renderChapterCommentaries();}catch(e){}
+    try{if(typeof catenaRefreshPdfIfOpen==='function')catenaRefreshPdfIfOpen();}catch(e){}
+    try{if(typeof window.cuxUpdateStats==='function')window.cuxUpdateStats();}catch(e){}
+    window.catenaRefreshingLayerSurfaces=false;
+  };
+  function wrapLayerFunction(name){
+    const old=window[name];
+    if(typeof old!=='function'||old.__wholeBibleLayerWrapped)return;
+    const wrapped=function(...args){
+      const result=old.apply(this,args);
+      setTimeout(()=>refreshLayerSurfaces(name),0);
+      return result;
+    };
+    wrapped.__wholeBibleLayerWrapped=true;
+    window[name]=wrapped;
+    try{eval(name+'=window["'+name+'"]');}catch(e){}
+  }
+  ['setActiveTranslation','toggleParallel','deleteTranslationNamed','deleteActiveTranslation','clearTranslationChapter','importFullTranslation','importCurrentChapter','importSequential','importOwnTranslationWithCommentary','importReaderQuickTranslation'].forEach(wrapLayerFunction);
+
+  function boot(){
+    installWholeBibleUi();
+    const modalHead=document.querySelector('#translationModal .section-head h3');
+    if(modalHead&&/Advanced layer controls/i.test(modalHead.textContent))modalHead.textContent='Layer Manager';
+    try{window.renderTranslationList();}catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else setTimeout(boot,0);
+  setTimeout(boot,350);
 })();
 </script>
