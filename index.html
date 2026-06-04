@@ -9763,3 +9763,384 @@ body.cux-search #cuxSearch{display:flex}
   setTimeout(boot,400);
 })();
 </script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CATENA · KJV-ONLY LIBRARY + FORMAL LAYER MANAGER + TOML I/O
+     Final, last-loaded. (1) clean/formal layer manager UI,
+     (2) online library reduced to KJV, (3) commentary TOML import/export.
+═════════════════════════════════════════════════════════════════ -->
+<style id="catena-kjv-layermgr-toml-css">
+
+/* ───────────────────────── 1 · LAYER MANAGER (formal, uncrowded) ───────── */
+#translationList.layer-manager{gap:12px!important}
+#translationList .layer-manager-toolbar{padding:12px 14px!important;gap:10px!important;border-radius:16px!important}
+#translationList .layer-mode-chips button,
+#translationList .layer-toolbar-actions button{height:32px!important;padding:0 13px!important;font:12px/1 var(--ui)!important;letter-spacing:.03em!important}
+
+#translationList .layer-card{
+  grid-template-columns:1fr auto!important;
+  grid-template-areas:"main type" "actions actions"!important;
+  gap:11px 14px!important;
+  padding:15px 17px!important;
+  border-radius:16px!important;
+  border-color:rgba(139,159,195,.22)!important;
+}
+#translationList .layer-card.active{border-color:rgba(201,168,76,.50)!important;background:rgba(201,168,76,.07)!important}
+#translationList .layer-main{grid-area:main!important;gap:9px!important;min-width:0!important}
+#translationList .layer-name-line{gap:10px!important;align-items:center!important}
+#translationList .layer-name-line input[type=radio]{width:18px!important;height:18px!important;accent-color:var(--gold)!important;flex:0 0 auto!important;cursor:pointer}
+#translationList .layer-name-line input[type=text]{
+  flex:1 1 auto!important;width:100%!important;min-width:0!important;height:38px!important;
+  font:500 15px/1.3 var(--serif)!important;padding:7px 12px!important;
+  background:var(--bg2)!important;border:1px solid var(--border2)!important;border-radius:9px!important;color:var(--ink)!important;
+}
+#translationList .layer-name-line input[type=text]:focus{border-color:var(--gold)!important;box-shadow:0 0 0 3px rgba(201,168,76,.10)!important}
+#translationList .layer-flags{gap:6px 16px!important;font:12px/1.45 var(--ui)!important;color:var(--muted)!important;align-items:center!important}
+#translationList .layer-flags label{gap:6px!important}
+#translationList .layer-flags input[type=checkbox]{accent-color:var(--gold)!important;width:15px!important;height:15px!important}
+
+#translationList .layer-meta-select{
+  grid-area:type!important;align-self:start!important;
+  width:178px!important;max-width:100%!important;height:38px!important;
+  padding:7px 11px!important;font:13px/1 var(--ui)!important;border-radius:9px!important;
+}
+#translationList .layer-card-actions{
+  grid-area:actions!important;justify-content:flex-end!important;gap:8px!important;
+  border-top:1px solid rgba(139,159,195,.16)!important;padding-top:12px!important;margin-top:1px!important;
+}
+#translationList .layer-card-actions button{
+  height:34px!important;min-width:0!important;padding:0 16px!important;
+  font:13px/1 var(--ui)!important;letter-spacing:.03em!important;border-radius:9px!important;
+}
+#translationList .layer-card-actions .layer-delete,
+#translationList .layer-card-actions .danger{margin-left:4px!important}
+@media(max-width:680px){
+  #translationList .layer-card{grid-template-columns:1fr!important;grid-template-areas:"main" "type" "actions"!important}
+  #translationList .layer-meta-select{width:100%!important}
+  #translationList .layer-card-actions{justify-content:stretch!important;flex-wrap:wrap!important}
+  #translationList .layer-card-actions button{flex:1 1 96px!important}
+}
+
+/* ───────────────────────── 2 · KJV-ONLY (hide multi-source widgets) ────── */
+.source-palette,
+#catenaOneClickSourceBank,
+#catenaSourceProvider,
+.reader-layer-actions [data-role="source-version"],
+.reader-layer-actions [data-role="open-ylt"]{display:none!important}
+.import-card[data-kjv] button{width:100%!important;margin-top:7px!important}
+.import-card[data-kjv] button:first-of-type{margin-top:4px!important}
+.kjv-online-card{
+  border:1px solid rgba(201,168,76,.34)!important;border-radius:14px!important;
+  background:linear-gradient(180deg,rgba(201,168,76,.08),rgba(255,255,255,.02))!important;
+  padding:14px 16px!important;margin:10px 0!important;display:grid!important;gap:9px!important;
+}
+.kjv-online-card h4{margin:0!important;color:var(--gold3)!important;font:700 14px/1.2 var(--title)!important;letter-spacing:.05em!important}
+.kjv-online-card p{margin:0!important;color:var(--muted)!important;font:12.5px/1.45 var(--ui)!important}
+.kjv-online-card .kjv-row{display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important}
+.kjv-online-card input[type=text]{flex:1 1 180px!important;min-width:0!important;height:36px!important;padding:6px 10px!important;font-size:14px!important}
+.kjv-online-card button{height:36px!important;padding:0 14px!important;font-size:13px!important;border-radius:9px!important}
+
+/* ───────────────────────── 3 · TOML EXPORT BOX ────────────────────────── */
+.toml-export-box{margin-top:16px!important;padding-top:14px!important;border-top:1px solid var(--border)!important}
+.toml-export-box code{color:var(--gold2)!important}
+.toml-export-actions{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.toml-export-actions button{height:36px!important;padding:0 14px!important;font-size:13px!important;border-radius:9px!important}
+
+/* ───────────────────────── general de-crowding in the layers modal ─────── */
+#translationModal .modal-body{padding:22px 22px 26px!important}
+#translationModal .simple-import-actions{gap:10px!important}
+#translationModal .fetch-advanced{margin-top:14px!important}
+#translationModal .import-grid{gap:10px!important}
+</style>
+<script id="catena-kjv-layermgr-toml-js">
+(function(){
+  'use strict';
+  if(window.__catenaKjvTomlUX) return; window.__catenaKjvTomlUX=true;
+  try{ if(typeof state!=='undefined' && state) window.state=state; }catch(_){}
+  const $=id=>document.getElementById(id);
+  const E=s=>{try{return typeof esc==='function'?esc(s):String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}catch(_){return String(s??'');}};
+  const strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  const A=()=>(window.state&&state.active)||{};
+
+  /* A TOML parser that PRESERVES literal value spacing — the stock one trims,
+     which destroys the intentional leading space in append_to_author_name=' 10:23-33'. */
+  window.parseToml=function(text){
+    const results=[];
+    const blocks=String(text||'').split(/\[\[\s*commentary\s*\]\]/i).slice(1);
+    blocks.forEach(block=>{
+      const entry={};
+      block=block.replace(/(\w+)\s*=\s*('''|""")([\s\S]*?)\2/g,(m,k,q,v)=>{ entry[k.trim()]=v.replace(/^\r?\n/,'').replace(/[ \t]*\r?\n[ \t]*$/,''); return ''; });
+      block.split(/\r?\n/).forEach(line=>{
+        const m=/^\s*(\w+)\s*=\s*(['"])([\s\S]*?)\2\s*(?:#.*)?$/.exec(line);
+        if(m) entry[m[1].trim()]=m[3]; // keep inner spaces verbatim
+      });
+      if(entry.quote||entry.source_title||entry.author||entry.reference||entry.ref) results.push(entry);
+    });
+    return results;
+  };
+
+  /* ═══════════════ 1 · ONLINE LIBRARY → KJV ONLY ═══════════════ */
+  function refNow(){
+    const r=$('onlineRef'); if(r&&r.value.trim())return r.value.trim();
+    const a=A(); return `${a.book||'Matthew'} ${a.chapter||1}`;
+  }
+  window.catenaOpenSourceVersion=function(){
+    window.open('https://www.biblegateway.com/passage/?search='+encodeURIComponent(refNow())+'&version=KJV','_blank','noopener');
+  };
+  // single, clean KJV fetch (bible-api.com supports the KJV)
+  window.catenaFetchKJV=async function(toPasteOnly){
+    const a=A(), book=a.book||'Matthew', ch=Number(a.chapter)||1, ref=refNow();
+    const rpt=$('fetchReport')||$('importReport');
+    const say=(m,c)=>{ if(rpt){rpt.textContent=m; rpt.className='small '+(c||'');} else if(typeof toast==='function')toast(m); };
+    say('Fetching KJV — '+ref+' …');
+    try{
+      const res=await fetch('https://bible-api.com/'+encodeURIComponent(ref)+'?translation=kjv',{cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      if(!data||!data.verses||!data.verses.length) throw new Error('no verses returned');
+      if(toPasteOnly){
+        const ta=$('translationPaste');
+        if(ta) ta.value=data.verses.map(v=>v.verse+' '+String(v.text||'').replace(/\s+/g,' ').trim()).join('\n');
+        say('Fetched '+data.verses.length+' KJV verses into the paste box — review, then Format / Import.','ok');
+        return;
+      }
+      const name=(($('newTransName')&&$('newTransName').value.trim())||(typeof targetLayerName==='function'?targetLayerName():'')||'King James Version');
+      const obj=(typeof ensureTranslation==='function')?ensureTranslation(name):(state.translations[name]=state.translations[name]||{});
+      let n=0;
+      data.verses.forEach(v=>{ obj[vKey(v.book_name||book, v.chapter||ch, v.verse)]=String(v.text||'').replace(/\s+/g,' ').trim(); n++; });
+      if(typeof rememberImportedLayer==='function') rememberImportedLayer(name); else state.active.translation=name;
+      say('Imported '+n+' KJV verses into “'+name+'”.','ok');
+      if(typeof renderAll==='function') renderAll();
+      if(typeof saveSoon==='function') saveSoon();
+    }catch(e){
+      say('Could not fetch KJV directly ('+e.message+'). Click “Open KJV · BibleGateway”, copy the chapter, and paste it above.','error');
+    }
+  };
+
+  function stripSources(){
+    document.querySelectorAll('.source-palette,#catenaOneClickSourceBank,#catenaSourceProvider,.reader-layer-actions [data-role="source-version"],.reader-layer-actions [data-role="open-ylt"]').forEach(el=>el.remove());
+  }
+  // a button is a non-KJV "version" button (fetch/open a specific edition) → remove it
+  function isVersionBtn(btn){
+    const oc=btn.getAttribute('onclick')||'';
+    return /catenaFetchPublicDomainBible\s*\(|catenaSourceButton|catenaFetchVersion/i.test(oc)
+        || /catenaOpenSourceVersion\s*\(\s*['"]/.test(oc)      // open with an explicit version argument
+        || btn.classList.contains('link-only');
+  }
+  function isKjvBtn(btn){ const s=(btn.getAttribute('onclick')||'')+' '+(btn.textContent||''); return /kjv|king\s*james/i.test(s); }
+  function pruneVersionButtons(scope){
+    (scope||document).querySelectorAll('.fetch-btn-grid button,.source-palette button,.reader-paste-panel button,.reader-quick-import button,.quick-fetch-panel button').forEach(btn=>{
+      if(isVersionBtn(btn) && !isKjvBtn(btn)) btn.remove();
+    });
+  }
+  function pruneKjv(){
+    // collapse the multi-source select to KJV (kept so dependent code still works)
+    const os=$('onlineSource'); if(os && os.dataset.kjv!=='1'){ os.dataset.kjv='1'; os.innerHTML='<option value="bible-api">King James Version (KJV)</option>'; os.value='bible-api'; const l=os.closest('label'); if(l)l.style.display='none'; }
+    const pv=$('onlineProviderValue'); if(pv){ pv.value='kjv'; const l=pv.closest('label'); if(l)l.style.display='none'; }
+    const ak=$('apiBibleKey'); if(ak){ const l=ak.closest('label'); if(l)l.style.display='none'; }
+    document.querySelectorAll('.fetch-grid').forEach(g=>{g.style.display='none';});
+    // rebuild the "Online source" import card into a clean KJV card
+    document.querySelectorAll('.import-card').forEach(card=>{
+      const h=card.querySelector('h4');
+      if(h && /online source/i.test(h.textContent) && card.dataset.kjv!=='1'){
+        card.dataset.kjv='1';
+        card.classList.add('kjv-online-card');
+        card.innerHTML='<h4>King James Version · online</h4><p>Public-domain KJV via bible-api.com. If a direct fetch is blocked, open the source page and paste.</p>'+
+          '<div class="kjv-row"><button class="gold" onclick="catenaFetchKJV(false)">Fetch KJV into layer</button>'+
+          '<button onclick="catenaFetchKJV(true)">Fetch to paste box</button>'+
+          '<button onclick="catenaOpenSourceVersion()">Open KJV · BibleGateway</button></div>';
+      }
+    });
+    // whole-bible public-domain picker → KJV only
+    const wb=$('wholeBiblePublicDomain'); if(wb && wb.dataset.kjv!=='1'){ wb.dataset.kjv='1'; wb.innerHTML='<option value="kjv">King James Version (KJV)</option>'; wb.value='kjv'; }
+    // add a smart "auto reference" option to the TOML attach-mode select
+    const am=$('tomlAttachMode'); if(am && !am.querySelector('option[value="auto"]')){ const o=document.createElement('option'); o.value='auto'; o.textContent='Auto-detect reference (filename or [Book C:V])'; am.insertBefore(o,am.firstChild); am.value='auto'; }
+
+    // === the large "Online Bible Library" panel → KJV only ===
+    const lib=$('wholeBibleImportBox');
+    if(lib){
+      lib.querySelectorAll('.fetch-btn-grid.source-links').forEach(el=>el.remove());        // licensed BibleGateway version row
+      const sv=$('sourceVersionSelect'); if(sv){const l=sv.closest('label'); if(l)l.style.display='none';}
+      const cu=$('customSourceTemplate'); if(cu){const l=cu.closest('label'); if(l)l.style.display='none';}
+      const wp=$('wholeBiblePreset'); if(wp && wp.dataset.kjv!=='1'){ wp.dataset.kjv='1'; wp.innerHTML='<option value="">Custom / from file</option><option value="KJV" selected>King James Version (KJV)</option><option value="My Translation">My Translation</option>'; }
+      const h=lib.querySelector('h3'); if(h)h.textContent='⚡ King James Version · online';
+      const hint=lib.querySelector('p.hint'); if(hint)hint.textContent='Import the public-domain King James Version straight into a text layer, or open it on a source page. You can also paste any chapter you copy, or import a local Bible file below.';
+      lib.querySelectorAll('.online-source-tools .tiny-note').forEach(n=>{ if(/Licensed\/source-page one-clicks/i.test(n.textContent)) n.remove(); });
+      ['bgPasteLayerName','wholeBibleLayerName'].forEach(id=>{const i=$(id); if(i&&/NKJV|ESV|NRSVUE|WEB-C/i.test(i.placeholder||'')) i.placeholder='King James Version';});
+    }
+    pruneVersionButtons(document);
+    stripSources();
+  }
+  // keep the whole-bible enhancer from re-adding source banks
+  const _enh=window.catenaEnhanceWholeBiblePanel;
+  window.catenaEnhanceWholeBiblePanel=function(){ try{ if(typeof _enh==='function')_enh.apply(this,arguments); }catch(_){} pruneKjv(); };
+  // prune when the relevant modals open (also injects the TOML export box)
+  const _om=window.openModal;
+  window.openModal=function(id){
+    const r=(typeof _om==='function')?_om.apply(this,arguments):($(id)&&$(id).classList.add('open'));
+    if(id==='translationModal'){ setTimeout(pruneKjv,30); }
+    if(id==='tomlModal'){ setTimeout(()=>{ pruneKjv(); injectTomlExport(); },30); }
+    return r;
+  };
+  // catch reader-rendered source widgets without a body-wide observer
+  (function(){
+    const reader=$('reader');
+    if(reader && 'MutationObserver' in window){
+      let raf=0;
+      new MutationObserver(()=>{ if(raf)return; raf=requestAnimationFrame(()=>{ raf=0;
+        stripSources();
+        if(document.querySelector('.fetch-btn-grid button,.reader-paste-panel button,.source-palette button')) pruneVersionButtons(reader);
+      }); }).observe(reader,{childList:true,subtree:true});
+    }
+  })();
+
+  /* ═══════════════ 2 · COMMENTARY TOML IMPORT / EXPORT ═══════════════ */
+  function resolveBook(name){
+    if(!name)return null; const nl=String(name).trim().replace(/\.+$/,'').toLowerCase();
+    const meta=(typeof BOOK_META!=='undefined')?BOOK_META:[];
+    let h=meta.find(m=>m.book.toLowerCase()===nl)||meta.find(m=>m.book.toLowerCase().startsWith(nl));
+    if(h)return h.book;
+    try{ for(const ab in BOOK_ABBR){ if(ab.toLowerCase()===nl) return BOOK_ABBR[ab]; } }catch(_){}
+    const c=nl.replace(/\s+/g,''); h=meta.find(m=>m.book.toLowerCase().replace(/\s+/g,'').startsWith(c));
+    return h?h.book:null;
+  }
+  function parseRefToken(s){
+    const m=/([1-4]?\s*[A-Za-z][A-Za-z.\s]*?)\s+(\d+)\s*[:.]\s*(\d+)/.exec(String(s||''));
+    if(!m)return null;
+    const book=resolveBook(m[1])||m[1].trim();
+    return {book,ch:Number(m[2]),v:Number(m[3])};
+  }
+  function tomlTarget(entry,filename,mode){
+    const a=A();
+    if(mode==='selected') return {book:a.book,ch:a.chapter,v:a.verse};
+    // explicit reference key
+    let t=parseRefToken(entry.reference||entry.ref||entry.verse_ref||entry.verse||'');
+    if(t&&t.book&&t.ch&&t.v) return t;
+    if(mode!=='filename'){
+      // [Book C:V] token inside the quote (the user's convention)
+      const bm=/\[([1-4]?\s*[A-Za-z][A-Za-z.\s]*?\s+\d+\s*[:.]\s*\d+)\]/.exec(entry.quote||'');
+      if(bm){ const r=parseRefToken(bm[1]); if(r&&r.book&&r.ch&&r.v) return r; }
+    }
+    if(filename){
+      const fm=/([1-4]?[A-Za-z][A-Za-z0-9 ]*?)\s*(\d+)[ _:.\-]+(\d+)/.exec(filename.replace(/\.toml$/i,''));
+      if(fm){ const r=parseRefToken(fm[1]+' '+fm[2]+':'+fm[3])||{book:fm[1].trim(),ch:+fm[2],v:+fm[3]}; if(r&&r.book&&r.ch&&r.v) return r; }
+    }
+    return {book:a.book,ch:a.chapter,v:a.verse};
+  }
+  function quoteToHtml(q){
+    const paras=String(q||'').split(/\n{2,}/).map(p=>E(p.trim()).replace(/\n/g,'<br>')).filter(Boolean);
+    return paras.length?`<blockquote>${paras.map(p=>`<p>${p}</p>`).join('')}</blockquote>`:'';
+  }
+  function applyTomlEntry(entry,book,ch,v,authorFallback){
+    if(!book||!ch||!v) return;
+    const k=vKey(book,ch,v);
+    const e=state.entries[k]||(state.entries[k]=(typeof defaultEntry==='function'?defaultEntry(k):{id:k,mode:'Patristic Catena',status:'Draft',tags:'',sourceHtml:'',commentaryHtml:'',structured:{},footnotes:[],citations:[],subentries:[]}));
+    let author=(entry.author||entry.source_title||authorFallback||'Imported Commentary');
+    if(entry.append_to_author_name) author=author+entry.append_to_author_name;   // literal append, keeps the user's spacing
+    e.citations=e.citations||[];
+    if(entry.source_title||entry.source_url||entry.author){
+      e.citations.push({title:entry.source_title||entry.author||author, url:entry.source_url||''});
+    }
+    e.commentaryHtml=(e.commentaryHtml||'')+`<p><b>${E(author)}</b></p>`+quoteToHtml(entry.quote);
+  }
+  window.importToml=function(){
+    const mode=($('tomlAttachMode')&&$('tomlAttachMode').value)||'auto';
+    const authorFallback=($('tomlAuthor')&&$('tomlAuthor').value.trim())||'Imported Commentary';
+    const files=($('tomlFiles')&&$('tomlFiles').files)||[];
+    let total=0; const targets=[];
+    const proc=(text,filename)=>{
+      const entries=(typeof parseToml==='function')?parseToml(text):[];
+      entries.forEach(entry=>{ const t=tomlTarget(entry,filename,mode); applyTomlEntry(entry,t.book,t.ch,t.v,authorFallback); targets.push(`${t.book} ${t.ch}:${t.v}`); total++; });
+    };
+    const done=()=>{
+      if(typeof renderAll==='function')renderAll(); if(typeof saveSoon==='function')saveSoon();
+      const r=$('tomlReport'); if(r) r.textContent=`Imported ${total} commentary block${total===1?'':'s'}`+(targets.length?` → ${[...new Set(targets)].slice(0,8).join(', ')}${targets.length>8?'…':''}`:'')+'.';
+      if(typeof toast==='function')toast('Imported '+total+' TOML block'+(total===1?'':'s'));
+    };
+    if(files.length){ let n=0; Array.from(files).forEach(f=>{ const rd=new FileReader(); rd.onload=ev=>{ try{proc(ev.target.result,f.name);}catch(e){console.warn(e);} if(++n===files.length) done(); }; rd.readAsText(f); }); }
+    else { try{ proc(($('tomlPaste')&&$('tomlPaste').value)||'',''); }catch(e){console.warn(e);} done(); }
+  };
+  window.pasteTomlToVerse=function(){
+    const text=($('tomlPaste')&&$('tomlPaste').value)||'';
+    const authorFallback=($('tomlAuthor')&&$('tomlAuthor').value.trim())||'Imported Commentary';
+    const entries=(typeof parseToml==='function')?parseToml(text):[];
+    const a=A();
+    entries.forEach(entry=>applyTomlEntry(entry,a.book,a.chapter,a.verse,authorFallback));
+    if(typeof loadEntryEditor==='function')loadEntryEditor();
+    if(typeof renderAll==='function')renderAll();
+    if(typeof saveSoon==='function')saveSoon();
+    const r=$('tomlReport'); if(r) r.textContent=`Pasted ${entries.length} block${entries.length===1?'':'s'} to ${a.book} ${a.chapter}:${a.verse}.`;
+    if(typeof toast==='function')toast('Pasted '+entries.length+' to '+a.book+' '+a.chapter+':'+a.verse);
+  };
+
+  function htmlToTomlText(html){
+    const d=document.createElement('div'); d.innerHTML=html||'';
+    d.querySelectorAll('br').forEach(br=>br.replaceWith('\n'));
+    d.querySelectorAll('p,div,blockquote,li,h1,h2,h3,h4').forEach(el=>el.insertAdjacentText('beforeend','\n\n'));
+    let t=(d.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+    return t.replace(/'''/g,'’’’');
+  }
+  const tq=s=>String(s||'').replace(/'/g,'’'); // literal-string safe
+  window.buildTomlExport=function(keys){
+    let out='# Catena commentary export\n# [[commentary]] blocks · quote + optional author / append_to_author_name / reference / source_url\n\n';
+    (keys||[]).forEach(k=>{
+      const e=state.entries[k]; if(!e) return;
+      const text=htmlToTomlText(e.commentaryHtml); if(!text.trim()) return;
+      const p=String(k).split('|');
+      out+='[[commentary]]\n';
+      out+=`reference='${tq(p[0]+' '+p[1]+':'+p[2])}'\n`;
+      const cite=(e.citations&&e.citations[0])||null;
+      if(cite&&cite.title) out+=`author='${tq(cite.title)}'\n`;
+      if(cite&&cite.url) out+=`source_url='${tq(cite.url)}'\n`;
+      out+=`quote='''\n${text}\n'''\n\n`;
+    });
+    return out.trim()+'\n';
+  };
+  window.catenaExportToml=function(scope){
+    const a=A(), b=a.book, c=a.chapter, v=a.verse;
+    const has=k=>state.entries[k]&&strip(state.entries[k].commentaryHtml).length>0;
+    const all=Object.keys(state.entries||{}).filter(has);
+    let keys=[];
+    if(scope==='verse') keys=[vKey(b,c,v)].filter(has);
+    else if(scope==='chapter') keys=all.filter(k=>{const p=k.split('|');return p[0]===b&&+p[1]===+c;});
+    else if(scope==='book') keys=all.filter(k=>k.split('|')[0]===b);
+    else keys=all;
+    if(typeof catenaCompareKeys==='function'){ try{keys.sort(catenaCompareKeys);}catch(_){} }
+    const rpt=$('catenaTomlExportReport');
+    if(!keys.length){ if(rpt)rpt.textContent='No commentary found for this scope.'; if(typeof toast==='function')toast('No commentary to export here.'); return; }
+    let fn='catena-commentaries.toml';
+    if(scope==='verse') fn=`${b} ${c}_${v}.toml`;
+    else if(scope==='chapter') fn=`${b} ${c}.toml`;
+    else if(scope==='book') fn=`${b}.toml`;
+    const toml=window.buildTomlExport(keys);
+    if(typeof dlBlob==='function') dlBlob(toml,'text/plain',fn);
+    else { const aE=document.createElement('a'); aE.href=URL.createObjectURL(new Blob([toml],{type:'text/plain'})); aE.download=fn; aE.click(); URL.revokeObjectURL(aE.href); }
+    if(rpt)rpt.textContent=`Exported ${keys.length} commentary block${keys.length===1?'':'s'} → ${fn}`;
+    if(typeof toast==='function')toast('Exported '+keys.length+' commentary block'+(keys.length===1?'':'s'));
+  };
+  function injectTomlExport(){
+    const modal=$('tomlModal'); if(!modal||$('catenaTomlExportBox')) return;
+    const body=modal.querySelector('.modal-body'); if(!body) return;
+    const box=document.createElement('div'); box.id='catenaTomlExportBox'; box.className='toml-export-box';
+    box.innerHTML=
+      '<div class="field-label" style="margin-top:0">Export commentaries → TOML</div>'+
+      '<p class="small" style="margin:0 0 9px">Round-trips with the importer above. Per-verse files are named <code>Book C_V.toml</code>.</p>'+
+      '<div class="toml-export-actions">'+
+        '<button onclick="catenaExportToml(\'verse\')">This verse</button>'+
+        '<button onclick="catenaExportToml(\'chapter\')">This chapter</button>'+
+        '<button onclick="catenaExportToml(\'book\')">This book</button>'+
+        '<button class="gold" onclick="catenaExportToml(\'all\')">Whole workspace</button>'+
+      '</div><div id="catenaTomlExportReport" class="small" style="margin-top:7px"></div>';
+    body.appendChild(box);
+    // friendlier callout
+    const callout=modal.querySelector('.callout');
+    if(callout) callout.innerHTML='Import files shaped like <code>[[commentary]]</code> with <code>quote=\'\'\'…\'\'\'</code>, optional <code>author</code>, <code>append_to_author_name</code>, <code>reference</code>, <code>source_url</code>. The verse is taken from a <code>reference</code> key, a <code>[Book C:V]</code> tag in the quote, or the filename.';
+  }
+
+  /* ═══════════════ boot ═══════════════ */
+  function boot(){ pruneKjv(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else setTimeout(boot,0);
+  setTimeout(boot,500);
+})();
+</script>
