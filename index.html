@@ -10701,11 +10701,12 @@ a.strongs-tag:hover{background:rgba(201,168,76,.14);border-radius:3px}
     if(vtCache[key])return vtCache[key];
     const local=verseTextFor(key); if(local)return local;
     if(vtFail[key])return '';
-    const p=key.split('|'); const ref=p[0]+' '+p[1]+':'+p[2];
-    try{
-      const r=await fetch('https://bible-api.com/'+encodeURIComponent(ref)+'?translation=kjv',{cache:'force-cache'});
-      if(r.ok){ const d=await r.json(); const t=(d&&d.text||'').replace(/\s+/g,' ').trim(); if(t){vtCache[key]=t;return t;} }
-    }catch(_){}
+    const p=key.split('|'); const book=p[0], ch=p[1];
+    const slug=String(book).toLowerCase().replace(/[^a-z0-9]/g,'');
+    const urls=['https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-kjv/books/'+slug+'/chapters/'+ch+'.json','https://raw.githubusercontent.com/wldeh/bible-api/main/bibles/en-kjv/books/'+slug+'/chapters/'+ch+'.json'];
+    for(const u of urls){
+      try{ const r=await fetch(u,{cache:'force-cache'}); if(r.ok){ const d=await r.json(); if(d&&d.data){ d.data.forEach(x=>{ if(x&&x.verse) vtCache[book+'|'+ch+'|'+x.verse]=String(x.text||'').replace(/\s+/g,' ').trim(); }); if(vtCache[key])return vtCache[key]; } } }catch(_){}
+    }
     vtFail[key]=1; return '';
   }
 
@@ -11493,7 +11494,8 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
      versions (NKJV, NIV, ESV, NASB, NLT) are NOT offered by any free
      API, so they cannot appear here. */
   const SOURCES={
-    bibleapi:{ label:'bible-api.com — public domain', wholeBook:true,
+    cdn:{ label:'Online library — 210 versions (recommended; works from a local file)' },
+    bibleapi:{ label:'bible-api.com — public domain (hosted sites only)', wholeBook:true,
       list:[
         ['kjv','King James Version (1769)'],['web','World English Bible'],
         ['webbe','World English Bible (British)'],['oeb-us','Open English Bible (US)'],
@@ -11501,9 +11503,40 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
         ['clementine','Clementine Latin Vulgate'],['almeida','João Ferreira de Almeida (Portuguese)'],
         ['rccv','Romanian Corrected Cornilescu'],['cherokee','Cherokee New Testament']
       ]},
-    bolls:{ label:'bolls.life — large catalog (YLT, ASV, Darby, Greek, Hebrew…)', wholeBook:false, list:null }
+    bolls:{ label:'bolls.life — large catalog (hosted sites only)', wholeBook:false, list:null }
   };
   let bollsCache=null;
+  let wldehCache=null;
+  async function wfetch(path){
+    const urls=['https://cdn.jsdelivr.net/gh/wldeh/bible-api/'+path,'https://raw.githubusercontent.com/wldeh/bible-api/main/'+path];
+    for(const u of urls){ try{ const r=await fetch(u,{cache:'force-cache'}); if(r.ok) return await r.json(); }catch(_){} }
+    return null;
+  }
+  async function wldehList(){
+    if(wldehCache) return wldehCache;
+    let d=null;
+    for(const u of ['https://raw.githubusercontent.com/wldeh/bible-api/main/bibles/bibles.json','https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/bibles.json']){
+      try{ const r=await fetch(u,{cache:'force-cache'}); if(r.ok){ d=await r.json(); break; } }catch(_){}
+    }
+    if(!d||!d.length) throw new Error('catalog unavailable');
+    const out=d.map(v=>[v.id,(String(v.version||v.id).replace(/\s*\[[^\]]*\]\s*$/,'').trim())+' · '+((v.language||{}).name||''),(v.language||{}).name||'']);
+    const keep=/^(English|Greek|Hebrew|Latin|Aramaic)/i;
+    out.sort((a,b)=>{const ka=keep.test(a[2])?0:1,kb=keep.test(b[2])?0:1;return ka-kb||a[1].localeCompare(b[1]);});
+    wldehCache=out; return out;
+  }
+  function bookSlug(b){ return String(b).toLowerCase().replace(/[^a-z0-9]/g,''); }
+  async function fetchFromWldeh(id,name,scope,onProg){
+    const s=window.state||state; s.translations[name]=s.translations[name]||{};
+    const books=bookList(scope); let totalCh=books.reduce((n,b)=>n+chCount(b),0)||1, done=0, got=0;
+    for(const book of books){ const ch=chCount(book), slug=bookSlug(book);
+      for(let c=1;c<=ch;c++){
+        const d=await wfetch('bibles/'+id+'/books/'+slug+'/chapters/'+c+'.json');
+        if(d&&d.data) d.data.forEach(v=>{ if(v&&v.verse){ s.translations[name][book+'|'+(v.chapter||c)+'|'+v.verse]=String(v.text||'').replace(/\s+/g,' ').trim(); got++; } });
+        done++; onProg(done,totalCh,book+' '+c);
+      }
+    }
+    if(!got) throw new Error('no verses returned (version may be empty for this range)');
+  }
   async function bollsList(){
     if(bollsCache) return bollsCache;
     const r=await fetch('https://bolls.life/static/bolls/app/views/languages.json',{cache:'force-cache'});
@@ -11586,9 +11619,9 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
 
     async function populate(){
       const src=srcSel.value; const list=$('tlList');
-      if(src==='bolls'){
-        list.innerHTML='<div class="busy-row" style="padding:14px"><span class="spin"></span> Loading catalog from bolls.life…</div>';
-        try{ current=await bollsList(); }catch(e){ list.innerHTML='<div class="lex-empty">Could not load the bolls.life catalog (it may be blocked when running from a local file). Use bible-api.com, which works offline-friendly.</div>'; current=[]; updateNote(); return; }
+      if(src==='bolls'||src==='cdn'){
+        list.innerHTML='<div class="busy-row" style="padding:14px"><span class="spin"></span> Loading catalog…</div>';
+        try{ current=src==='cdn'?await wldehList():await bollsList(); }catch(e){ list.innerHTML='<div class="lex-empty">Could not load the catalog (the network may be blocked). The “Online library” source is the most reliable and works even from a local file.</div>'; current=[]; updateNote(); return; }
       } else { current=SOURCES.bibleapi.list.map(x=>[x[0],x[1],'English']); }
       renderList(); updateNote();
     }
@@ -11607,7 +11640,7 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
     function updateNote(){
       const src=srcSel.value, scope=scopeSel.value;
       let note='Only public-domain texts are available online. Modern translations such as NKJV, NIV, ESV, NASB and NLT are copyrighted and cannot be provided by any free API.';
-      if(src==='bolls' && scope==='all') note+=' Note: a whole-Bible download from bolls.life fetches each chapter individually and can be slow.';
+      if((src==='bolls'||src==='cdn') && scope==='all') note+=' Note: this source fetches each chapter individually, so a whole-Bible download makes many requests and can take a while.';
       $('tlNote').textContent=note;
     }
     async function download(){
@@ -11621,6 +11654,7 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
         try{
           const onProg=(d,t,label)=>{ bar.style.width=Math.round(d/t*100)+'%'; if(d%4===0||d===t) T('['+name+'] '+label+' ('+d+'/'+t+')'); };
           if(src==='bibleapi') await fetchFromBibleApi(code,name,scope,onProg);
+          else if(src==='cdn') await fetchFromWldeh(code,name,scope,onProg);
           else await fetchFromBolls(code,name,scope,onProg);
           T(name+' loaded — '+Object.keys(state.translations[name]||{}).length+' verses');
         }catch(e){ T('Failed: '+name+(/Failed to fetch|NetworkError/.test(e.message)?' (network/CORS blocked in this context)':' — '+e.message)); }
@@ -11650,5 +11684,346 @@ blockquote.catena-gold-quote p{margin:0 0 6px!important}
 
   function boot(){ /* nothing until settings open */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else setTimeout(boot,0);
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CATENA · MULTI-VERSE SELECT · DESKTOP FOCUS · XREF VERSE/CHAPTER
+═════════════════════════════════════════════════════════════════ -->
+<style id="catena-multiselect-focus-xref-css">
+/* multi-verse selection highlight (blue, distinct from gold active) */
+.verse-span.v-multi,.verse-para.v-multi,.cux-pv.v-multi,.stacked-verse.v-multi,.il-verse.v-multi,.pt-row.v-multi,[data-verse].v-multi,[data-v].v-multi{
+  background:rgba(120,150,210,.20)!important;box-shadow:inset 0 0 0 1px rgba(140,170,220,.55)!important;border-radius:5px!important;
+}
+#multiSelBar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 4px;padding:9px 14px;border:1px solid rgba(120,150,210,.42);border-radius:10px;background:rgba(120,150,210,.08);font:13px/1.3 var(--ui);color:var(--ink2)}
+#multiSelBar .ms-label{color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+#multiSelBar b{color:#bcd2f5;font-family:var(--title);font-weight:600}
+#multiSelBar .ms-count{color:var(--muted);font-size:12px}
+#multiSelBar .ms-clear{margin-left:auto;font-size:12px;padding:5px 12px;border-radius:8px}
+#multiSelHint{font:11.5px/1.4 var(--ui);color:var(--dim);margin:2px 0 0}
+
+/* ── DESKTOP focus mode = distraction-free reader + editor (NOT a phone column) ── */
+body.cux-focus.is-desktop #sidebar{display:none!important}
+body.cux-focus.is-desktop #rightPanel{display:flex!important}
+body.cux-focus.is-desktop #layout{grid-template-columns:minmax(0,1.45fr) minmax(380px,540px)!important;max-width:1640px;margin:0 auto!important;gap:0!important}
+body.cux-focus.is-desktop #reader{grid-column:auto!important;grid-row:auto!important;max-width:none!important;margin:0!important;padding:30px clamp(30px,4.5vw,80px) 90px!important}
+body.cux-focus.is-desktop #cuxNav{display:none!important}
+body.cux-focus.is-desktop #topbar .topbar-group{opacity:.45;transition:opacity .2s}
+body.cux-focus.is-desktop #topbar .topbar-group:hover{opacity:1}
+body.cux-focus.is-desktop #verseFlow{max-width:900px;margin-left:auto;margin-right:auto}
+
+/* cross-reference chapter mode */
+.xrefc-block{padding:9px 0;border-bottom:1px solid var(--border)}
+.xrefc-block:last-child{border-bottom:0}
+.xrefc-vhead{font:700 13px/1.3 var(--title);color:var(--gold2);cursor:pointer;margin-bottom:5px;display:inline-block}
+.xrefc-vhead:hover{text-decoration:underline}
+.xrefc-vtext{font:italic 12.5px/1.4 var(--serif);color:var(--muted);margin:0 0 6px}
+.xrefc-refs{display:flex;flex-wrap:wrap;gap:6px}
+.xrefc-ref{font:12.5px/1 var(--ui);color:var(--ink2);border:1px solid var(--border);border-radius:6px;padding:5px 9px;cursor:pointer;background:var(--card);text-decoration:none}
+.xrefc-ref:hover{border-color:var(--gold);color:var(--gold3)}
+</style>
+
+<script id="catena-multiselect-focus-xref-js">
+(function(){
+  'use strict';
+  if(window.__catenaMSFX) return; window.__catenaMSFX=true;
+  const $=id=>document.getElementById(id);
+  const E=s=>{try{return typeof esc==='function'?esc(s):String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}catch(_){return String(s??'');}};
+  const T=m=>{try{typeof toast==='function'&&toast(m);}catch(_){}};
+  const A=()=>(window.state&&state.active)||{};
+  const META=()=> (typeof BOOK_META!=='undefined')?BOOK_META:[];
+  const chCount=b=>{ try{ return (typeof chapterCount==='function')?chapterCount(b):0; }catch(_){ return 0; } };
+  const strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  function ensureCR(){ const s=window.state||state; if(s){ s.crossRefs=s.crossRefs||{}; } }
+  const refLabel=k=>{const p=String(k).split('|');return p[0]+' '+p[1]+':'+p[2];};
+
+  /* ════════ 1 · MULTI-VERSE SELECTION (Ctrl / Shift + click) ════════ */
+  let selSet=new Set(), selBook=null, selChapter=null, lastClicked=0;
+  function verseNumOf(el){
+    if(!el)return 0;
+    if(el.dataset&&(el.dataset.verse||el.dataset.v)) return +(el.dataset.verse||el.dataset.v);
+    const sup=el.querySelector&&el.querySelector('.verse-num,.cux-pvn,.pt-num'); if(sup){ const n=+String(sup.textContent).replace(/\D+/g,''); if(n)return n; }
+    return 0;
+  }
+  const VSEL='.verse-span,.verse-para,.cux-pv,.stacked-verse,.il-verse,.pt-row,[data-verse],[data-v]';
+  function specFromSet(set){
+    const arr=[...set].sort((a,b)=>a-b); if(!arr.length)return '';
+    const parts=[]; let s=arr[0],p=arr[0];
+    for(let i=1;i<=arr.length;i++){ if(arr[i]===p+1){p=arr[i];} else {parts.push(s===p?String(s):s+'-'+p); s=arr[i]; p=arr[i];} }
+    return parts.join(',');
+  }
+  function specHuman(spec){ try{ if(typeof catenaSpecHuman==='function')return catenaSpecHuman(spec); }catch(_){} return spec.replace(/-/g,'–'); }
+  function clearMultiHighlights(){ document.querySelectorAll('.v-multi').forEach(el=>el.classList.remove('v-multi')); }
+  function highlightMulti(){ clearMultiHighlights(); if(selSet.size<1)return; document.querySelectorAll(VSEL).forEach(el=>{ const v=verseNumOf(el); if(v&&selSet.has(v)) el.classList.add('v-multi'); }); }
+  function hideBar(){ const b=$('multiSelBar'); if(b)b.style.display='none'; }
+  function showBar(spec){
+    const reader=$('reader'), flow=$('verseFlow'); if(!reader||!flow)return;
+    let bar=$('multiSelBar'); if(!bar){ bar=document.createElement('div'); bar.id='multiSelBar'; }
+    if(bar.parentNode!==reader || bar.nextSibling!==flow) reader.insertBefore(bar,flow);
+    bar.innerHTML='<span class="ms-label">Commentary target</span> <b>'+E(A().book)+' '+A().chapter+':'+specHuman(spec)+'</b> <span class="ms-count">('+selSet.size+' verses)</span><button class="ms-clear">Clear selection</button>';
+    bar.querySelector('.ms-clear').onclick=clearSelection;
+    bar.style.display='flex';
+  }
+  function clearSelection(){
+    selSet.clear(); clearMultiHighlights(); hideBar();
+    const s=window.state||state; if(s&&s.active){ s.active.commentaryScope='verse'; s.active.passageSpec=''; s.active.passageStart=s.active.verse; s.active.passageEnd=s.active.verse; }
+    reloadEditor();
+  }
+  function reloadEditor(){
+    try{ if(typeof catenaSyncPassageTools==='function')catenaSyncPassageTools(); }catch(_){}
+    try{ if(typeof loadEntryEditor==='function')loadEntryEditor(); }catch(_){}
+    try{ if(typeof renderChapterCommentaries==='function')renderChapterCommentaries(); }catch(_){}
+    try{ if(typeof catenaRefreshPdfIfOpen==='function')catenaRefreshPdfIfOpen(); }catch(_){}
+    try{ if(typeof saveSoon==='function')saveSoon(); }catch(_){}
+  }
+  function ensureChapterScope(){ const a=A(); if(selBook!==a.book||String(selChapter)!==String(a.chapter)){ selSet.clear(); selBook=a.book; selChapter=a.chapter; } }
+  function applyMultiSelection(){
+    const s=window.state||state; const arr=[...selSet].sort((a,b)=>a-b);
+    if(arr.length>=2){
+      const spec=specFromSet(selSet);
+      s.active.commentaryScope='passage'; s.active.passageSpec=spec;
+      s.active.passageStart=arr[0]; s.active.passageEnd=arr[arr.length-1]; s.active.verse=arr[0];
+      showBar(spec);
+    } else {
+      s.active.commentaryScope='verse'; s.active.passageSpec='';
+      s.active.verse=arr[0]||s.active.verse; s.active.passageStart=s.active.verse; s.active.passageEnd=s.active.verse;
+      hideBar();
+    }
+    reloadEditor(); highlightMulti();
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('input,textarea,select,button,a,[contenteditable="true"],.cux-ov,.modal-overlay')) return;
+    const el=e.target.closest(VSEL); if(!el) return;
+    const v=verseNumOf(el); if(!v) return;
+    const multi=e.ctrlKey||e.metaKey, range=e.shiftKey;
+    if(multi||range){
+      e.preventDefault(); e.stopPropagation();
+      ensureChapterScope();
+      if(range && lastClicked){ const a=Math.min(lastClicked,v), b=Math.max(lastClicked,v); for(let i=a;i<=b;i++) selSet.add(i); }
+      else { if(selSet.has(v)) selSet.delete(v); else selSet.add(v); }
+      lastClicked=v;
+      applyMultiSelection();
+    } else {
+      if(selSet.size){ selSet.clear(); clearMultiHighlights(); hideBar(); const s=window.state||state; if(s&&s.active){s.active.passageSpec='';s.active.commentaryScope='verse';} }
+      lastClicked=v; selBook=A().book; selChapter=A().chapter;
+    }
+  },true);
+  // re-apply / clear selection across reader re-renders
+  const _rr=window.renderReader;
+  window.renderReader=function(){
+    const r=(typeof _rr==='function')?_rr.apply(this,arguments):undefined;
+    try{
+      const a=A();
+      if(selBook!==a.book||String(selChapter)!==String(a.chapter)){ selSet.clear(); hideBar(); }
+      else if(selSet.size>=2){ highlightMulti(); showBar(specFromSet(selSet)); }
+      // add a one-line hint under the verse toolbar
+      const tb=$('verseToolbar');
+      if(tb && !$('multiSelHint')){ const h=document.createElement('div'); h.id='multiSelHint'; h.textContent='Tip: Ctrl/⌘-click (or Shift-click) verses to write one commentary on a passage.'; tb.insertAdjacentElement('afterend',h); }
+    }catch(_){}
+    return r;
+  };
+
+  /* ════════ 3 · CROSS-REFERENCES with VERSE / CHAPTER modes ════════ */
+  function mkOv(id,title){
+    let ov=$(id); if(ov)return ov;
+    ov=document.createElement('div'); ov.id=id; ov.className='cux-ov';
+    ov.innerHTML='<div class="cux-ov-box"><div class="cux-ov-head"><h2>'+E(title)+'</h2><button class="x">✕</button></div><div class="cux-ov-tabs"></div><div class="cux-ov-body"></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('.x').onclick=()=>ov.classList.remove('open');
+    ov.addEventListener('mousedown',e=>{ if(e.target===ov) ov.classList.remove('open'); });
+    return ov;
+  }
+  function gotoKey(key){
+    const s=window.state||state; const p=String(key).split('|'); const book=p[0],ch=+p[1],v=+p[2];
+    const meta=META().find(m=>m.book===book); if(meta&&s.active) s.active.tab=meta.cat;
+    s.active.book=book; s.active.chapter=ch; s.active.verse=v;
+    s.active.commentaryScope='verse'; s.active.passageSpec='';
+    selSet.clear(); hideBar();
+    try{ if(typeof renderAll==='function')renderAll(); }catch(_){}
+    try{ if(typeof saveSoon==='function')saveSoon(); }catch(_){}
+  }
+  function userRefs(key){ ensureCR(); return (state.crossRefs[key]||[]); }
+  function addUserRef(key,refKey){ ensureCR(); state.crossRefs[key]=state.crossRefs[key]||[]; if(!state.crossRefs[key].some(r=>r.ref===refKey)){ state.crossRefs[key].push({ref:refKey,src:'user'}); try{saveSoon();}catch(_){} } }
+  function resolveBook(name){ if(!name)return null; const nl=String(name).trim().replace(/\.+$/,'').toLowerCase(); let h=META().find(m=>m.book.toLowerCase()===nl)||META().find(m=>m.book.toLowerCase().startsWith(nl)); if(h)return h.book; const c=nl.replace(/\s+/g,''); h=META().find(m=>m.book.toLowerCase().replace(/\s+/g,'').startsWith(c)); return h?h.book:null; }
+  function parseRefKey(str){ const m=/([1-4]?\s*[A-Za-z][A-Za-z.\s]*?)\s+(\d+)\s*[:.]\s*(\d+)/.exec(String(str||'')); if(!m)return null; const b=resolveBook(m[1]); if(!b)return null; return b+'|'+m[2]+'|'+m[3]; }
+  const vtc={},vtf={};
+  function verseTextFor(key){ const s=window.state||state; if(!s||!s.translations)return ''; if(vtc[key])return vtc[key]; for(const n in s.translations){ const t=s.translations[n]&&s.translations[n][key]; if(t){const x=strip(t); if(x){vtc[key]=x;return x;}} } return ''; }
+  async function fetchVerse(key){
+    if(vtc[key])return vtc[key]; const local=verseTextFor(key); if(local)return local; if(vtf[key])return '';
+    const p=key.split('|'); const slug=String(p[0]).toLowerCase().replace(/[^a-z0-9]/g,'');
+    for(const u of ['https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-kjv/books/'+slug+'/chapters/'+p[1]+'.json','https://raw.githubusercontent.com/wldeh/bible-api/main/bibles/en-kjv/books/'+slug+'/chapters/'+p[1]+'.json']){
+      try{ const r=await fetch(u,{cache:'force-cache'}); if(r.ok){ const d=await r.json(); if(d&&d.data){ d.data.forEach(x=>{ if(x&&x.verse) vtc[p[0]+'|'+p[1]+'|'+x.verse]=String(x.text||'').replace(/\s+/g,' ').trim(); }); if(vtc[key])return vtc[key]; } } }catch(_){}
+    }
+    vtf[key]=1; return '';
+  }
+  let curMode='verse';
+  async function openXref(mode){
+    curMode=mode||curMode||'verse';
+    const ov=mkOv('xref2Overlay','Cross-references'); const body=ov.querySelector('.cux-ov-body');
+    const tabs=ov.querySelector('.cux-ov-tabs'); tabs.style.display='flex';
+    const a=A(); const key=a.book+'|'+a.chapter+'|'+a.verse;
+    ov.querySelector('.cux-ov-head h2').textContent='Cross-references · '+E(a.book)+' '+a.chapter+(curMode==='verse'?(':'+a.verse):'');
+    tabs.innerHTML='<button data-m="verse" class="'+(curMode==='verse'?'active':'')+'">This verse ('+a.chapter+':'+a.verse+')</button><button data-m="chapter" class="'+(curMode==='chapter'?'active':'')+'">Whole chapter ('+E(a.book)+' '+a.chapter+')</button>';
+    tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>openXref(b.dataset.m));
+    ov.classList.add('open'); document.body.classList.remove('cux-sheet','cux-drawer');
+    body.innerHTML='<div class="busy-row"><span class="spin"></span> Loading references…</div>';
+    let db; try{ db=await CatenaDB.xref(); }catch(e){ body.innerHTML='<div class="lex-empty">'+E(e.message)+'</div>'; return; }
+    if(curMode==='chapter') renderChapter(body,a.book,a.chapter,db); else renderVerse(body,key,db);
+  }
+  function renderVerse(body,key,db){
+    const u=userRefs(key); const uset=new Set(u.map(r=>r.ref));
+    const canon=(db[key]||[]).filter(r=>!uset.has(r));
+    const list=[...u.map(r=>({ref:r.ref,src:'user'})),...canon.map(r=>({ref:r,src:'canon'}))];
+    body.innerHTML='<div class="xref-toolbar"><button class="gold" id="xq2Graph">Open graph</button><button id="xq2Load">Load verse text (online)</button><button id="xq2Copy">Copy list</button></div>'+
+      '<p class="xref-note">Canonical references (Treasury-of-Scripture style) for '+E(refLabel(key))+', plus any you add.</p>'+
+      (list.length?'<div class="xref-list" id="xq2List"></div>':'<div class="lex-empty">No canonical cross-references for this verse. Add your own below.</div>')+
+      '<div class="xref-add"><input id="xq2Add" type="text" placeholder="Add a reference, e.g. Romans 8:28"><button id="xq2AddBtn">Add</button></div>';
+    const wrap=$('xq2List');
+    if(wrap){ wrap.innerHTML=list.map(r=>{const t=verseTextFor(r.ref);return '<div class="xref-row" data-ref="'+E(r.ref)+'"><span class="xref-ref">'+E(refLabel(r.ref))+'</span><span class="xref-text" data-text>'+(t?E(t.slice(0,170)):'—')+'</span><span class="xref-src '+r.src+'">'+(r.src==='canon'?'canon':'mine')+'</span></div>';}).join('');
+      wrap.querySelectorAll('.xref-row').forEach(row=>row.onclick=()=>{ gotoKey(row.dataset.ref); $('xref2Overlay').classList.remove('open'); }); }
+    $('xq2Graph').onclick=()=>{ if(window.catenaXrefGraph) window.catenaXrefGraph(key); };
+    $('xq2AddBtn').onclick=()=>{ const rk=parseRefKey($('xq2Add').value); if(!rk){T('Could not read that reference.');return;} addUserRef(key,rk); openXref('verse'); };
+    $('xq2Add').addEventListener('keydown',e=>{ if(e.key==='Enter')$('xq2AddBtn').click(); });
+    const lt=$('xq2Load'); if(lt&&wrap)lt.onclick=async function(){ this.disabled=true; this.textContent='Loading…'; for(const cell of wrap.querySelectorAll('[data-text]')){ if(cell.textContent==='—'){ const t=await fetchVerse(cell.closest('.xref-row').dataset.ref); cell.textContent=t?t.slice(0,170):'(unavailable)'; } } this.textContent='Loaded'; };
+    const cp=$('xq2Copy'); if(cp)cp.onclick=()=>{ try{ navigator.clipboard.writeText(refLabel(key)+' — '+list.map(r=>refLabel(r.ref)).join('; ')); T('Copied '+list.length+' references.'); }catch(_){} };
+  }
+  function renderChapter(body,book,ch,db){
+    const n=chCount(book)||0; let total=0; const blocks=[];
+    for(let v=1;v<=n;v++){
+      const key=book+'|'+ch+'|'+v;
+      const u=userRefs(key).map(r=>r.ref); const canon=(db[key]||[]);
+      const refs=[...new Set([...u,...canon])]; if(!refs.length)continue;
+      total+=refs.length;
+      const vt=verseTextFor(key);
+      blocks.push('<div class="xrefc-block"><span class="xrefc-vhead" data-go="'+E(key)+'">'+E(book)+' '+ch+':'+v+'</span>'+(vt?'<div class="xrefc-vtext">'+E(vt.slice(0,150))+'</div>':'')+'<div class="xrefc-refs">'+refs.map(r=>'<a class="xrefc-ref" data-go="'+E(r)+'">'+E(refLabel(r))+'</a>').join('')+'</div></div>');
+    }
+    if(!total){ body.innerHTML='<div class="lex-empty">No cross-references found for '+E(book)+' '+ch+'.</div>'; return; }
+    body.innerHTML='<p class="xref-note">Canonical cross-references for every verse in '+E(book)+' '+ch+' — '+total+' references across '+blocks.length+' verses. Click any reference to jump there.</p>'+blocks.join('');
+    body.querySelectorAll('[data-go]').forEach(el=>el.onclick=()=>{ gotoKey(el.dataset.go); $('xref2Overlay').classList.remove('open'); });
+  }
+  window.catenaXref=()=>openXref('verse');
+  // redirect all existing "Cross-refs" buttons (study rail + verse toolbar) to the v2 overlay
+  document.addEventListener('click',function(e){
+    const b=e.target.closest&&e.target.closest('[data-act="xref"]');
+    if(b){ e.preventDefault(); e.stopPropagation(); openXref('verse'); }
+  },true);
+
+  /* ════════ 2 · ensure desktop focus is clearly a desktop layout (class hook only; CSS does the work) ════════ */
+  // nothing needed in JS — handled by CSS overrides above.
+
+  function boot(){ ensureCR(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else setTimeout(boot,0);
+})();
+</script>
+
+<!-- ════════ CATENA · STUDY PDF — don't duplicate verses covered by a passage commentary ════════ -->
+<script id="catena-pdf-passage-dedup">
+(function(){
+  'use strict';
+  if(window.__catenaPdfDedup) return; window.__catenaPdfDedup=true;
+  function hasComm(k){
+    const s=window.state||state; const e=s&&s.entries&&s.entries[k]; if(!e)return false;
+    if(typeof catenaEntryHasVisibleCommentary==='function') return catenaEntryHasVisibleCommentary(e);
+    return !!(e.commentaryHtml && String(e.commentaryHtml).replace(/<[^>]+>/g,'').trim());
+  }
+  function specContains(spec,v){
+    try{ if(typeof catenaSpecContains==='function') return catenaSpecContains(spec,v); }catch(_){}
+    return String(spec).split(',').some(part=>{const m=part.split('-');const a=+m[0],b=+(m[1]||m[0]);return v>=a && v<=b;});
+  }
+  function installDedup(){
+    const orig=window.getPdfKeys;
+    if(typeof orig!=='function' || orig.__dedupWrapped) return false;
+    const wrapped=function(scope){
+      let keys=orig(scope)||[];
+      const type=(typeof catenaPdfExportType==='function')?catenaPdfExportType():'study';
+      if(type==='reading') return keys; // reading mode shows every verse of scripture
+      const s=window.state||state;
+      // passages (with their own visible commentary), grouped by "book|chapter|"
+      const passages=[];
+      Object.keys((s&&s.entries)||{}).forEach(k=>{
+        const parts=k.split('|'); if(parts.length<3) return;
+        if(/[-,]/.test(parts[2]) && hasComm(k)) passages.push({prefix:parts[0]+'|'+parts[1]+'|', spec:parts[2]});
+      });
+      if(!passages.length) return keys;
+      return keys.filter(k=>{
+        const parts=k.split('|'); if(parts.length<3) return true;
+        const spec=parts[2];
+        if(/[-,]/.test(spec)) return true;        // keep passage keys themselves
+        if(hasComm(k)) return true;               // keep verses that have their OWN commentary
+        const v=Number(spec)||0; const pfx=parts[0]+'|'+parts[1]+'|';
+        // drop this lone verse only if a passage-commentary already covers it
+        return !passages.some(P=>P.prefix===pfx && specContains(P.spec, v));
+      });
+    };
+    wrapped.__dedupWrapped=true;
+    window.getPdfKeys=wrapped;
+    return true;
+  }
+  // getPdfKeys is defined inside a later IIFE; keep trying until it exists, then rebuild any open PDF.
+  let tries=0;
+  (function attempt(){
+    const ok=installDedup();
+    if(ok){ try{ if(document.getElementById('pdfPage') && typeof refreshPdfFromWorkspace==='function') refreshPdfFromWorkspace(true); }catch(_){ } return; }
+    if(tries++<40) setTimeout(attempt,150);
+  })();
+})();
+</script>
+
+<!-- ════════ CATENA · STUDY PDF dedup (HTML-level, wraps the active builder) ════════ -->
+<script id="catena-pdf-passage-dedup2">
+(function(){
+  'use strict';
+  if(window.__catenaPdfDedup2) return; window.__catenaPdfDedup2=true;
+  function hasComm(k){
+    const s=window.state||state; const e=s&&s.entries&&s.entries[k]; if(!e)return false;
+    if(typeof catenaEntryHasVisibleCommentary==='function') return catenaEntryHasVisibleCommentary(e);
+    return !!(e.commentaryHtml && String(e.commentaryHtml).replace(/<[^>]+>/g,'').trim());
+  }
+  function specContains(spec,v){
+    try{ if(typeof catenaSpecContains==='function') return catenaSpecContains(spec,v); }catch(_){}
+    return String(spec).split(',').some(part=>{const m=part.split('-');const a=+m[0],b=+(m[1]||m[0]);return v>=a && v<=b;});
+  }
+  function passagesWithCommentary(){
+    const s=window.state||state; const out=[];
+    Object.keys((s&&s.entries)||{}).forEach(k=>{ const pr=k.split('|'); if(pr.length>=3 && /[-,]/.test(pr[2]) && hasComm(k)) out.push({prefix:pr[0]+'|'+pr[1]+'|',spec:pr[2]}); });
+    return out;
+  }
+  function filterHtml(html){
+    const passages=passagesWithCommentary(); if(!passages.length) return html;
+    const div=document.createElement('div'); div.innerHTML=html;
+    let removed=0;
+    div.querySelectorAll('section[data-key]').forEach(sec=>{
+      const k=sec.getAttribute('data-key'); const pr=String(k).split('|'); if(pr.length<3)return;
+      const spec=pr[2];
+      if(/[-,]/.test(spec)) return;     // a passage section — always keep
+      if(hasComm(k)) return;            // verse has its OWN commentary — keep
+      const v=Number(spec)||0; const pfx=pr[0]+'|'+pr[1]+'|';
+      if(passages.some(P=>P.prefix===pfx && specContains(P.spec,v))){ sec.remove(); removed++; }
+    });
+    return div.innerHTML;
+  }
+  function wrapBuilder(){
+    const orig=window.buildLinkedPdfHtml;
+    if(typeof orig!=='function' || orig.__dedupWrapped) return false;
+    const wrapped=function(){
+      let html=orig.apply(this,arguments);
+      try{
+        const type=(typeof catenaPdfExportType==='function')?catenaPdfExportType():'study';
+        if(type!=='reading' && typeof html==='string' && html.indexOf('data-key')>=0) html=filterHtml(html);
+      }catch(_){}
+      return html;
+    };
+    wrapped.__dedupWrapped=true;
+    window.buildLinkedPdfHtml=wrapped;
+    return true;
+  }
+  let tries=0;
+  (function attempt(){
+    const ok=wrapBuilder();
+    if(ok){ try{ if(document.getElementById('pdfPage') && typeof refreshPdfFromWorkspace==='function') refreshPdfFromWorkspace(true); }catch(_){ } return; }
+    if(tries++<50) setTimeout(attempt,150);
+  })();
+  // re-apply the wrap if a later routine reassigns the builder
+  setInterval(()=>{ if(window.buildLinkedPdfHtml && !window.buildLinkedPdfHtml.__dedupWrapped) wrapBuilder(); }, 1500);
 })();
 </script>
